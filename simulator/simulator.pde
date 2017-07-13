@@ -17,7 +17,7 @@ float apexRadiusFeet = 0.5;
 float hFeet = 3;
 float rFeet = deriveBaseWidth();
 
-int scaleFactor = 20;
+int scaleFactor = 30;
 float r = rFeet * scaleFactor;
 float h = hFeet * scaleFactor;
 float apexR = apexRadiusFeet * scaleFactor;
@@ -37,40 +37,36 @@ float deriveBaseWidth() {
 }
 
 Strip[] ledstrips = new Strip[numStrips];
+Pattern pattern;
+
+int tick = 0;
 
 void setup() {
   for (int i = 0; i < numStrips; i++) {
     ledstrips[i] = new Strip(new color[numLedsPerStrip]);
   }
-  size(500, 500, P3D);
+  size(750, 750, P3D);
   camera = new PeasyCam(this, 0, 0, 0, d * 2);
   print(rFeet);
   
+  //pattern = new PatternRainbowScan();
+  //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
+  //pattern = new PatternPulseMulti(ledstrips, 20, color(255,100,10));
+  pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
 }
 
-int count = 0;
-int row = 0;
 void draw() {
-  // ====== PATTERN DRAWING GOES HERE =======
-  clearStrips();
-  for (int i = 0; i < 96; i++) {
-    ledstrips[i].leds[row] = color(255,0,0);
-  }
-  row++;
-  if (row >= numLedsPerStrip) {
-    row = 0;
-  }
-  // ========================================
-  
+  pattern.run(ledstrips);
+  /** TODO: push from ledstrips to PixelPusher strips - this will require some math
+  * Which of the two PixelPushers (0-47 will be on PP1, 48-95 will be on PP2)
+  * Which of the 8 outputs, and then which of the LEDs on that output correspond to the LED we're targeting.
+  * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration, 
+  * making 6 out of 96 of our strips per output.
+  */
   renderCanopy();
-  
+  tick++;
 }
 
-void clearStrips() {
-  for (int i = 0; i < numStrips; i++) {
-    ledstrips[i].clear();
-  }
-}
 
 void renderCanopy() {
   background(50);
@@ -108,30 +104,31 @@ void renderStrip(int i) {
   float yLarge = -h;
   float zLarge = r * cos(angle);
   
-  noStroke();
+  stroke(50);
   line(xSmall, ySmall, zSmall, xLarge, yLarge, zLarge);
   
   /**
    * Draw the LEDs
    */
-    for (int j = 0; j < numLedsPerStrip; j++) {
-      // Interpolate them equally along the length of the strip
-      float xLed = (xLarge - xSmall) * (j + 2) / numLedsPerStrip;
-      float yLed = (yLarge - ySmall) * (j + 2) / numLedsPerStrip;
-      float zLed = (zLarge - zSmall) * (j + 2) / numLedsPerStrip;
-    
-      pushMatrix();
-      translate(xLed, yLed, zLed);
-      //stroke(255 / 75 * j);
-      //sphere(2);
-      fill(s.leds[j]);
-      stroke(s.leds[j]);
-      box(0.5,0.5,0.5);
-      popMatrix();
-    }
-   
+  for (int j = 0; j < numLedsPerStrip; j++) {
+    // Interpolate them equally along the length of the strip
+    float xLed = (xLarge - xSmall) * (j + 2) / numLedsPerStrip;
+    float yLed = (yLarge - ySmall) * (j + 2) / numLedsPerStrip;
+    float zLed = (zLarge - zSmall) * (j + 2) / numLedsPerStrip;
+    pushMatrix();
+    translate(xLed, yLed, zLed);
+    fill(s.leds[j]);
+    stroke(s.leds[j]);
+    box(1,1,1);
+    popMatrix();
+  }
 }
 
+void clearStrips() {
+  for (int i = 0; i < numStrips; i++) {
+    ledstrips[i].clear();
+  }
+}
 
 class Strip {
   color[] leds;
