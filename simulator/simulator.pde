@@ -112,9 +112,9 @@ void renderStrip(int i) {
    */
   for (int j = 0; j < numLedsPerStrip; j++) {
     // Interpolate them equally along the length of the strip
-    float xLed = (xLarge - xSmall) * (j + 2) / numLedsPerStrip;
-    float yLed = (yLarge - ySmall) * (j + 2) / numLedsPerStrip;
-    float zLed = (zLarge - zSmall) * (j + 2) / numLedsPerStrip;
+    float xLed = xSmall + (xLarge - xSmall) * j / numLedsPerStrip;
+    float yLed = ySmall + (yLarge - ySmall) * j / numLedsPerStrip;
+    float zLed = zSmall + (zLarge - zSmall) * j / numLedsPerStrip;
     pushMatrix();
     translate(xLed, yLed, zLed);
     fill(s.leds[j]);
