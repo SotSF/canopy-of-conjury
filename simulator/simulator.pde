@@ -9,7 +9,7 @@ int TOTAL_LEDS = 7200;
 
 int numStrips = 96;
 int numLedsPerStrip = TOTAL_LEDS / numStrips;
-int stripLengthMeters = 5;
+float stripLengthMeters = 2.5;
 float stripLengthFeet = stripLengthMeters * FEET_PER_METER;
 float apexRadiusFeet = 0.5;
 
