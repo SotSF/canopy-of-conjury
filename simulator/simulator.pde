@@ -67,11 +67,11 @@ void setup() {
   //pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
   
   /* audio visualizer */
-  //pattern = new PatternAV("/audio/bloom.mp3");
+  //pattern = new PatternAV("./audio/bloom.mp3");
   
   /* extends PatternAV */
-  //pattern = new PatternAVIntersection("/audio/bloom.mp3");
-  //pattern = new PatternAVRainbowPulsar("/audio/bloom.mp3");
+  //pattern = new PatternAVIntersection("./audio/bloom.mp3");
+  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
 }
 
 void draw() {
