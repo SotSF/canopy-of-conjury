@@ -59,7 +59,7 @@ void setup() {
   print(rFeet);
   
   /* implements Pattern */
-  pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
+  //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
   //pattern = new PatternPulseMulti(20, color(255,100,10));
   
   /* extends CartesianPattern implements Pattern */
@@ -71,7 +71,7 @@ void setup() {
   
   /* extends PatternAV */
   //pattern = new PatternAVIntersection("./audio/bloom.mp3");
-  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
 }
 
 void draw() {
