@@ -1,7 +1,15 @@
-
 import peasy.*;
+import ddf.minim.*;
+import ddf.minim.analysis.*;
 
 PeasyCam camera;
+
+// == AUDIO VISUALIZER ===
+Minim minim;
+AudioInput audio; 
+AudioPlayer player;
+BeatDetect beat;
+FFT fft;
 
 // Constants
 float FEET_PER_METER = 3.28084;
@@ -42,6 +50,7 @@ Pattern pattern;
 int tick = 0;
 
 void setup() {
+  minim = new Minim(this);
   for (int i = 0; i < numStrips; i++) {
     ledstrips[i] = new Strip(new color[numLedsPerStrip]);
   }
@@ -49,10 +58,20 @@ void setup() {
   camera = new PeasyCam(this, 0, 0, 0, d * 2);
   print(rFeet);
   
-  //pattern = new PatternRainbowScan();
-  //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
+  /* implements Pattern */
+  pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
   //pattern = new PatternPulseMulti(20, color(255,100,10));
-  pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
+  
+  /* extends CartesianPattern implements Pattern */
+  //pattern = new PatternRainbowScan();
+  //pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
+  
+  /* audio visualizer */
+  //pattern = new PatternAV("/audio/bloom.mp3");
+  
+  /* extends PatternAV */
+  //pattern = new PatternAVIntersection("/audio/bloom.mp3");
+  //pattern = new PatternAVRainbowPulsar("/audio/bloom.mp3");
 }
 
 void draw() {
