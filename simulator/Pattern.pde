@@ -4,8 +4,7 @@ public interface Pattern {
 
 public class CartesianPattern {
   int dimension = 150;
-  color[][] pixelWindow = new color[dimension][dimension]; // for writing in 2D, to convert to Polar/3D
-  float maxRadius = sqrt(pixelWindow[0].length * pixelWindow[0].length + pixelWindow.length * pixelWindow.length);
+  float maxRadius = sqrt(2 * dimension * dimension);
   
   // helper classes
   public int mapCartesian(int x) {
@@ -35,13 +34,13 @@ public class CartesianPattern {
   
   public void scrapeWindow(Strip[] strips) {
     clearStrips();
-    for (int y = 0; y < pixelWindow.length; y++) {
-      for (int x = 0; x < pixelWindow[y].length; x++) {
+    for (int y = 0; y < dimension; y++) {
+      for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
         if (co.led >= numLedsPerStrip) {
           continue;
         }
-        strips[co.strip].leds[co.led] = pixelWindow[y][x];
+        strips[co.strip].leds[co.led] = get(x,y);
       }
     }
     
@@ -57,11 +56,7 @@ public class CartesianPattern {
   }
   
   public void clearWindow() {
-    for (int y = 0; y < pixelWindow.length; y++) {
-      for (int x = 0; x < pixelWindow[y].length; x++) {
-        pixelWindow[y][x] = 0;
-      }
-    }
+    clear();
   }
   
   public class CanopyCoord {
