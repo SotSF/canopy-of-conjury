@@ -8,7 +8,9 @@ class PatternRainbowScan extends CartesianPattern implements Pattern {
         if (hue > 100) {
           hue += -100;
         }
-        pixelWindow[y][x] = color(hue,100,100);;
+        //pixelWindow[y][x] = color(hue,100,100);;
+        //pixels[y * x] = color(hue,100,100);
+        set(x,y, color(hue,100,100));
       }
     }
     this.shift += 2;

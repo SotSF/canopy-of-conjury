@@ -36,13 +36,13 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
       int y2 = round(y * 2 + (dimension / 2));
      
      // overcompensate the lines
-      pixelWindow[y2][x2] = color(255);
-      pixelWindow[y2+1][x2] = color(255);
-      pixelWindow[y2-1][x2] = color(255);
-      pixelWindow[y2][x2+1] = color(255);
-      pixelWindow[y2][x2-1] = color(255);
-      pixelWindow[y2+1][x2+1] = color(255);
-      pixelWindow[y2-1][x2-1] = color(255);
+     set(x2,y2,color(255));
+     set(x2, y2+1, color(255));
+     set(x2,y2-1,color(255));
+     set(x2+1, y2, color(255));
+     set(x2-1, y2, color(255));
+     set(x2+1, y2+1,color(255));
+     set(x2-1,y2+1,color(255));
       t++;
     }
     this.t = 0;
@@ -81,7 +81,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     }
   }
   
-  private void colorOverlay(Strip[] strips) {
+  public void colorOverlay(Strip[] strips) {
     colorMode(HSB,100);
     for (Strip s : strips) {
       for (int l = 0; l < numLedsPerStrip; l++) {
