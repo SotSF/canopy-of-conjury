@@ -51,7 +51,7 @@ void setup() {
   
   //pattern = new PatternRainbowScan();
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
-  //pattern = new PatternPulseMulti(ledstrips, 20, color(255,100,10));
+  //pattern = new PatternPulseMulti(20, color(255,100,10));
   pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
 }
 
