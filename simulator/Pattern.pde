@@ -26,7 +26,7 @@ public class CartesianPattern {
     
     float thetaDegrees = theta * 180 / PI;
     if (thetaDegrees < 0) { thetaDegrees += 360; }
-    int s = floor(thetaDegrees * numStrips / 360);
+    int s = floor(thetaDegrees * NUM_STRIPS / 360);
     int l = floor(radius);
     return new CanopyCoord(s, l);
     
@@ -37,7 +37,7 @@ public class CartesianPattern {
     for (int y = 0; y < dimension; y++) {
       for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
-        if (co.led >= numLedsPerStrip) {
+        if (co.led >= NUM_LEDS_PER_STRIP) {
           continue;
         }
         strips[co.strip].leds[co.led] = get(x,y);
@@ -46,9 +46,9 @@ public class CartesianPattern {
     
     // the Cartesian doesn't map neatly to Canopy coords in the center
     // grab the nearest neighbor
-    for (int s = numStrips - 1; s >= 0; s--) {
+    for (int s = NUM_STRIPS - 1; s >= 0; s--) {
       for (int l = 20; l >= 0; l--) {
-         int l1 = l + 1 >= numLedsPerStrip ? l - 1 : l + 1;
+         int l1 = l + 1 >= NUM_LEDS_PER_STRIP ? l - 1 : l + 1;
          strips[s].leds[l] = strips[s].leds[l1];
       
       }

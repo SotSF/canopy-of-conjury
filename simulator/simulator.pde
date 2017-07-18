@@ -14,49 +14,38 @@ FFT fft;
 // Constants
 float FEET_PER_METER = 3.28084;
 int TOTAL_LEDS = 7200;
+int BASE_RADIUS_FEET = 8;
+float STRIP_LENGTH_METERS = 2.5;
+float STRIP_LENGTH_FEET = STRIP_LENGTH_METERS * FEET_PER_METER;
+float APEX_RADIUS_FEET = 0.5;
+float MAX_HEIGHT_FEET = sqrt(pow(STRIP_LENGTH_FEET, 2) - pow(BASE_RADIUS_FEET - APEX_RADIUS_FEET, 2));
 
-int numStrips = 96;
-int numLedsPerStrip = TOTAL_LEDS / numStrips;
-float stripLengthMeters = 2.5;
-float stripLengthFeet = stripLengthMeters * FEET_PER_METER;
-float apexRadiusFeet = 0.5;
+int NUM_STRIPS = 96;
+int NUM_LEDS_PER_STRIP = TOTAL_LEDS / NUM_STRIPS;
 
-// Height is configurable
-float hFeet = 3;
-float rFeet = deriveBaseWidth();
-
+// Initialize the height
 int scaleFactor = 30;
-float r = rFeet * scaleFactor;
-float h = hFeet * scaleFactor;
-float apexR = apexRadiusFeet * scaleFactor;
+float BASE_RADIUS = BASE_RADIUS_FEET * scaleFactor;
+float h = MAX_HEIGHT_FEET * scaleFactor;
+float APEX_RADIUS = APEX_RADIUS_FEET * scaleFactor;
 
-float d = r * 2;
-float apexD = apexR * 2;
+float BASE_DIAMETER = BASE_RADIUS * 2;
+float APEX_DIAMETER = APEX_RADIUS * 2;
 
-/**
- * Derives the width of the large circle based on trapezoidal geometry
- */
-float deriveBaseWidth() {
-  float theta = asin(hFeet / stripLengthFeet);
-  float semiBaseWidth = stripLengthFeet * cos(theta);
-  float stripSlope = hFeet / semiBaseWidth;
-  float heightAdded = stripSlope * apexRadiusFeet;
-  return apexRadiusFeet * ((hFeet / heightAdded) + 1);
-}
+float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
-Strip[] ledstrips = new Strip[numStrips];
+Strip[] ledstrips = new Strip[NUM_STRIPS];
 Pattern pattern;
 
 int tick = 0;
 
 void setup() {
   minim = new Minim(this);
-  for (int i = 0; i < numStrips; i++) {
-    ledstrips[i] = new Strip(new color[numLedsPerStrip]);
+  for (int i = 0; i < NUM_STRIPS; i++) {
+    ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
-  camera = new PeasyCam(this, 0, 0, 0, d * 2);
-  print(rFeet);
+  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
   
   /* implements Pattern */
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
@@ -73,6 +62,7 @@ void setup() {
   //pattern = new PatternAVIntersection("./audio/bloom.mp3");
   //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
   
+  getCatenaryCoords();
   /* extends PatternAV */
   /* uses FFT frequency and amplitude calculations to
     produce a more precise, but sensitive and potentially complex, visual effect */
@@ -87,6 +77,7 @@ void draw() {
   * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration, 
   * making 6 out of 96 of our strips per output.
   */
+  rotateZ(PI);
   renderCanopy();
   tick++;
 }
@@ -97,59 +88,61 @@ void renderCanopy() {
   
   // Large circle
   pushMatrix();
-  translate(0, -h);
   rotateX(PI/2);
   stroke(255);
   noFill();
-  ellipse(0, 0, d, d);
+  ellipse(0, 0, BASE_DIAMETER, BASE_DIAMETER);
   popMatrix();
   
   // Small circle
   pushMatrix();
+  translate(0, -h);
   rotateX(PI/2);
   stroke(255);
   noFill();
-  ellipse(0, 0, apexD, apexD);
+  ellipse(0, 0, APEX_DIAMETER, APEX_DIAMETER);
   popMatrix();
   
   // Render the strips
-  for (int i = 0; i < numStrips; i++) {
+  for (int i = 0; i < NUM_STRIPS; i++) {
     renderStrip(i);
   }
 }
 
 void renderStrip(int i) {
   Strip s = ledstrips[i]; // this has all of our colors
-  float angle = i * (2 * PI) / numStrips;
-  float xSmall = apexR * sin(angle);
-  float ySmall = 0;
-  float zSmall = apexR * cos(angle);
-  float xLarge = r * sin(angle);
-  float yLarge = -h;
-  float zLarge = r * cos(angle);
+  float angle = i * (2 * PI) / NUM_STRIPS;
   
-  stroke(50);
-  line(xSmall, ySmall, zSmall, xLarge, yLarge, zLarge);
+  pushMatrix();
+  rotateY(angle);
   
-  /**
-   * Draw the LEDs
-   */
-  for (int j = 0; j < numLedsPerStrip; j++) {
-    // Interpolate them equally along the length of the strip
-    float xLed = xSmall + (xLarge - xSmall) * j / numLedsPerStrip;
-    float yLed = ySmall + (yLarge - ySmall) * j / numLedsPerStrip;
-    float zLed = zSmall + (zLarge - zSmall) * j / numLedsPerStrip;
+  // Draw the cord holding the LEDs
+  int j;
+  noFill();
+  stroke(100);
+  beginShape();
+  for (j = 0; j < catenaryCoords.length; j++) {
+    float[] coord = catenaryCoords[j];
+    curveVertex(coord[0], coord[1]);
+  }
+  endShape();
+  
+  // Draw the LEDs
+  for (j = 0; j < catenaryCoords.length; j++) {
+    float[] coord = catenaryCoords[j];
     pushMatrix();
-    translate(xLed, yLed, zLed);
+    translate(coord[0], coord[1]);
     fill(s.leds[j]);
     stroke(s.leds[j]);
     box(1,1,1);
     popMatrix();
   }
+  
+  popMatrix();
 }
 
 void clearStrips() {
-  for (int i = 0; i < numStrips; i++) {
+  for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i].clear();
   }
 }
@@ -164,5 +157,43 @@ class Strip {
     for (int i = 0; i < leds.length; i++) {
       leds[i] = color(0);
     }
+  }
+}
+
+void keyPressed () {
+  if (key == CODED) {
+    if (keyCode == UP) {
+      adjustApexHeight(-0.2);
+    } else if (keyCode == DOWN) {
+      adjustApexHeight(0.2);
+    }
+  }
+}
+
+void adjustApexHeight (float deltaHeightFeet) {
+  float newHeight = h + deltaHeightFeet * scaleFactor;
+  if (abs(newHeight) > MAX_HEIGHT_FEET * scaleFactor) {
+    newHeight = (newHeight > 0 ? MAX_HEIGHT_FEET : -MAX_HEIGHT_FEET) * scaleFactor; 
+  }
+  
+  // Update the height and coordinates
+  h = newHeight;
+  getCatenaryCoords();
+}
+
+/**
+ * Updates the coordinates for the catenaries. Note that we downscale by `scaleFactor`
+ * in order for the `catenary` function to be able to compute the catenary. For whatever
+ * reason it can't handle larger inputs and totally barfs if you pass it the scaled
+ * coordinates.
+ */
+void getCatenaryCoords () {
+  float[] apexCoord = { APEX_RADIUS / scaleFactor, -h / scaleFactor };
+  float[] baseCoord = { BASE_RADIUS / scaleFactor, 0 };
+  float[][] newCoords = catenary(baseCoord, apexCoord, STRIP_LENGTH_FEET, NUM_LEDS_PER_STRIP);
+  
+  for (int i = 0; i < newCoords.length; i++) {
+    catenaryCoords[i][0] = newCoords[i][0] * scaleFactor;
+    catenaryCoords[i][1] = newCoords[i][1] * scaleFactor;
   }
 }

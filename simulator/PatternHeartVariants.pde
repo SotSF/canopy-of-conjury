@@ -17,7 +17,7 @@ class PatternHeartPink extends PatternHeartPulse {
     int count = 0;
     int step = 10 + round(this.pulse);
     for (Strip s : strips) {
-      for (int l = numLedsPerStrip - 1; l >= 0; l--) {
+      for (int l = NUM_LEDS_PER_STRIP - 1; l >= 0; l--) {
         // hit the first light
         if (s.leds[l] != 0) {
           while (count < step) {
@@ -26,7 +26,7 @@ class PatternHeartPink extends PatternHeartPulse {
             count++;
           }
           l = l - step;
-          currHue += round((maxHue - minHue) / (numLedsPerStrip / (step + 1)));
+          currHue += round((maxHue - minHue) / (NUM_LEDS_PER_STRIP / (step + 1)));
           if (currHue > maxHue) currHue = minHue;
           count = 0;
           continue;
