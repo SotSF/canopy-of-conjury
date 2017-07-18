@@ -56,7 +56,6 @@ void setup() {
   }
   size(750, 750, P3D);
   camera = new PeasyCam(this, 0, 0, 0, d * 2);
-  print(rFeet);
   
   /* implements Pattern */
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
@@ -116,12 +115,15 @@ void renderCanopy() {
 void renderStrip(int i) {
   Strip s = ledstrips[i]; // this has all of our colors
   float angle = i * (2 * PI) / numStrips;
-  float xSmall = apexR * sin(angle);
+  
+  pushMatrix();
+  rotateY(angle);
+  float xSmall = apexR;
   float ySmall = 0;
-  float zSmall = apexR * cos(angle);
-  float xLarge = r * sin(angle);
+  float zSmall = 0;
+  float xLarge = r;
   float yLarge = -h;
-  float zLarge = r * cos(angle);
+  float zLarge = 0;
   
   stroke(50);
   line(xSmall, ySmall, zSmall, xLarge, yLarge, zLarge);
@@ -141,6 +143,8 @@ void renderStrip(int i) {
     box(1,1,1);
     popMatrix();
   }
+  
+  popMatrix();
 }
 
 void clearStrips() {
