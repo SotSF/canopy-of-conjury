@@ -71,7 +71,7 @@ class PatternAVTestPulse extends PatternAV {
     
     // go through every position in beatList, and light up the corresponding LED in all strips
     for (int i = 0; i < beatList.size(); i++) {
-      for (int j = 0; j < numStrips; j++) {
+      for (int j = 0; j < NUM_STRIPS; j++) {
 
           Strip s = strips[j];
           s.leds[beatList.get(i).pos] = beatList.get(i).c;
@@ -84,7 +84,7 @@ class PatternAVTestPulse extends PatternAV {
     
     // if any updated positions are too big, remove the beat from the list
     for (int l = beatList.size() - 1; l >= 0 ; l--) {
-      if (beatList.get(l).pos >= numLedsPerStrip) {
+      if (beatList.get(l).pos >= NUM_LEDS_PER_STRIP) {
         beatList.remove(l);
       }
     }
