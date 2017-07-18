@@ -71,7 +71,12 @@ void setup() {
   
   /* extends PatternAV */
   //pattern = new PatternAVIntersection("./audio/bloom.mp3");
-  pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  
+  /* extends PatternAV */
+  /* uses FFT frequency and amplitude calculations to
+    produce a more precise, but sensitive and potentially complex, visual effect */
+  pattern = new PatternAVTestPulse("./audio/bloom.mp3");
 }
 
 void draw() {
