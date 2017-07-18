@@ -14,7 +14,7 @@ class PatternSwirly implements Pattern {
       } 
       if (flow == -1) flowOut = false;
       if (flow == 1) flowOut = true;
-      this.swirls[i] = new Swirl(int(random(numStrips)), int(random(numLedsPerStrip)), int(random(15,30)), color(255,0,0), flowOut);
+      this.swirls[i] = new Swirl(int(random(NUM_STRIPS)), int(random(NUM_LEDS_PER_STRIP)), int(random(15,30)), color(255,0,0), flowOut);
     }
   }
   
@@ -90,9 +90,9 @@ class PatternSwirly implements Pattern {
     public void update(int direction) {
       this.strip += 1 * direction;
       this.led += 1 * direction;
-      if (this.strip >= numStrips) { this.strip = 0; }
-      if (this.strip < 0) { this.strip = numStrips - 1; }
-      if (this.led >= numLedsPerStrip || this.led < 0) { kill = true; }
+      if (this.strip >= NUM_STRIPS) { this.strip = 0; }
+      if (this.strip < 0) { this.strip = NUM_STRIPS - 1; }
+      if (this.led >= NUM_LEDS_PER_STRIP || this.led < 0) { kill = true; }
     }
   }
 }

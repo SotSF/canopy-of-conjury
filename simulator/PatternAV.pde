@@ -24,7 +24,7 @@ class PatternAVRainbowPulsar extends PatternAV {
     for (int i = 0; i < lightTracks.size(); i++) {
       for (Strip s : strips) {
         s.leds[lightTracks.get(i)] = color(currHue, 100, 100);
-        if (lightTracks.get(i) + 1 < numLedsPerStrip) {
+        if (lightTracks.get(i) + 1 < NUM_LEDS_PER_STRIP) {
           s.leds[lightTracks.get(i) + 1] = color(currHue, 100, 100);
         }
         currHue += 2;
@@ -35,7 +35,7 @@ class PatternAVRainbowPulsar extends PatternAV {
     }
     
     for (int l = lightTracks.size() - 1; l >= 0 ; l--) {
-      if (lightTracks.get(l) >= numLedsPerStrip) {
+      if (lightTracks.get(l) >= NUM_LEDS_PER_STRIP) {
         lightTracks.remove(l);
       }
     }
@@ -56,17 +56,17 @@ class PatternAVIntersection extends PatternAV {
 
     colorMode(HSB, 100);
     int bsize = player.bufferSize();
-    for (int i = 0; i < numStrips; i++) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
       strips[i].clear();
       int lights = int(random(45,60));
       int b = 0;
        lights += abs(player.left.get(b));
        if (beat.isOnset()) lights += random(100) > 50 ? -10 : -7;
-       b += bsize / numStrips;
+       b += bsize / NUM_STRIPS;
        for (int l = 0; l < lights; l++) {
          strips[i].leds[l] = getColor(i, l);
-         int outerColor = i + numStrips / 2 > numStrips ? i + numStrips / 2 - numStrips : i + numStrips / 2; 
-         strips[i].leds[numLedsPerStrip - l - 1] = getColor(outerColor, l);
+         int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
+         strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
        }
     }
     for(int i = 0; i<256 ; i++)
@@ -77,7 +77,7 @@ class PatternAVIntersection extends PatternAV {
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     if (bpm > 160) { direction = -1 * direction; }
     else if (beat.isOnset()) { direction = -1 * direction; }
-    colorShifter += bpm / numStrips * direction;
+    colorShifter += bpm / NUM_STRIPS * direction;
     if (colorShifter >= 100) { colorShifter = 0; }
     if (colorShifter < 0) { colorShifter = 100; }
     colorMode(RGB,255);
@@ -112,18 +112,18 @@ class PatternAV implements Pattern {
 
     colorMode(HSB, 100);
     int bsize = player.bufferSize();
-    for (int i = 0; i < numStrips; i++) {
+    for (int i = 0; i < NUM_STRIPS; i++) {
       strips[i].clear();
       //int lights = int(random(40,50));
       int lights = int(random(20,30));
       int b = 0;
        lights += abs(player.left.get(b));
        if (beat.isOnset()) lights += random(100) > 50 ? -10 : -7;
-       b += bsize / numStrips;
+       b += bsize / NUM_STRIPS;
        for (int l = 0; l < lights; l++) {
          strips[i].leds[l] = getColor(i, l);
-         int outerColor = i + numStrips / 2 > numStrips ? i + numStrips / 2 - numStrips : i + numStrips / 2; 
-         strips[i].leds[numLedsPerStrip - l - 1] = getColor(outerColor, l);
+         int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
+         strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
        }
     }
     for(int i = 0; i<256 ; i++)
@@ -134,14 +134,14 @@ class PatternAV implements Pattern {
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     if (bpm > 160) { direction = -1 * direction; }
     else if (beat.isOnset()) { direction = -1 * direction; }
-    colorShifter += bpm / numStrips * direction;
+    colorShifter += bpm / NUM_STRIPS * direction;
     if (colorShifter >= 100) { colorShifter = 0; }
     if (colorShifter < 0) { colorShifter = 100; }
     colorMode(RGB,255);
   }
   
   public color getColor(int s, int l) {
-    int hue = s * 100 / numStrips + colorShifter;
+    int hue = s * 100 / NUM_STRIPS + colorShifter;
     if (hue > 100) {
       hue += -100;
     }

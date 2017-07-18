@@ -6,7 +6,7 @@ class PatternPulseMulti implements Pattern {
     this.rows = new int[rows];
     this.c = c;
     for (int r = 0; r < this.rows.length; r++) {
-      this.rows[r] = int(random(numLedsPerStrip));
+      this.rows[r] = int(random(NUM_LEDS_PER_STRIP));
     }
   }
   

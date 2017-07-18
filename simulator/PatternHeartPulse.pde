@@ -64,7 +64,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
   
   private void fillHeart(Strip[] strips) {
     for (Strip s : strips) {
-      for (int l = numLedsPerStrip - 2; l >= 0; l--) {
+      for (int l = NUM_LEDS_PER_STRIP - 2; l >= 0; l--) {
         if (s.leds[l + 1] != 0) {
           s.leds[l] = color(255);
           pulse(s, l);
@@ -84,9 +84,9 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
   public void colorOverlay(Strip[] strips) {
     colorMode(HSB,100);
     for (Strip s : strips) {
-      for (int l = 0; l < numLedsPerStrip; l++) {
+      for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
         if (s.leds[l] != 0) {
-          int hue = floor(l * this.dimension / numLedsPerStrip / sin(this.pulse));
+          int hue = floor(l * this.dimension / NUM_LEDS_PER_STRIP / sin(this.pulse));
           s.leds[l] = color(hue,100,100);
         }
       }

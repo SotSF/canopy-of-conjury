@@ -14,21 +14,19 @@ FFT fft;
 // Constants
 float FEET_PER_METER = 3.28084;
 int TOTAL_LEDS = 7200;
+int BASE_RADIUS_FEET = 8;
+float STRIP_LENGTH_METERS = 2.5;
+float STRIP_LENGTH_FEET = STRIP_LENGTH_METERS * FEET_PER_METER;
+float APEX_RADIUS_FEET = 0.5;
+float MAX_HEIGHT_FEET = sqrt(pow(STRIP_LENGTH_FEET, 2) - pow(BASE_RADIUS_FEET - APEX_RADIUS_FEET, 2));
 
-int numStrips = 96;
-int numLedsPerStrip = TOTAL_LEDS / numStrips;
-float stripLengthMeters = 2.5;
-float stripLengthFeet = stripLengthMeters * FEET_PER_METER;
-float apexRadiusFeet = 0.5;
-
-// Height is configurable
-float hFeet = 3;
-float rFeet = deriveBaseWidth();
+int NUM_STRIPS = 96;
+int NUM_LEDS_PER_STRIP = TOTAL_LEDS / NUM_STRIPS;
 
 int scaleFactor = 30;
-float r = rFeet * scaleFactor;
-float h = hFeet * scaleFactor;
-float apexR = apexRadiusFeet * scaleFactor;
+float r = BASE_RADIUS_FEET * scaleFactor;
+float h = MAX_HEIGHT_FEET * scaleFactor;
+float apexR = APEX_RADIUS_FEET * scaleFactor;
 
 float d = r * 2;
 float apexD = apexR * 2;
@@ -44,15 +42,15 @@ float deriveBaseWidth() {
   return apexRadiusFeet * ((hFeet / heightAdded) + 1);
 }
 
-Strip[] ledstrips = new Strip[numStrips];
+Strip[] ledstrips = new Strip[NUM_STRIPS];
 Pattern pattern;
 
 int tick = 0;
 
 void setup() {
   minim = new Minim(this);
-  for (int i = 0; i < numStrips; i++) {
-    ledstrips[i] = new Strip(new color[numLedsPerStrip]);
+  for (int i = 0; i < NUM_STRIPS; i++) {
+    ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
   camera = new PeasyCam(this, 0, 0, 0, d * 2);
@@ -107,14 +105,14 @@ void renderCanopy() {
   popMatrix();
   
   // Render the strips
-  for (int i = 0; i < numStrips; i++) {
+  for (int i = 0; i < NUM_STRIPS; i++) {
     renderStrip(i);
   }
 }
 
 void renderStrip(int i) {
   Strip s = ledstrips[i]; // this has all of our colors
-  float angle = i * (2 * PI) / numStrips;
+  float angle = i * (2 * PI) / NUM_STRIPS;
   
   pushMatrix();
   rotateY(angle);
@@ -131,11 +129,11 @@ void renderStrip(int i) {
   /**
    * Draw the LEDs
    */
-  for (int j = 0; j < numLedsPerStrip; j++) {
+  for (int j = 0; j < NUM_LEDS_PER_STRIP; j++) {
     // Interpolate them equally along the length of the strip
-    float xLed = xSmall + (xLarge - xSmall) * j / numLedsPerStrip;
-    float yLed = ySmall + (yLarge - ySmall) * j / numLedsPerStrip;
-    float zLed = zSmall + (zLarge - zSmall) * j / numLedsPerStrip;
+    float xLed = xSmall + (xLarge - xSmall) * j / NUM_LEDS_PER_STRIP;
+    float yLed = ySmall + (yLarge - ySmall) * j / NUM_LEDS_PER_STRIP;
+    float zLed = zSmall + (zLarge - zSmall) * j / NUM_LEDS_PER_STRIP;
     pushMatrix();
     translate(xLed, yLed, zLed);
     fill(s.leds[j]);
@@ -148,7 +146,7 @@ void renderStrip(int i) {
 }
 
 void clearStrips() {
-  for (int i = 0; i < numStrips; i++) {
+  for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i].clear();
   }
 }
