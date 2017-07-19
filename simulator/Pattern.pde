@@ -40,7 +40,10 @@ public class CartesianPattern {
         if (co.led >= NUM_LEDS_PER_STRIP) {
           continue;
         }
-        strips[co.strip].leds[co.led] = get(x,y);
+        if (get(x,y) != 0) {
+          strips[co.strip].leds[co.led] = get(x,y);
+        }
+        
       }
     }
     

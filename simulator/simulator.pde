@@ -66,7 +66,9 @@ void setup() {
   /* extends PatternAV */
   /* uses FFT frequency and amplitude calculations to
     produce a more precise, but sensitive and potentially complex, visual effect */
-  pattern = new PatternAVTestPulse("./audio/bloom.mp3");
+  //pattern = new PatternAVTestPulse("./audio/bloom.mp3");
+  
+  pattern = new PatternChevrons();
 }
 
 void draw() {
@@ -85,7 +87,6 @@ void draw() {
 
 void renderCanopy() {
   background(50);
-  
   // Large circle
   pushMatrix();
   rotateX(PI/2);
@@ -137,6 +138,7 @@ void renderStrip(int i) {
     box(1,1,1);
     popMatrix();
   }
+  
   
   popMatrix();
 }
