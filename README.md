@@ -5,6 +5,7 @@ This repository houses the code for the "Canopy of Luminous Conjury" project, in
 Easy to install through the Processing editor, through Sketch > Import Library... > Add Library...
 - [PeasyCam](http://mrfeinberg.com/peasycam/)
 - [Minim](http://code.compartmental.net/tools/minim/)
+- [GifAnimation](https://github.com/01010101/GifAnimation) <-- unzip, and drop the `GifAnimation-master` folder into your Processing > libraries folder. Rename `GifAnimation-master` --> `GifAnimation`. Will require you to restart the Processing GUI.
 
 # Overview
 The `Strip` class is a virtual LED strip, containing `color[] leds`. These control the simulator display, and will be used to push colors to the PixelPusher outputs (this code is still pending!) -- we’ll probably need to rename this to avoid confusion with the PixelPusher `Strip` class.
