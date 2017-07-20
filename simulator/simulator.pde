@@ -70,12 +70,12 @@ void setup() {
   //pattern = new ImgPattern("./images/cube.png");
   
   /* Import .GIF */
-  pattern = new GifPattern(this, "./images/fox_silhouette.gif");
+  //pattern = new GifPattern(this, "./images/fox_silhouette.gif");
   
   /* Import Movie */
   boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
   boolean playSound = false;
-  //pattern = new MoviePattern(this, "fire.mp4", loopMovie, playSound);
+  pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
   
   getCatenaryCoords();
 }

@@ -118,9 +118,11 @@ class MoviePattern extends CartesianPattern implements Pattern {
   }
   
   public void run(Strip[] strips) {
-    //image(movie,0,0, dimension, dimension);
-    //movie.resize(dimension,dimension);
-    scrapeImage(movie,strips);
+    if (movie.width < 1 && movie.height < 1) return;
+    PImage frame = movie.get();
+    frame.resize(dimension,dimension);
+    scrapeImage(frame,strips);
+    
   }
 }
 
