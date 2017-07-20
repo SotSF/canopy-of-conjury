@@ -1,6 +1,11 @@
+
 import peasy.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import gifAnimation.*;
+import processing.video.*;
+
+
 
 PeasyCam camera;
 
@@ -53,7 +58,6 @@ void setup() {
   
   /* extends CartesianPattern implements Pattern */
   //pattern = new PatternRainbowScan();
-  //pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
   
   /* audio visualizer */
   //pattern = new PatternAV("./audio/bloom.mp3");
@@ -62,8 +66,17 @@ void setup() {
   //pattern = new PatternAVIntersection("./audio/bloom.mp3");
   //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
   
-  /** testing 2d images in 3d peasycam **/
-  pattern = new ImgPattern("./images/cube.png");
+  /* Import Static Image */
+  //pattern = new ImgPattern("./images/cube.png");
+  
+  /* Import .GIF */
+  pattern = new GifPattern(this, "./images/fox_silhouette.gif");
+  
+  /* Import Movie */
+  boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
+  boolean playSound = false;
+  //pattern = new MoviePattern(this, "fire.mp4", loopMovie, playSound);
+  
   getCatenaryCoords();
 }
 
@@ -76,7 +89,7 @@ void draw() {
   * making 6 out of 96 of our strips per output.
   */
   rotateZ(PI);
-  //renderCanopy();
+  renderCanopy();
   tick++;
 }
 
