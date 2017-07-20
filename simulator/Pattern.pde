@@ -3,7 +3,7 @@ public interface Pattern {
 }
 
 public class CartesianPattern {
-  int dimension = 150;
+  int dimension = 200;
   float maxRadius = sqrt(2 * dimension * dimension);
   
   // helper classes
@@ -23,39 +23,33 @@ public class CartesianPattern {
       theta = atan2(y2,x2);
     }
     float radius = sqrt(x2 * x2 + y2 * y2);
-    
     float thetaDegrees = theta * 180 / PI;
     if (thetaDegrees < 0) { thetaDegrees += 360; }
     int s = floor(thetaDegrees * NUM_STRIPS / 360);
-    int l = floor(radius);
+    int l = floor(radius * 75 / dimension * 2);
     return new CanopyCoord(s, l);
     
   }
   
+  boolean scraped = false;
   public void scrapeWindow(Strip[] strips) {
+    if (scraped) return;
     clearStrips();
     for (int y = 0; y < dimension; y++) {
       for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
-        if (co.led >= NUM_LEDS_PER_STRIP) {
+        // the center of the cartesian plane doesn't play well with canopy coords
+        int l = co.led - 20; 
+        if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }
-        if (get(x,y) != 0) {
-          strips[co.strip].leds[co.led] = get(x,y);
+        if (get(x,y) != color(0)) {
+          strips[co.strip].leds[l] = get(x,y);
         }
         
       }
     }
-    
-    // the Cartesian doesn't map neatly to Canopy coords in the center
-    // grab the nearest neighbor
-    for (int s = NUM_STRIPS - 1; s >= 0; s--) {
-      for (int l = 20; l >= 0; l--) {
-         int l1 = l + 1 >= NUM_LEDS_PER_STRIP ? l - 1 : l + 1;
-         strips[s].leds[l] = strips[s].leds[l1];
-      
-      }
-    }
+    //scraped = true;
   }
   
   public void clearWindow() {

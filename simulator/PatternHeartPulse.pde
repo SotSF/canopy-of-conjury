@@ -75,7 +75,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
   
   private void pulse(Strip s, int l) {
     int i = l;
-    while (i < l + (10 * this.pulse)) {
+    while (i < l + (10 * this.pulse) && i < NUM_LEDS_PER_STRIP) {
       s.leds[i] = color(255);
       i++;
     }

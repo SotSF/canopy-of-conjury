@@ -53,22 +53,19 @@ void setup() {
   
   /* extends CartesianPattern implements Pattern */
   //pattern = new PatternRainbowScan();
-  //pattern = new PatternHeartPulse(0.03, -0.03, 3.5, 0.25);
+  //pattern = new PatternHeartPulse(0.08, -0.05, 5, 1);
   
   /* audio visualizer */
   //pattern = new PatternAV("./audio/bloom.mp3");
   
   /* extends PatternAV */
-  //pattern = new PatternAVIntersection("./audio/bloom.mp3");
   //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  pattern = new PatternChevrons();
   
   getCatenaryCoords();
-  /* extends PatternAV */
-  /* uses FFT frequency and amplitude calculations to
-    produce a more precise, but sensitive and potentially complex, visual effect */
-  //pattern = new PatternAVTestPulse("./audio/bloom.mp3");
   
-  pattern = new PatternChevrons();
+  
+  
 }
 
 void draw() {

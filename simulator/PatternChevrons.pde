@@ -15,7 +15,7 @@ class PatternChevrons extends CartesianPattern implements Pattern {
     }
     
     Position p = new Position(10,10);
-    chevron(p, 1, 60);
+    chevron(p, 1, 1);
     scrapeWindow(strips);
     colorMode(RGB,255);
     colorShift(10);
