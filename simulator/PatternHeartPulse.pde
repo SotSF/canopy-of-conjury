@@ -36,17 +36,11 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
       int y2 = round(y * 2 + (dimension / 2));
      
      // overcompensate the lines
-     set(x2,y2,color(255));
-     set(x2, y2+1, color(255));
-     set(x2,y2-1,color(255));
-     set(x2+1, y2, color(255));
-     set(x2-1, y2, color(255));
-     set(x2+1, y2+1,color(255));
-     set(x2-1,y2+1,color(255));
+    drawPoint(x2,y2);
       t++;
     }
     this.t = 0;
-    
+    /*
     if (this.grow) { this.pulse += growStep; }
     else { this.pulse += shrinkStep; }
     if (this.pulse > pulseMax) {
@@ -55,11 +49,20 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     if (this.pulse < pulseMin) {
       this.grow = true;
     }
-
+*/
     this.scrapeWindow(strips); // only gets heart outline
     fillHeart(strips); // so roughly fill in the heart
     colorOverlay(strips);
-    
+  }
+  
+  private void drawPoint(int x, int y) {
+     set(x,y,color(255));
+     set(x, y+1, color(255));
+     set(x,y-1,color(255));
+     set(x+1, y, color(255));
+     set(x-1, y, color(255));
+     set(x+1, y+1, color(255));
+     set(x-1, y+1, color(255));
   }
   
   private void fillHeart(Strip[] strips) {
