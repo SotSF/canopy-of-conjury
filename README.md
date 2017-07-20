@@ -1,10 +1,11 @@
-# canopy-of-conjury
+﻿# canopy-of-conjury
 This repository houses the code for the "Canopy of Luminous Conjury" project, including the simulator, Kinect interfacing, and other miscellaneous cyphers.
 
 # Required Libraries
 Easy to install through the Processing editor, through Sketch > Import Library... > Add Library...
 - [PeasyCam](http://mrfeinberg.com/peasycam/)
 - [Minim](http://code.compartmental.net/tools/minim/)
+- [Processing Video](https://processing.org:8443/reference/libraries/video/index.html)
 - [GifAnimation](https://github.com/01010101/GifAnimation) <-- unzip, and drop the `GifAnimation-master` folder into your Processing > libraries folder. Rename `GifAnimation-master` --> `GifAnimation`. Will require you to restart the Processing GUI.
 
 # Overview

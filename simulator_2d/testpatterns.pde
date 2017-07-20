@@ -1,15 +1,15 @@
 class TestPattern extends CartesianPattern implements Pattern {
   int currHue = 0;
+  float pos = 0;
   float min = dimension / 2 - 5;
   public void run(Strip[] strips) {
     colorMode(HSB,100);
-    float pos = 0;
     while (pos <= min) {
       fill(color(currHue,100,100));
       rect(pos,pos,dimension-pos * 2,dimension-pos * 2);
       currHue += 10;
       if (currHue > 100) currHue = 0;
-      pos += 10;
+      pos += dimension / 20;
     }
     colorMode(RGB,255);
     scrapeWindow(strips);
@@ -18,27 +18,37 @@ class TestPattern extends CartesianPattern implements Pattern {
 
 class ImgPattern extends CartesianPattern implements Pattern {
   String filename;
-  color background;
   int resizeWidth = dimension;
   int resizeHeight = dimension;
-  public ImgPattern(String filename, color bgColor) {
+  public ImgPattern(String filename) {
     this.filename = filename;
-    this.background = bgColor;
   }
   
-  public ImgPattern(String filename, color bgColor, int w, int h) {
+  public ImgPattern(String filename, int w, int h) {
     this.filename = filename;
-    this.background = bgColor;
     this.resizeWidth = w;
     this.resizeHeight = h;
   }
   
   public void run(Strip[] strips) {
-    fill(background);
-    rect(0,0,dimension,dimension);
     PImage img;
     img = loadImage(filename);
     image(img,0,0,this.resizeWidth,this.resizeHeight);
+    scrapeWindow(strips);
+  }
+}
+
+class MoviePattern extends CartesianPattern implements Pattern {
+  Movie movie;
+  public MoviePattern(PApplet window, String filename, boolean loop, boolean sound) {
+    movie = new Movie(window, filename);
+    if (loop) { movie.loop(); }
+    else { movie.play(); } 
+    if (!sound) { movie.volume(0); }
+  }
+  
+  public void run(Strip[] strips) {
+    image(movie,0,0, dimension, dimension);
     scrapeWindow(strips);
   }
 }
@@ -51,7 +61,7 @@ class GifPattern extends CartesianPattern implements Pattern {
  }
  
   public void run(Strip[] strips) {
-    image(frames[frame],0,0,dispWidth,dispHeight);
+    image(frames[frame],0,0,dimension,dimension);
     scrapeWindow(strips);
     this.frame++;
     if (this.frame >= frames.length) this.frame = 0;
