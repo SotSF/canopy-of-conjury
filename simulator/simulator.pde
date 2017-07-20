@@ -60,8 +60,10 @@ void setup() {
   
   /* extends PatternAV */
   //pattern = new PatternAVIntersection("./audio/bloom.mp3");
-  pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
   
+  /** testing 2d images in 3d peasycam **/
+  pattern = new ImgPattern("./images/cube.png");
   getCatenaryCoords();
 }
 
@@ -74,7 +76,7 @@ void draw() {
   * making 6 out of 96 of our strips per output.
   */
   rotateZ(PI);
-  renderCanopy();
+  //renderCanopy();
   tick++;
 }
 
