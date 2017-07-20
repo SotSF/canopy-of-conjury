@@ -68,3 +68,28 @@ public class CartesianPattern {
     }
   }
 }
+
+class ImgPattern extends CartesianPattern implements Pattern {
+  String filename;
+  int resizeWidth = dimension;
+  int resizeHeight = dimension;
+  public ImgPattern(String filename) {
+    this.filename = filename;
+  }
+  
+  public ImgPattern(String filename, int w, int h) {
+    this.filename = filename;
+    this.resizeWidth = w;
+    this.resizeHeight = h;
+  }
+  
+  public void run(Strip[] strips) {
+    pushMatrix();
+    translate(-750 / 2 - 180, -750 / 2 - 180); //translate back to 0?
+    PImage img;
+    img = loadImage(filename);
+    image(img,0,0,this.resizeWidth,this.resizeHeight);
+    scrapeWindow(strips);
+    popMatrix();
+  }
+}
