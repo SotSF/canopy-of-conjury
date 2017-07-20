@@ -28,7 +28,7 @@ public class CartesianPattern {
     thetaDegrees = (thetaDegrees + -90);
     if (thetaDegrees < 0) { thetaDegrees += 360; }
     int s = floor(thetaDegrees * NUM_STRIPS / 360);
-    int l = floor(radius * NUM_LEDS_PER_STRIP / dimension * 2);
+    int l = floor(radius);
     return new CanopyCoord(s, l);
     
   }

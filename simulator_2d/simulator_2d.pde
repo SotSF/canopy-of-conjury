@@ -53,11 +53,15 @@ void setup() {
   For best results, images should be 200x200 pixels or larger.
   Core components should not be centered (the apex cuts the image center)
   **/
-  //pattern = new ImgPattern("./images/rainbow_Stripe.png", color(255));
+  pattern = new ImgPattern("./images/rainbow_Stripe.png", color(255));
   
 
   /** GIFS! **/
-  pattern = new GifPattern(this, "./images/fox_silhouette.gif");
+  //pattern = new GifPattern(this, "./images/fox_silhouette.gif");
+  
+  /* Test boundaries and cut-offs */
+  //pattern = new TestPattern();
+  
 }
 
 int _tick = 0;
@@ -67,6 +71,7 @@ void draw() {
   if (_tick % 2 == 0) {
     noStroke();
     pattern.run(ledstrips);
+   
   }
   
   // this maps directly to strips/rads
@@ -94,7 +99,7 @@ void renderStrip(int i) {
   int l = 0;
   while (l < NUM_LEDS_PER_STRIP) {
     fill(s.leds[l]);
-    stroke(s.leds[l] == color(0) ? color(150,150,150) : s.leds[l]);
+    stroke(s.leds[l] == color(0) || s.leds[l] == 0 ? color(150,150,150) : s.leds[l]);
     ellipse(0, NUM_STRIPS + (5 * l), 3,3);
     l++;
   }
