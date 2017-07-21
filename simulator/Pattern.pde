@@ -3,7 +3,7 @@ public interface Pattern {
 }
 
 public class CartesianPattern {
-  int dimension = 200;
+  int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
   
   // helper classes
@@ -23,10 +23,11 @@ public class CartesianPattern {
       theta = atan2(y2,x2);
     }
     float radius = sqrt(x2 * x2 + y2 * y2);
+    
     float thetaDegrees = theta * 180 / PI;
     if (thetaDegrees < 0) { thetaDegrees += 360; }
     int s = floor(thetaDegrees * NUM_STRIPS / 360);
-    int l = floor(radius * 75 / dimension * 2);
+    int l = floor(radius / 3);
     return new CanopyCoord(s, l);
     
   }
@@ -39,13 +40,27 @@ public class CartesianPattern {
       for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
         // the center of the cartesian plane doesn't play well with canopy coords
-        int l = co.led - 20; 
+        int l = co.led - 5; 
         if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }
-        if (get(x,y) != color(0)) {
-          strips[co.strip].leds[l] = get(x,y);
+        
+        strips[co.strip].leds[l] = get(x,y);
+      }
+    }
+  }
+  
+  public void scrapeImage(PImage img, Strip[] strips) {
+    for (int y = 0; y < img.height; y++) {
+      for (int x = 0; x < img.width; x++) {
+        CanopyCoord co = mapToCanopy(x,y);
+        // the center of the cartesian plane doesn't play well with canopy coords
+        int l = co.led - 5; 
+        if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
+          continue;
         }
+         color c = img.get(x,y);
+        strips[co.strip].leds[l] = c;
         
       }
     }
@@ -64,4 +79,56 @@ public class CartesianPattern {
       this.led = l;
     }
   }
+}
+
+class ImgPattern extends CartesianPattern implements Pattern {
+  String filename;
+  PImage img;
+  public ImgPattern(String filename) {
+    this.filename = filename;
+    img = loadImage(filename);
+    img.resize(dimension,dimension);
+  }
+  
+  public void run(Strip[] strips) {
+    scrapeImage(img, strips);
+  }
+}
+
+class GifPattern extends CartesianPattern implements Pattern {
+ int frame = 0;
+ PImage[] frames;
+ public GifPattern(PApplet window, String filename) {
+   frames = Gif.getPImages(window, filename);
+ }
+ 
+  public void run(Strip[] strips) {
+    PImage img = frames[frame];
+    img.resize(dimension,dimension);
+    scrapeImage(img, strips);
+    this.frame++;
+    if (this.frame >= frames.length) this.frame = 0;
+  }
+}
+
+class MoviePattern extends CartesianPattern implements Pattern {
+  Movie movie;
+  public MoviePattern(PApplet window, String filename, boolean loop, boolean sound) {
+    movie = new Movie(window, filename);
+    if (loop) { movie.loop(); }
+    else { movie.play(); } 
+    if (!sound) { movie.volume(0); }
+  }
+  
+  public void run(Strip[] strips) {
+    if (movie.width < 1 && movie.height < 1) return;
+    PImage frame = movie.get();
+    frame.resize(dimension,dimension);
+    scrapeImage(frame,strips);
+    
+  }
+}
+
+void movieEvent(Movie m) { 
+  m.read(); 
 }

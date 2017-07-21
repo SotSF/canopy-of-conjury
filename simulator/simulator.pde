@@ -1,6 +1,11 @@
+
 import peasy.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
+import gifAnimation.*;
+import processing.video.*;
+
+
 
 PeasyCam camera;
 
@@ -53,14 +58,24 @@ void setup() {
   
   /* extends CartesianPattern implements Pattern */
   //pattern = new PatternRainbowScan();
-  //pattern = new PatternHeartPulse(0.08, -0.05, 5, 1);
   
   /* audio visualizer */
   //pattern = new PatternAV("./audio/bloom.mp3");
   
   /* extends PatternAV */
   //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
-  pattern = new PatternChevrons();
+  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  
+  /* Import Static Image */
+  //pattern = new ImgPattern("./images/cube.png");
+  
+  /* Import .GIF */
+  //pattern = new GifPattern(this, "./images/fox_silhouette.gif");
+  
+  /* Import Movie */
+  boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
+  boolean playSound = false;
+  pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
   
   getCatenaryCoords();
   
