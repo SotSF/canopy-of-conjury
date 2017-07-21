@@ -11,19 +11,21 @@ class PatternPulseMulti implements Pattern {
   }
   
   public void run(Strip[] strips) {
-    for (int i = 0; i < strips.length; i++) {
-      strips[i].clear();
-      for (int r = 0; r < rows.length; r++) {
+    clearStrips();
+    for (int r = 0; r < rows.length; r++) {
+      for (int i = 0; i < strips.length; i++) {
         strips[i].leds[rows[r]] = this.c;
       }
+       getNextColor();
     }
     
     for (int r = 0; r < rows.length; r++) {
       rows[r] += 1;
       if (rows[r] >= strips[0].leds.length) { rows[r] = 0; }
     }
-     getNextColor();
+     
   }
+  
   
   private void getNextColor() {
     int d = (int)random(10) >= 5 ? 1 : -1;

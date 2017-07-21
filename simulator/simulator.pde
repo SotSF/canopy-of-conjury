@@ -1,10 +1,10 @@
-
+import controlP5.*;
 import peasy.*;
 import ddf.minim.*;
 import ddf.minim.analysis.*;
 import gifAnimation.*;
 import processing.video.*;
-
+import processing.opengl.*;
 
 
 PeasyCam camera;
@@ -43,6 +43,9 @@ Strip[] ledstrips = new Strip[NUM_STRIPS];
 Pattern pattern;
 
 int tick = 0;
+GUI gui;
+PMatrix3D currCameraMatrix;
+PGraphics3D g3;
 
 void setup() {
   minim = new Minim(this);
@@ -51,10 +54,13 @@ void setup() {
   }
   size(750, 750, P3D);
   camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
+  gui = new GUI(this);
+  g3 = (PGraphics3D)g;
+  
   
   /* implements Pattern */
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
-  //pattern = new PatternPulseMulti(20, color(255,100,10));
+  pattern = new PatternPulseMulti(20, color(255,100,10));
   
   /* extends CartesianPattern implements Pattern */
   //pattern = new PatternRainbowScan();
@@ -64,7 +70,7 @@ void setup() {
   
   /* extends PatternAV */
   //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
-  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
+  //pattern = new PatternAVTestPulse("./audio/bloom.mp3");
   
   /* Import Static Image */
   //pattern = new ImgPattern("./images/cube.png");
@@ -75,7 +81,7 @@ void setup() {
   /* Import Movie */
   boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
   boolean playSound = false;
-  pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
+  //pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
   
   getCatenaryCoords();
   
@@ -84,7 +90,8 @@ void setup() {
 }
 
 void draw() {
-  pattern.run(ledstrips);
+  if (isFading) { fadeStrips(); }
+  else { pattern.run(ledstrips); }
   /** TODO: push from ledstrips to PixelPusher strips - this will require some math
   * Which of the two PixelPushers (0-47 will be on PP1, 48-95 will be on PP2)
   * Which of the 8 outputs, and then which of the LEDs on that output correspond to the LED we're targeting.
@@ -94,11 +101,14 @@ void draw() {
   rotateZ(PI);
   renderCanopy();
   tick++;
+  
+  gui.run();
 }
 
 
 void renderCanopy() {
   background(50);
+  
   // Large circle
   pushMatrix();
   rotateX(PI/2);
