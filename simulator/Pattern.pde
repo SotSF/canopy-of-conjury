@@ -2,6 +2,12 @@ public interface Pattern {
   void run(Strip[] strips);
 }
 
+class EmptyPattern implements Pattern {
+  public void run(Strip[] strips) {
+    clearStrips();
+  }
+}
+
 public class CartesianPattern {
   int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
@@ -112,7 +118,6 @@ class GifPattern extends CartesianPattern implements Pattern {
 }
 
 class MoviePattern extends CartesianPattern implements Pattern {
-  Movie movie;
   public MoviePattern(PApplet window, String filename, boolean loop, boolean sound) {
     movie = new Movie(window, filename);
     if (loop) { movie.loop(); }

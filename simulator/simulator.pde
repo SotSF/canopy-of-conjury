@@ -6,7 +6,6 @@ import gifAnimation.*;
 import processing.video.*;
 import processing.opengl.*;
 
-
 PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
@@ -15,6 +14,8 @@ AudioInput audio;
 AudioPlayer player;
 BeatDetect beat;
 FFT fft;
+
+Movie movie;
 
 // Constants
 float FEET_PER_METER = 3.28084;
@@ -52,7 +53,7 @@ void setup() {
   for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
-  size(750, 750, P3D);
+  size(750, 750, OPENGL);
   camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
@@ -60,7 +61,6 @@ void setup() {
   
   /* implements Pattern */
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
-  pattern = new PatternPulseMulti(20, color(255,100,10));
   
   /* extends CartesianPattern implements Pattern */
   //pattern = new PatternRainbowScan();
@@ -81,17 +81,21 @@ void setup() {
   /* Import Movie */
   boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
   boolean playSound = false;
-  //pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
+  pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
   
+  
+  //pattern = new EmptyPattern();
   getCatenaryCoords();
-  
-  
-  
 }
 
+
+
 void draw() {
-  if (isFading) { fadeStrips(); }
+   
+  if (isFadingOut) { fadeStrips(); }
   else { pattern.run(ledstrips); }
+  
+ 
   /** TODO: push from ledstrips to PixelPusher strips - this will require some math
   * Which of the two PixelPushers (0-47 will be on PP1, 48-95 will be on PP2)
   * Which of the 8 outputs, and then which of the LEDs on that output correspond to the LED we're targeting.
@@ -101,7 +105,6 @@ void draw() {
   rotateZ(PI);
   renderCanopy();
   tick++;
-  
   gui.run();
 }
 
