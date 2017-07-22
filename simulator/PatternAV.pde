@@ -190,7 +190,7 @@ class PatternAV implements Pattern {
 
   public PatternAV(String filename) {
     player = minim.loadFile(filename, 1024);
-    player.play();
+    if (stopCurrentAudio) { player.play(); } // current audio is stopped, play next audio (which is this)
     //player = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
     fft = new FFT(player.bufferSize(), player.sampleRate());
   }

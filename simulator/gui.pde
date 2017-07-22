@@ -1,25 +1,55 @@
 boolean isFadingOut = false;
 int pulseCount = 20;
 int fadeSpeed = 10;
-boolean stopAudio = true;
-
+boolean stopCurrentAudio = true;
+boolean videoMuted = false;
 String selectedAudio;
+String selectedImg;
+String selectedGif;
+String selectedVid;
+
 class GUI {
   public ControlP5 cp5;
   
   public GUI(PApplet window) {
     cp5 = new ControlP5(window);
-    cp5.addButton("FadeLEDs").setLabel("Fade Out").setPosition(0,0);
-    cp5.addSlider("UpdateFadeSpeed").setLabel("Fade Speed").setSize(100,20).setRange(10,30).setNumberOfTickMarks(5).setPosition(120,0).setValue(10);
-    cp5.addButton("PlayPatternSwirly").setLabel("Swirls").setPosition(0,30);
-    cp5.addButton("PlayPatternPulseMulti").setLabel("Pulse").setPosition(0,60);
-    cp5.addSlider("UpdatePulseCount").setLabel("Pulse Rings").setSize(100,20).setRange(5,50).setNumberOfTickMarks(10).setPosition(120,60).setValue(20);
+     ScrollableList imgDropdown = cp5.addScrollableList("ImgFiles").setLabel("Select JPG/PNG").setSize(200,200).setPosition(170, 90).setOpen(false);
+    imgDropdown.setDirection(PApplet.UP);
+     imgDropdown.onClick(new CallbackListener() {
+      void controlEvent(CallbackEvent e) {
+        UpdateDropdownList((ScrollableList)e.getController(), "/images");
+      }
+    });
     
-    cp5.addToggle("ToggleAudioTransition").setLabel("End Song on Fade").setPosition(5,90);
-    cp5.addButton("PlayPatternAVPulse").setLabel("AV - Pulse").setPosition(0, 130);
-    cp5.addButton("PlayPatternAVRainbowPulse").setLabel("AV - Rainbow Pulse").setSize(100,20).setPosition(0, 160);
-    DropdownList audioDropdown = cp5.addDropdownList("AudioFiles").setLabel("Select Sound File").setSize(200,200).setPosition(300, 10);
-    UpdateAudioList(audioDropdown);
+    ScrollableList vidDropdown = cp5.addScrollableList("VidFiles").setLabel("Select Video File").setSize(200,200).setPosition(170,50).setOpen(false);
+     vidDropdown.onClick(new CallbackListener() {
+      void controlEvent(CallbackEvent e) {
+        UpdateDropdownList((ScrollableList)e.getController(), "/data");
+      }
+    });
+    
+    ScrollableList audioDropdown = cp5.addScrollableList("AudioFiles").setLabel("Select Sound File").setSize(200,200).setPosition(170, 10).setOpen(false);
+    audioDropdown.onClick(new CallbackListener() {
+      void controlEvent(CallbackEvent e) {
+        UpdateDropdownList((ScrollableList)e.getController(), "/audio");
+      }
+    });
+    
+    cp5.addButton("PlayAudio").setLabel("Play Audio").setPosition(400,10);
+    cp5.addButton("PauseAudio").setLabel("Pause Audio").setPosition(475,10);
+    cp5.addButton("StopAudio").setLabel("Stop Audio").setPosition(550, 10);
+    
+    cp5.addButton("PlayVieo").setLabel("Play Video").setPosition(400,50);
+    cp5.addButton("PauseVideo").setLabel("Pause Video").setPosition(475,50);
+    cp5.addButton("StopVideo").setLabel("Stop Video").setPosition(550, 50);
+    cp5.addButton("MuteVideo").setLabel("Toggle Video Audio").setPosition(625, 50).setSize(100,19);
+    
+    // ADD PARAM BUTTONS HERE
+    
+    // ======================
+    ScrollableList patternList = cp5.addScrollableList("PatternSelect").setLabel("Select Pattern").setSize(150,200).setPosition(10,10).setOpen(false);
+    addPatterns(patternList);
+
     cp5.addButton("DebugLedstrips").setLabel("Debug").setPosition(0,220);
     cp5.setAutoDraw(false);
   }
@@ -30,8 +60,6 @@ class GUI {
     cp5.draw();
     g3.camera = currCameraMatrix;
   }
-  
-  
 }
 
 void DebugLedstrips() {
@@ -61,13 +89,9 @@ boolean allLedsOff() {
 
 void FadeLEDs() {
   pattern = new EmptyPattern();
-  if (player != null && stopAudio) { player.pause(); } // fade out music?
+  if (player != null && stopCurrentAudio) { player.pause(); } // fade out music?
   if (movie != null) { movie.stop(); } // fade out movie?
   isFadingOut = true;
-}
-
-void UpdateFadeSpeed(int val) {
-  fadeSpeed = val;
 }
 
 void fadeStrips() {
@@ -88,25 +112,12 @@ void fadeStrips() {
   }
 }
 
-void PlayPatternSwirly() {
-  FadeLEDs();
-  pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
-}
-
-void PlayPatternPulseMulti() {
-  FadeLEDs();
-  pattern = new PatternPulseMulti(pulseCount, color(10,255,10));
-}
-
-void UpdatePulseCount(int val) {
-  pulseCount = val;
-}
-
-void UpdateAudioList(DropdownList d) {
-  String path = sketchPath() + "/audio";
+void UpdateDropdownList(ScrollableList list, String folder) {
+  list.clear();
+  String path = sketchPath() + folder;
   String[] filenames = listFileNames(path);
   for (String s : filenames) {
-    d.addItem(s, s);
+    list.addItem(s, folder + "/" + s);
   }
 }
 
@@ -138,18 +149,123 @@ void PlayPatternAVRainbowPulse() {
 }
 
 void ToggleAudioTransition(boolean value) {
-  stopAudio = value;
+  stopCurrentAudio = value;
 }
 
 void controlEvent(ControlEvent theEvent) {
-  // DropdownList is of type ControlGroup.
-  // A controlEvent will be triggered from inside the ControlGroup class.
-  // therefore you need to check the originator of the Event with
-  // if (theEvent.isGroup())
-  // to avoid an error message thrown by controlP5.
+  if (theEvent.getController().getName() == "PatternSelect") {
+   ScrollableList d = (ScrollableList)theEvent.getController();
+   println(d.getValue());
+   setPattern(int(d.getValue()));
+  }
+  
   if (theEvent.getController().getName() == "AudioFiles") {
-    DropdownList d = (DropdownList)theEvent.getController();
-    println("[AUDIO SELECTED]" + d.getValueLabel().getText());
-    selectedAudio = "./audio/" + d.getValueLabel().getText();
+    ScrollableList d = (ScrollableList)theEvent.getController();
+    int index = int(d.getValue());
+    println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
+    selectedAudio = d.getItem(index).get("value").toString();
+  }
+  if (theEvent.getController().getName() == "ImgFiles") {
+    ScrollableList d = (ScrollableList)theEvent.getController();
+    int index = int(d.getValue());
+    File f = new File(d.getItem(index).get("value").toString());
+    println(getFileExtension(f).toLowerCase().trim());
+    if (getFileExtension(f).toLowerCase().trim().equals("gif")) {
+      println("[GIF SELECTED]" + d.getItem(index).get("value").toString());
+      selectedGif = d.getItem(index).get("value").toString();
+    } else {
+      println("[IMAGE SELECTED]" + d.getItem(index).get("value").toString());
+      selectedImg = d.getItem(index).get("value").toString();
+    }
+  }
+  if (theEvent.getController().getName() == "VidFiles") {
+    ScrollableList d = (ScrollableList)theEvent.getController();
+    int index = int(d.getValue());
+    println("[VIDEO SELECTED]" + d.getItem(index).get("name").toString());
+    selectedVid = d.getItem(index).get("name").toString();
   }
 }
+
+ String getFileExtension(File file) {
+    String fileName = file.getName();
+    if(fileName.lastIndexOf(".") != -1 && fileName.lastIndexOf(".") != 0)
+    return fileName.substring(fileName.lastIndexOf(".")+1);
+    else return "";
+}
+
+String[] patterns = {"Empty", "Swirls", "Pulse", "Pulse (AV)", "Rainbow Pulse (AV)", "Still Image", "GIF", "Video"};
+void addPatterns(ScrollableList list) {
+  
+  for (int i = 0; i < patterns.length; i++) {
+    list.addItem(patterns[i], i);
+  }
+   
+}
+
+void setPattern(int val) {
+  String name = patterns[val];
+  FadeLEDs();
+  switch (name) {
+    case "Empty":
+      pattern = new EmptyPattern(); break;
+    case "Swirls":
+      pattern = new PatternSwirly(color(255,0,0), 500, 0, false); break;
+    case "Pulse":
+      pattern = new PatternPulseMulti(20, color(10,255,10)); break;
+    case "Pulse (AV)":
+      if (selectedAudio == null) { println("[WARNING] No audio selected"); }
+      else { pattern = new PatternAVTestPulse(selectedAudio); }
+      break;
+    case "Rainbow Pulse (AV)":
+      if (selectedAudio == null) { println("[WARNING] No audio selected"); }
+      else { pattern = new PatternAVRainbowPulsar(selectedAudio); }
+      break;
+    case "Still Image":
+      if (selectedImg == null) { println("[WARNING] Still image not selected"); }
+      else { pattern = new ImgPattern(selectedImg); }
+      break;
+    case "GIF":
+      if (selectedGif == null) { println("[WARNING] GIF not selected"); }
+      else { pattern = new GifPattern(this, selectedGif); }
+      break;
+    case "Video":
+      if (selectedVid == null) { println("[WARNING] No video selected"); }
+      else { pattern = new MoviePattern(this, selectedVid, true, false); }
+      break;
+  }
+}
+ 
+void PlayAudio() {
+  if (player != null && !player.isPlaying()) {
+    player.play();
+  }
+}
+
+void StopAudio() {
+  if (player != null && player.isPlaying()) { player.pause(); player.rewind(); }
+}
+
+void PauseAudio() {
+  if (player != null && player.isPlaying()) { player.pause(); }
+}
+
+void PlayVideo() {
+  if (movie != null) { movie.play(); }
+}
+
+void PauseVideo() {
+  if (movie != null) { movie.pause(); }
+}
+
+void StopVideo() {
+  if (movie != null) { movie.stop(); }
+}
+
+void MuteVideo() {
+  if (movie != null) { 
+    if (videoMuted) { movie.volume(100); videoMuted = false; }
+    else { movie.volume(0); videoMuted = true; }
+  }
+  
+}
+  

@@ -53,7 +53,7 @@ void setup() {
   for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
-  size(750, 750, OPENGL);
+  size(750, 750, P3D);
   camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
@@ -81,10 +81,10 @@ void setup() {
   /* Import Movie */
   boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
   boolean playSound = false;
-  pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
+  //pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
   
   
-  //pattern = new EmptyPattern();
+  pattern = new EmptyPattern();
   getCatenaryCoords();
 }
 
