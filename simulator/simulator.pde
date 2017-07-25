@@ -10,6 +10,7 @@ PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
 Minim minim;
+boolean listening = false;
 AudioInput audio; 
 AudioPlayer player;
 BeatDetect beat;
@@ -50,6 +51,7 @@ PGraphics3D g3;
 
 void setup() {
   minim = new Minim(this);
+  audio = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
   for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }

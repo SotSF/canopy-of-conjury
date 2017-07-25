@@ -3,7 +3,7 @@ int pulseCount = 20;
 int fadeSpeed = 10;
 boolean stopCurrentAudio = true;
 boolean videoMuted = false;
-String selectedAudio;
+String selectedAudio; 
 String selectedImg;
 String selectedGif;
 String selectedVid;
@@ -32,6 +32,7 @@ class GUI {
     audioDropdown.onClick(new CallbackListener() {
       void controlEvent(CallbackEvent e) {
         UpdateDropdownList((ScrollableList)e.getController(), "/audio");
+        ((ScrollableList)e.getController()).addItem("Speaker Audio", "Speaker Audio");
       }
     });
     
@@ -89,7 +90,7 @@ boolean allLedsOff() {
 
 void FadeLEDs() {
   pattern = new EmptyPattern();
-  if (player != null && stopCurrentAudio) { player.pause(); } // fade out music?
+  //if (player != null && stopCurrentAudio) { player.pause(); } // fade out music?
   if (movie != null) { movie.stop(); } // fade out movie?
   isFadingOut = true;
 }
@@ -164,6 +165,8 @@ void controlEvent(ControlEvent theEvent) {
     int index = int(d.getValue());
     println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
     selectedAudio = d.getItem(index).get("value").toString();
+    if (selectedAudio.equals("Speaker Audio")) {listening = true;}
+    else {listening = false;}
   }
   if (theEvent.getController().getName() == "ImgFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
@@ -236,7 +239,10 @@ void setPattern(int val) {
 }
  
 void PlayAudio() {
-  if (player != null && !player.isPlaying()) {
+  if (player == null) {
+    player = minim.loadFile(selectedAudio, 1024);
+  }
+  if (!player.isPlaying()) {
     player.play();
   }
 }

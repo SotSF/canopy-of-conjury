@@ -24,7 +24,7 @@ class PatternAVTestPulse extends PatternAV {
   
   public void visualize(Strip[] strips) {
     clearStrips();
-    fft.forward(player.mix);
+    fftForward();
     // switch to HSB colors for this method
     colorMode(HSB, 100);
     boolean added = false;
@@ -116,7 +116,7 @@ class PatternAVRainbowPulsar extends PatternAV {
   public void visualize(Strip[] strips) {
     colorMode(HSB,100);
     clearStrips();
-    fft.forward(player.mix);
+    fftForward();
     
     // switch to HSB colors for this method
     colorMode(HSB, 100);
@@ -189,10 +189,14 @@ class PatternAV implements Pattern {
   public int sampleRate = 44100;
 
   public PatternAV(String filename) {
-    player = minim.loadFile(filename, 1024);
-    if (stopCurrentAudio) { player.play(); } // current audio is stopped, play next audio (which is this)
+    //player = minim.loadFile(filename, 1024);
+    //if (stopCurrentAudio) { player.play(); } //urrent audio is stopped, play next audio (which is this)
     //player = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
-    fft = new FFT(player.bufferSize(), player.sampleRate());
+    if (listening) {
+      fft = new FFT(audio.bufferSize(), audio.sampleRate());
+    } else {
+      fft = new FFT(player.bufferSize(), player.sampleRate());
+    }
   }
   
   public void run(Strip[] strips) {
@@ -202,7 +206,7 @@ class PatternAV implements Pattern {
   public void visualize(Strip[] strips) {
     time = millis();
     milliDiff = time - mydelay;
-    fft.forward(player.mix);
+    fftForward();
 
     colorMode(HSB, 100);
     
@@ -262,6 +266,11 @@ class PatternAV implements Pattern {
     }
     int sat = 100 - l;
     return color(hue,sat,100);
+  }
+  
+  public void fftForward() {
+    if (listening) fft.forward(audio.mix);
+    else fft.forward(player.mix);
   }
   
 }
