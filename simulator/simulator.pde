@@ -169,6 +169,10 @@ class Strip {
       leds[i] = color(0);
     }
   }
+
+  public int length () {
+    return leds.length;
+  }
 }
 
 void keyPressed () {
