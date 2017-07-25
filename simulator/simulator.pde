@@ -50,7 +50,7 @@ void setup() {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
-  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
+  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 1.1);
   
   /* implements Pattern */
   //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
