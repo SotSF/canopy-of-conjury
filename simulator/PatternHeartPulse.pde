@@ -17,6 +17,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
   float pulseMin = 0.25;
   
   float pulse = pulseMin;
+  color colorMask = color(255);
   
   public PatternHeartPulse(float growStep, float shrinkStep, float pulseMax, float pulseMin) {
     this.growStep = growStep;
@@ -29,18 +30,22 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     clearWindow();
     while (t < 1000) {
       // this is Cartesian
-      int x = floor(16 * sin(t) * sin(t) * sin(t));
-      int y = floor(13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t));
+      int x = floor((1 + this.pulse) * (16 * sin(t) * sin(t) * sin(t)));
+      int y = floor((1 + this.pulse) * (13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t)));
       // this is PixelWindow
       int x2 = round(x * 2 + (dimension / 2));
       int y2 = round(y * 2 + (dimension / 2));
      
-     // overcompensate the lines
-    drawPoint(x2,y2);
+       // overcompensate the lines
+      drawPoint(x2,y2);
+      drawPoint(x2+1, y2);
+      drawPoint(x2-1, y2);
+      drawPoint(x2, y2+1);
+      drawPoint(x2, y2-1);
       t++;
     }
-    this.t = 0;
-    /*
+    t = 0;
+    
     if (this.grow) { this.pulse += growStep; }
     else { this.pulse += shrinkStep; }
     if (this.pulse > pulseMax) {
@@ -49,38 +54,31 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     if (this.pulse < pulseMin) {
       this.grow = true;
     }
-*/
+
     this.scrapeWindow(strips); // only gets heart outline
     fillHeart(strips); // so roughly fill in the heart
     colorOverlay(strips);
   }
   
   private void drawPoint(int x, int y) {
-     set(x,y,color(255));
-     set(x, y+1, color(255));
-     set(x,y-1,color(255));
-     set(x+1, y, color(255));
-     set(x-1, y, color(255));
-     set(x+1, y+1, color(255));
-     set(x-1, y+1, color(255));
+     set(x,y,colorMask);
+     set(x, y+1, colorMask);
+     set(x,y-1,colorMask);
+     set(x+1, y, colorMask);
+     set(x-1, y, colorMask);
+     set(x+1, y+1, colorMask);
+     set(x-1, y+1, colorMask);
   }
   
   private void fillHeart(Strip[] strips) {
-    for (Strip s : strips) {
+    for (int s = 0; s < NUM_STRIPS; s++) {
       for (int l = NUM_LEDS_PER_STRIP - 2; l >= 0; l--) {
-        if (s.leds[l + 1] != color(0)) {
-          s.leds[l] = color(255);
-          pulse(s, l);
+        int nextStrip = s + 1 >= NUM_STRIPS ? 0 : s + 1;
+        if (strips[s].leds[l + 1] == colorMask ||
+          (strips[nextStrip].leds[l + 1] == colorMask)) {
+          strips[s].leds[l] = colorMask;
         }
       }
-    }
-  }
-  
-  private void pulse(Strip s, int l) {
-    int i = l;
-    while (i < l + (10 * this.pulse) && i < NUM_LEDS_PER_STRIP) {
-      s.leds[i] = color(255);
-      i++;
     }
   }
   
@@ -88,7 +86,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     colorMode(HSB,100);
     for (Strip s : strips) {
       for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
-        if (s.leds[l] != color(0)) {
+        if (s.leds[l] == colorMask) {
           int hue = floor(l * this.dimension / NUM_LEDS_PER_STRIP / sin(this.pulse));
           s.leds[l] = color(hue,100,100);
         }

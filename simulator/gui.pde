@@ -88,31 +88,6 @@ boolean allLedsOff() {
   return count == TOTAL_LEDS;
 }
 
-void FadeLEDs() {
-  pattern = new EmptyPattern();
-  //if (player != null && stopCurrentAudio) { player.pause(); } // fade out music?
-  if (movie != null) { movie.stop(); } // fade out movie?
-  isFadingOut = true;
-}
-
-void fadeStrips() {
-  for (Strip s : ledstrips) {
-    for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
-      color c = s.leds[l];
-      int red = (c >> 16) & 0xFF;
-      int green = (c >> 8) & 0xFF;
-      int blue = c & 0xFF;  
-      if (red > 0) red -= fadeSpeed;
-      if (green > 0) green -= fadeSpeed;
-      if (blue > 0) blue -= fadeSpeed;
-      s.leds[l] = color(red,green,blue);
-    }
-  }
-  if (allLedsOff()) {
-    isFadingOut = false;
-  }
-}
-
 void UpdateDropdownList(ScrollableList list, String folder) {
   list.clear();
   String path = sketchPath() + folder;
@@ -133,26 +108,6 @@ String[] listFileNames(String dir) {
   }
 }
 
-void PlayPatternAVPulse() {
-  if (selectedAudio == null) { println("[WARNING] No audio selected"); }
-  else {
-    FadeLEDs();
-    pattern = new PatternAVTestPulse(selectedAudio);
-  } 
-}
-
-void PlayPatternAVRainbowPulse() {
-  if (selectedAudio == null) { println("[WARNING] No audio selected"); }
-  else { 
-    FadeLEDs();
-    pattern = new PatternAVRainbowPulsar(selectedAudio);
-  }
-}
-
-void ToggleAudioTransition(boolean value) {
-  stopCurrentAudio = value;
-}
-
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.getController().getName() == "PatternSelect") {
    ScrollableList d = (ScrollableList)theEvent.getController();
@@ -165,8 +120,13 @@ void controlEvent(ControlEvent theEvent) {
     int index = int(d.getValue());
     println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
     selectedAudio = d.getItem(index).get("value").toString();
-    if (selectedAudio.equals("Speaker Audio")) {listening = true;}
-    else {listening = false;}
+    if (selectedAudio.equals("Speaker Audio")) {
+      listening = true;
+    }
+    else {
+      listening = false;
+      player = minim.loadFile(selectedAudio, 1024);
+    }
   }
   if (theEvent.getController().getName() == "ImgFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
@@ -186,6 +146,7 @@ void controlEvent(ControlEvent theEvent) {
     int index = int(d.getValue());
     println("[VIDEO SELECTED]" + d.getItem(index).get("name").toString());
     selectedVid = d.getItem(index).get("name").toString();
+    movie = new Movie(this, selectedVid);
   }
 }
 
@@ -196,7 +157,7 @@ void controlEvent(ControlEvent theEvent) {
     else return "";
 }
 
-String[] patterns = {"Empty", "Swirls", "Pulse", "Pulse (AV)", "Rainbow Pulse (AV)", "Still Image", "GIF", "Video"};
+String[] patterns = {"Empty", "Swirls", "Pulse", "Heart Beat", "Pulse (AV)", "Rainbow Pulse (AV)", "Still Image", "GIF", "Video"};
 void addPatterns(ScrollableList list) {
   
   for (int i = 0; i < patterns.length; i++) {
@@ -215,6 +176,8 @@ void setPattern(int val) {
       pattern = new PatternSwirly(color(255,0,0), 500, 0, false); break;
     case "Pulse":
       pattern = new PatternPulseMulti(20, color(10,255,10)); break;
+    case "Heart Beat":
+      pattern = new PatternHeartPulse(0.08, -0.1, 3, 0.5); break;
     case "Pulse (AV)":
       if (selectedAudio == null) { println("[WARNING] No audio selected"); }
       else { pattern = new PatternAVTestPulse(selectedAudio); }
@@ -233,7 +196,7 @@ void setPattern(int val) {
       break;
     case "Video":
       if (selectedVid == null) { println("[WARNING] No video selected"); }
-      else { pattern = new MoviePattern(this, selectedVid, true, false); }
+      else { pattern = new MoviePattern(true, false); }
       break;
   }
 }

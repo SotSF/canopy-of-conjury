@@ -200,7 +200,36 @@ class PatternAV implements Pattern {
   }
   
   public void run(Strip[] strips) {
-    visualize(strips);
+    if (listening){ 
+      visualize(strips);
+    } else {
+      if (player.isPlaying()) {
+        visualize(strips);
+      } else {
+        runDefault(strips);
+      }
+    }
+    
+  }
+  public void runDefault(Strip[] strips) {
+    int offset = int(random(5,10));
+
+    for (int i = 0; i < NUM_STRIPS; i++) {
+      strips[i].clear();
+      //int lights = int(random(40,50));
+      int lights = int(random(20,30));
+       lights += offset;
+       for (int l = 0; l < lights; l++) {
+         strips[i].leds[l] = getColor(i, l);
+         int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
+         strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
+       }
+    }
+    if (random(100) > 75) direction = direction * -1;
+    colorShifter += 120 / NUM_STRIPS * direction;
+    if (colorShifter >= 100) { colorShifter = 0; }
+    if (colorShifter < 0) { colorShifter = 100; }
+    colorMode(RGB,255);
   }
   
   public void visualize(Strip[] strips) {

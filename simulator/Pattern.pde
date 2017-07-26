@@ -118,8 +118,7 @@ class GifPattern extends CartesianPattern implements Pattern {
 }
 
 class MoviePattern extends CartesianPattern implements Pattern {
-  public MoviePattern(PApplet window, String filename, boolean loop, boolean sound) {
-    movie = new Movie(window, filename);
+  public MoviePattern(boolean loop, boolean sound) {
     if (loop) { movie.loop(); }
     else { movie.play(); } 
     if (!sound) { movie.volume(0); }
