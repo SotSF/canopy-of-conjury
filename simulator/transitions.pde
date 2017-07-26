@@ -1,5 +1,4 @@
 void FadeLEDs() {
-  pattern = new EmptyPattern();
   //if (player != null && stopCurrentAudio) { player.pause(); } // fade out music?
   if (movie != null) { movie.stop(); } // fade out movie?
   isFadingOut = true;

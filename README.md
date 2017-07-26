@@ -11,22 +11,22 @@ Easy to install through the Processing editor, through Sketch > Import Library..
 # Overview
 The `Strip` class is a virtual LED strip, containing `color[] leds`. These control the simulator display, and will be used to push colors to the PixelPusher outputs (this code is still pending!) -- we’ll probably need to rename this to avoid confusion with the PixelPusher `Strip` class.
 
-All Patterns must `implement Pattern`.
+All Patterns must `extend Pattern` which `implements IPattern`. 
 
-The Pattern’s `.run(Strip[] strips)` function manipulates the colors in each strip’s `color[] leds`.
+The `IPattern` interface contains only three methods: `run()`, `runDefault()` for animating without audio, and `visualize()` for audio visualization. The default `visualize()` just calls `runDefault()` if you aren't planning to implement audio visualization in your pattern. 
 
-There is a `CartesianPattern` class which contain some helper methods for drawing functions in the Cartesian plane and then mapping those colors to the Canopy coordinates.
 
-An extension of the `CartesianPattern` must also `implement Pattern`, e.g.
+The Pattern’s `.run(Strip[] strips)` function manipulates the colors in each strip’s `color[] leds`. By default, the Pattern parent class selects whether or not to play the default pattern or to audio visualize based on whether or not an audio file is playing or if we are listening for microphone input.
+
+There is a `CartesianPattern` class which contain some helper methods for drawing functions in the Cartesian plane and then mapping those colors to the Canopy coordinates. This is an extension of Pattern.
+
+An extension of the `CartesianPattern`, e.g.
 
 ```java
-MyPattern extends CartesianPattern implements Pattern
+MyPattern extends CartesianPattern
 ```
 
-NOTE: `CartesianPattern`s can’t be “drawn” directly to the window (from what I can tell??). You have to directly `set(x,y,color)`. I.e., using the built-in `ellipse(x,y,width,height)` Processing function won’t work. I don’t know why yet.
+NOTE: `CartesianPattern`s can’t be “drawn” directly to the window (from what I can tell??). You have to directly `set(x,y,color)`. I.e., using the built-in `ellipse(x,y,width,height)` Processing function won’t work (yet!).
 
 `CartesianPattern`s must call `scrapeWindow()` in their `run()` functions.
-
-
-We can create Audio Visualizers by extending the `PatternAV` class, and overriding the `visualize(Strip[] strips)` function. This uses the Mimim library for audio processing and stuff. Currently, requires an audio file to work (can’t figure out how to read audio from speaker output line).
 

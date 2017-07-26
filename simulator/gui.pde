@@ -7,6 +7,7 @@ String selectedAudio;
 String selectedImg;
 String selectedGif;
 String selectedVid;
+boolean listeningToMic = false;
 
 class GUI {
   public ControlP5 cp5;

@@ -8,8 +8,8 @@ class EmptyPattern implements IPattern {
   public void run(Strip[] strips) {
     clearStrips();
   }
-  public void runDefault(Strip[] strips) {};
-  public void visualize(Strip[] strips) {};
+  public void runDefault(Strip[] strips) { run(strips); }
+  public void visualize(Strip[] strips) { run(strips); }
 }
 
 class Pattern implements IPattern {
