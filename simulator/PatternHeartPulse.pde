@@ -60,10 +60,6 @@ class PatternHeartPulse extends CartesianPattern {
     colorOverlay(strips);
   }
   
-  public void visualize(Strip[] strips) {
-    runDefault(strips);
-  }
-  
   private void drawPoint(int x, int y) {
      set(x,y,colorMask);
      set(x, y+1, colorMask);

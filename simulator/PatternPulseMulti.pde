@@ -26,11 +26,7 @@ class PatternPulseMulti extends Pattern {
       if (rows.get(r) >= strips[0].leds.length) { rows.set(r,0); }
     }  
   }
-  
-  public void visualize(Strip[] strips) {
-    runDefault(strips);
-  }
-  
+
   private void getNextColor() {
     int d = (int)random(10) >= 5 ? 1 : -1;
     int r = (int)random(3);

@@ -31,14 +31,13 @@ class Pattern implements IPattern {
   }
   
   public void visualize(Strip[] strips) {
-    clearStrips();
+    runDefault(strips);
   }
 
   public void fftForward() {
     if (listeningToMic) fft.forward(audio.mix);
     else fft.forward(player.mix);
   }
-  
 }
 
 public class CartesianPattern extends Pattern {

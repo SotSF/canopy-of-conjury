@@ -38,11 +38,7 @@ class PatternSwirly extends Pattern {
       s.getNextColor(d,r,int(random(5,11)), this.warm);
     }
   }
-  
-  public void visualize(Strip[] strips) {
-    runDefault(strips);
-  }
-  
+
   private class Swirl {
     ArrayList<Position> lights;
     int maxLights;
