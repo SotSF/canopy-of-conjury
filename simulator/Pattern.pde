@@ -1,14 +1,47 @@
-public interface Pattern {
+public interface IPattern {
   void run(Strip[] strips);
+  void runDefault(Strip[] strips);
+  void visualize(Strip[] strips);
 }
 
-class EmptyPattern implements Pattern {
+class EmptyPattern implements IPattern {
   public void run(Strip[] strips) {
     clearStrips();
   }
+  public void runDefault(Strip[] strips) {};
+  public void visualize(Strip[] strips) {};
 }
 
-public class CartesianPattern {
+class Pattern implements IPattern {
+  public int sampleRate = 44100;
+  public void run(Strip[] strips) {
+    if (listeningToMic){ 
+      visualize(strips);
+    } else {
+      if (player != null && player.isPlaying()) {
+        visualize(strips);
+      } else {
+        runDefault(strips);
+      }
+    }
+  }
+  
+  public void runDefault(Strip[] strips) {
+    clearStrips();
+  }
+  
+  public void visualize(Strip[] strips) {
+    clearStrips();
+  }
+
+  public void fftForward() {
+    if (listeningToMic) fft.forward(audio.mix);
+    else fft.forward(player.mix);
+  }
+  
+}
+
+public class CartesianPattern extends Pattern {
   int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
   
@@ -35,7 +68,6 @@ public class CartesianPattern {
     int s = floor(thetaDegrees * NUM_STRIPS / 360);
     int l = floor(radius / 3);
     return new CanopyCoord(s, l);
-    
   }
   
   boolean scraped = false;
@@ -87,7 +119,7 @@ public class CartesianPattern {
   }
 }
 
-class ImgPattern extends CartesianPattern implements Pattern {
+class ImgPattern extends CartesianPattern {
   String filename;
   PImage img;
   public ImgPattern(String filename) {
@@ -99,9 +131,10 @@ class ImgPattern extends CartesianPattern implements Pattern {
   public void run(Strip[] strips) {
     scrapeImage(img, strips);
   }
+
 }
 
-class GifPattern extends CartesianPattern implements Pattern {
+class GifPattern extends CartesianPattern {
  int frame = 0;
  PImage[] frames;
  public GifPattern(PApplet window, String filename) {
@@ -115,9 +148,10 @@ class GifPattern extends CartesianPattern implements Pattern {
     this.frame++;
     if (this.frame >= frames.length) this.frame = 0;
   }
+
 }
 
-class MoviePattern extends CartesianPattern implements Pattern {
+class MoviePattern extends CartesianPattern {
   public MoviePattern(boolean loop, boolean sound) {
     if (loop) { movie.loop(); }
     else { movie.play(); } 
@@ -129,7 +163,6 @@ class MoviePattern extends CartesianPattern implements Pattern {
     PImage frame = movie.get();
     frame.resize(dimension,dimension);
     scrapeImage(frame,strips);
-    
   }
 }
 

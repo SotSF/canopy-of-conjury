@@ -1,4 +1,4 @@
-class PatternSwirly implements Pattern {
+class PatternSwirly extends Pattern {
   Swirl[] swirls;
   color c;
   boolean warm = true;
@@ -18,7 +18,7 @@ class PatternSwirly implements Pattern {
     }
   }
   
-  public void run(Strip[] strips) {
+  public void runDefault(Strip[] strips) {
     clearStrips();
     int d = random(100) > 50 ? 1 : -1;
     int r = int(random(3));
@@ -38,6 +38,11 @@ class PatternSwirly implements Pattern {
       s.getNextColor(d,r,int(random(5,11)), this.warm);
     }
   }
+  
+  public void visualize(Strip[] strips) {
+    runDefault(strips);
+  }
+  
   private class Swirl {
     ArrayList<Position> lights;
     int maxLights;

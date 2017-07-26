@@ -4,13 +4,12 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import gifAnimation.*;
 import processing.video.*;
-import processing.opengl.*;
 
 PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
 Minim minim;
-boolean listening = false;
+boolean listeningToMic = false;
 AudioInput audio; 
 AudioPlayer player;
 BeatDetect beat;
@@ -42,7 +41,7 @@ float APEX_DIAMETER = APEX_RADIUS * 2;
 float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
 Strip[] ledstrips = new Strip[NUM_STRIPS];
-Pattern pattern;
+IPattern pattern;
 
 int tick = 0;
 GUI gui;
@@ -59,33 +58,7 @@ void setup() {
   camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
-  
-  
-  /* implements Pattern */
-  //pattern = new PatternSwirly(color(255,0,0), 500, 0, false);
-  
-  /* extends CartesianPattern implements Pattern */
-  //pattern = new PatternRainbowScan();
-  
-  /* audio visualizer */
-  //pattern = new PatternAV("./audio/bloom.mp3");
-  
-  /* extends PatternAV */
-  //pattern = new PatternAVRainbowPulsar("./audio/bloom.mp3");
-  //pattern = new PatternAVTestPulse("./audio/bloom.mp3");
-  
-  /* Import Static Image */
-  //pattern = new ImgPattern("./images/cube.png");
-  
-  /* Import .GIF */
-  //pattern = new GifPattern(this, "./images/fox_silhouette.gif");
-  
-  /* Import Movie */
-  boolean loopMovie = true; // loop or play once - the movie will freeze on the last frame if play once
-  boolean playSound = false;
-  //pattern = new MoviePattern(this, "fractals.mp4", loopMovie, playSound);
-  
-  
+
   pattern = new EmptyPattern();
   getCatenaryCoords();
 }
@@ -104,6 +77,7 @@ void draw() {
   * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration, 
   * making 6 out of 96 of our strips per output.
   */
+
   rotateZ(PI);
   renderCanopy();
   tick++;

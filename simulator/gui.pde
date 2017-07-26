@@ -114,20 +114,23 @@ void controlEvent(ControlEvent theEvent) {
    println(d.getValue());
    setPattern(int(d.getValue()));
   }
-  
+  // AUDIO
   if (theEvent.getController().getName() == "AudioFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
     int index = int(d.getValue());
     println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
     selectedAudio = d.getItem(index).get("value").toString();
     if (selectedAudio.equals("Speaker Audio")) {
-      listening = true;
+      listeningToMic = true;
+      fft = new FFT(audio.bufferSize(), audio.sampleRate());
     }
     else {
-      listening = false;
+      listeningToMic = false;
       player = minim.loadFile(selectedAudio, 1024);
+      fft = new FFT(player.bufferSize(), player.sampleRate());
     }
   }
+  // GIF and IMGs
   if (theEvent.getController().getName() == "ImgFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
     int index = int(d.getValue());
@@ -141,6 +144,7 @@ void controlEvent(ControlEvent theEvent) {
       selectedImg = d.getItem(index).get("value").toString();
     }
   }
+  // VIDEO
   if (theEvent.getController().getName() == "VidFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
     int index = int(d.getValue());
@@ -157,7 +161,7 @@ void controlEvent(ControlEvent theEvent) {
     else return "";
 }
 
-String[] patterns = {"Empty", "Swirls", "Pulse", "Heart Beat", "Pulse (AV)", "Rainbow Pulse (AV)", "Still Image", "GIF", "Video"};
+String[] patterns = {"Empty", "Swirls", "Pulse", "Heart Beat", "Sound", "Gradient Pulse", "Rainbow Rings", "Still Image", "GIF", "Video"};
 void addPatterns(ScrollableList list) {
   
   for (int i = 0; i < patterns.length; i++) {
@@ -178,14 +182,12 @@ void setPattern(int val) {
       pattern = new PatternPulseMulti(20, color(10,255,10)); break;
     case "Heart Beat":
       pattern = new PatternHeartPulse(0.08, -0.1, 3, 0.5); break;
-    case "Pulse (AV)":
-      if (selectedAudio == null) { println("[WARNING] No audio selected"); }
-      else { pattern = new PatternAVTestPulse(selectedAudio); }
-      break;
-    case "Rainbow Pulse (AV)":
-      if (selectedAudio == null) { println("[WARNING] No audio selected"); }
-      else { pattern = new PatternAVRainbowPulsar(selectedAudio); }
-      break;
+    case "Sound":
+      pattern = new PatternSound(); break;
+    case "Gradient Pulse":
+      pattern = new PatternGradientPulse(); break;
+    case "Rainbow Rings":
+      pattern = new PatternRainbowRings(); break;
     case "Still Image":
       if (selectedImg == null) { println("[WARNING] Still image not selected"); }
       else { pattern = new ImgPattern(selectedImg); }
@@ -203,9 +205,13 @@ void setPattern(int val) {
  
 void PlayAudio() {
   if (player == null) {
-    player = minim.loadFile(selectedAudio, 1024);
+    if (selectedAudio == null) { println("[WARNING] No audio selected!"); } 
+    else {
+      player = minim.loadFile(selectedAudio, 1024);
+      fft = new FFT(player.bufferSize(), player.sampleRate());
+    }
   }
-  if (!player.isPlaying()) {
+  if (!player.isPlaying() && !listeningToMic) {
     player.play();
   }
 }

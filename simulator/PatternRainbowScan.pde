@@ -1,6 +1,6 @@
-class PatternRainbowScan extends CartesianPattern implements Pattern {
+class PatternRainbowScan extends CartesianPattern {
   int shift = 0;
-  public void run(Strip[] strips) {
+  public void runDefault(Strip[] strips) {
     colorMode(HSB, 100);
     for (int y = 0; y < this.dimension; y++) {
       for (int x = 0; x < this.dimension; x++) {

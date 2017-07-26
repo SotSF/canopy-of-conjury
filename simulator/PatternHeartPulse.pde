@@ -8,7 +8,7 @@
 * float pulseMin - the smallest the heart can shrink
 **/
 
-class PatternHeartPulse extends CartesianPattern implements Pattern {
+class PatternHeartPulse extends CartesianPattern {
   int t = 0;
   boolean grow = true;
   float growStep = 0.03;
@@ -26,7 +26,7 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     this.pulseMin = pulseMin;
   }
   
-  public void run(Strip[] strips) {
+  public void runDefault(Strip[] strips) {
     clearWindow();
     while (t < 1000) {
       // this is Cartesian
@@ -58,6 +58,10 @@ class PatternHeartPulse extends CartesianPattern implements Pattern {
     this.scrapeWindow(strips); // only gets heart outline
     fillHeart(strips); // so roughly fill in the heart
     colorOverlay(strips);
+  }
+  
+  public void visualize(Strip[] strips) {
+    runDefault(strips);
   }
   
   private void drawPoint(int x, int y) {

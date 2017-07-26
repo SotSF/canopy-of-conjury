@@ -1,31 +1,35 @@
-class PatternPulseMulti implements Pattern {
-  int[] rows;
+class PatternPulseMulti extends Pattern {
+  ArrayList<Integer> rows;
   color c;
+  int max;
   
   public PatternPulseMulti(int rows, color c) {
-    this.rows = new int[rows];
+    this.rows = new ArrayList<Integer>(); 
     this.c = c;
-    for (int r = 0; r < this.rows.length; r++) {
-      this.rows[r] = int(random(NUM_LEDS_PER_STRIP));
-    }
+    this.max = rows;
   }
   
-  public void run(Strip[] strips) {
+  public void runDefault(Strip[] strips) {
     clearStrips();
-    for (int r = 0; r < rows.length; r++) {
+    boolean add = random(100) > 80;
+    if (add && rows.size() < max) {
+      rows.add(0);
+    }
+    for (int r : rows) {
       for (int i = 0; i < strips.length; i++) {
-        strips[i].leds[rows[r]] = this.c;
+        strips[i].leds[r] = this.c;
       }
        getNextColor();
     }
-    
-    for (int r = 0; r < rows.length; r++) {
-      rows[r] += 1;
-      if (rows[r] >= strips[0].leds.length) { rows[r] = 0; }
-    }
-     
+    for (int r = 0; r < rows.size(); r++) {
+      rows.set(r, rows.get(r) + 1);
+      if (rows.get(r) >= strips[0].leds.length) { rows.set(r,0); }
+    }  
   }
   
+  public void visualize(Strip[] strips) {
+    runDefault(strips);
+  }
   
   private void getNextColor() {
     int d = (int)random(10) >= 5 ? 1 : -1;
