@@ -1,6 +1,5 @@
-boolean isFadingOut = false;
-int pulseCount = 20;
 int fadeSpeed = 10;
+boolean isFadingOut = false;
 boolean stopCurrentAudio = true;
 boolean videoMuted = false;
 String selectedAudio; 
@@ -8,6 +7,7 @@ String selectedImg;
 String selectedGif;
 String selectedVid;
 boolean listeningToMic = false;
+int selectedPattern = 0;
 
 class GUI {
   public ControlP5 cp5;
@@ -41,7 +41,7 @@ class GUI {
     cp5.addButton("PauseAudio").setLabel("Pause Audio").setPosition(475,10);
     cp5.addButton("StopAudio").setLabel("Stop Audio").setPosition(550, 10);
     
-    cp5.addButton("PlayVieo").setLabel("Play Video").setPosition(400,50);
+    cp5.addButton("PlayVideo").setLabel("Play Video").setPosition(400,50);
     cp5.addButton("PauseVideo").setLabel("Pause Video").setPosition(475,50);
     cp5.addButton("StopVideo").setLabel("Stop Video").setPosition(550, 50);
     cp5.addButton("MuteVideo").setLabel("Toggle Video Audio").setPosition(625, 50).setSize(100,19);
@@ -172,13 +172,14 @@ void addPatterns(ScrollableList list) {
 }
 
 void setPattern(int val) {
+  selectedPattern = val;
   String name = patterns[val];
   FadeLEDs();
   switch (name) {
     case "Empty":
       pattern = new EmptyPattern(); break;
     case "Swirls":
-      pattern = new PatternSwirly(color(255,0,0), 500, 0, false); break;
+      pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
     case "Pulse":
       pattern = new PatternPulseMulti(20, color(10,255,10)); break;
     case "Heart Beat":
@@ -226,15 +227,19 @@ void PauseAudio() {
 }
 
 void PlayVideo() {
-  if (movie != null) { movie.play(); }
+  if (movie != null) {
+    if (patterns[selectedPattern] == "Video") {
+      movie.play();
+    }
+  }
 }
 
 void PauseVideo() {
-  if (movie != null) { movie.pause(); }
-}
-
-void StopVideo() {
-  if (movie != null) { movie.stop(); }
+  if (movie != null) {
+    if (patterns[selectedPattern] == "Video") {
+      movie.pause();
+    }
+  }
 }
 
 void MuteVideo() {
@@ -242,6 +247,15 @@ void MuteVideo() {
     if (videoMuted) { movie.volume(100); videoMuted = false; }
     else { movie.volume(0); videoMuted = true; }
   }
-  
+}
+
+void StopVideo() {
+  if (movie != null) {
+    if (patterns[selectedPattern] == "Video") {
+      movie.stop();
+      pattern = new EmptyPattern();
+      FadeLEDs();
+    }
+  }
 }
   

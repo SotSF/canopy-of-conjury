@@ -9,7 +9,6 @@ PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
 Minim minim;
-boolean listeningToMic = false;
 AudioInput audio; 
 AudioPlayer player;
 BeatDetect beat;
@@ -66,7 +65,6 @@ void setup() {
 
 
 void draw() {
-   
   if (isFadingOut) { fadeStrips(); }
   else { pattern.run(ledstrips); }
   

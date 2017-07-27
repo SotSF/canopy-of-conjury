@@ -1,16 +1,8 @@
 /**
-* An audio visualizer. Requires a filename pointing to an audio file.
-* Can be extended, with visualize(Strip[] strips) overridden in the 
-* subclasses. When the audio stops playing, any baseline pattern will
-* continue to run.
+* Emits pulse rings from center - each ring is a different color,
+* following a gradient color scheme.
 **/
 
-
-/*
-  More precise frequency and amplitude calculations in PatternAVTestPulse
-  based on sketch here: 
-  https://forum.processing.org/one/topic/minim-super-accurate-frequency-or-beat-detection-analysis-3-4-2013-1.html
-*/
 class PatternGradientPulse extends Pattern {
   ArrayList<Beat> beatList;
   float lastAvg = 0;

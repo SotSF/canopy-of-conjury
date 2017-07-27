@@ -1,3 +1,7 @@
+/*
+* Two rings, one each at apex and base, simulating sound wave movement.
+*/
+
 class PatternSound extends Pattern {
   int colorShifter = 0;
   int direction = 1;

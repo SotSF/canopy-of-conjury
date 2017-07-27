@@ -1,3 +1,7 @@
+/*
+* Emits rings from the center - each ring is it's own rainbow
+*/
+
 class PatternRainbowRings extends Pattern {
   ArrayList<Integer> lightTracks;
   int currHue = 0;

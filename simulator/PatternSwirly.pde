@@ -1,3 +1,11 @@
+/*
+* A color shifting vortex.
+* Params:
+* color c - the base color
+* int swirlCount - the number of concurrent swirls
+* int flow - direction of flow, -1 flow towards apex, 1 flow towards base, 0 produces swirls in both directions
+* boolean warm - whether the color shift tends towards red or blue
+*/
 class PatternSwirly extends Pattern {
   Swirl[] swirls;
   color c;

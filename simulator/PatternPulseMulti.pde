@@ -1,3 +1,11 @@
+/*
+* Emits rings from the center - each ring is the same color,
+* with a random color shift each step.
+* Params:
+* int rows - max number of rings
+* color c - the base color
+*/
+
 class PatternPulseMulti extends Pattern {
   ArrayList<Integer> rows;
   color c;

@@ -1,3 +1,7 @@
+/*
+* Full rainbow gradient scanner.
+*/
+
 class PatternRainbowScan extends CartesianPattern {
   int shift = 0;
   public void runDefault(Strip[] strips) {
