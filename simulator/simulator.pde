@@ -4,6 +4,7 @@ import ddf.minim.*;
 import ddf.minim.analysis.*;
 import gifAnimation.*;
 import processing.video.*;
+import processing.net.*;
 
 PeasyCam camera;
 
@@ -15,6 +16,9 @@ BeatDetect beat;
 FFT fft;
 
 Movie movie;
+
+Server kinectServer;
+Server renderServer;
 
 // Constants
 float FEET_PER_METER = 3.28084;
@@ -40,6 +44,7 @@ float APEX_DIAMETER = APEX_RADIUS * 2;
 float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
 Strip[] ledstrips = new Strip[NUM_STRIPS];
+Conjurer conjurer;
 IPattern pattern;
 
 int tick = 0;
@@ -48,6 +53,8 @@ PMatrix3D currCameraMatrix;
 PGraphics3D g3;
 
 void setup() {
+  kinectServer = new Server(this, 5111);
+  renderServer = new Server(this, 5024);
   minim = new Minim(this);
   audio = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
   for (int i = 0; i < NUM_STRIPS; i++) {
@@ -57,16 +64,45 @@ void setup() {
   camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
-
-  pattern = new EmptyPattern();
   getCatenaryCoords();
+  conjurer = new Conjurer(this);   
+  pattern = new EmptyPattern();
 }
 
-
+JPGEncoder jpg = new JPGEncoder();
 
 void draw() {
-  if (isFadingOut) { fadeStrips(); }
-  else { pattern.run(ledstrips); }
+  clearStrips();
+  if (conjurer.mode == MODE_LISTENING) {
+    if (kinectServer != null) {
+      Client client = kinectServer.available();
+      if (client != null) {
+        String cmd = client.readString();
+        parseCmd(cmd);
+      }
+    }
+    if (renderServer != null) {
+      Client client = renderServer.available();
+      if (client != null) {
+        byte[] byteBuffer = client.readBytes();
+        try {
+          PImage img = jpg.decode(byteBuffer);
+          conjurer.drawing = img;
+        } 
+        catch (Exception e) {
+        }
+      }
+    }
+  }
+  switch (conjurer.mode) {
+    case MODE_MANUAL: 
+      if (isFadingOut){ fadeStrips(); }
+      else { pattern.run(ledstrips); }
+      break;
+    case MODE_LISTENING: 
+      conjurer.cast();
+      break;
+  }
   
  
   /** TODO: push from ledstrips to PixelPusher strips - this will require some math

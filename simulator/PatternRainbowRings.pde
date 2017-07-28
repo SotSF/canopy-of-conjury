@@ -12,16 +12,19 @@ class PatternRainbowRings extends Pattern {
   }
   
   public void runDefault(Strip[] strips) {
-     clearStrips();
     // switch to HSB colors for this method
     boolean added = false;
     colorMode(HSB, 100);
+    
+    if (conjurer.mode == MODE_MANUAL) {
+     clearStrips();
      if (delayCount == 0) {
-      lightTracks.add(0);
-      added = true;
-    }
-    if (!added && random(100) > 70) {
-      lightTracks.add(0);
+        lightTracks.add(0);
+        added = true;
+      }
+      if (!added && random(100) > 70) {
+        lightTracks.add(0);
+      }
     }
         
     for (int i = 0; i < lightTracks.size(); i++) {
@@ -103,5 +106,10 @@ class PatternRainbowRings extends Pattern {
     }
     
     colorMode(RGB,255);
+  }
+  
+  public void addRing() {
+    lightTracks.add(0);
+    lightTracks.add(1);
   }
 }

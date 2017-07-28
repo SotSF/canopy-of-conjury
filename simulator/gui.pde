@@ -9,13 +9,16 @@ String selectedVid;
 boolean listeningToMic = false;
 int selectedPattern = 0;
 
+Button modebtn;
+
 class GUI {
   public ControlP5 cp5;
   
   public GUI(PApplet window) {
     cp5 = new ControlP5(window);
-     ScrollableList imgDropdown = cp5.addScrollableList("ImgFiles").setLabel("Select JPG/PNG").setSize(200,200).setPosition(170, 90).setOpen(false);
-    imgDropdown.setDirection(PApplet.UP);
+    modebtn = cp5.addButton("ToggleMode").setLabel("Switch to Kinect Mode").setPosition(400,90).setSize(100,20);
+    
+    ScrollableList imgDropdown = cp5.addScrollableList("ImgFiles").setLabel("Select JPG/PNG").setSize(200,200).setPosition(170, 90).setOpen(false);
      imgDropdown.onClick(new CallbackListener() {
       void controlEvent(CallbackEvent e) {
         UpdateDropdownList((ScrollableList)e.getController(), "/images");
@@ -168,7 +171,6 @@ void addPatterns(ScrollableList list) {
   for (int i = 0; i < patterns.length; i++) {
     list.addItem(patterns[i], i);
   }
-   
 }
 
 void setPattern(int val) {
@@ -258,4 +260,18 @@ void StopVideo() {
     }
   }
 }
+ 
+void ToggleMode() {
+  FadeLEDs();
+  if (conjurer.mode == MODE_MANUAL) {
+    conjurer.mode = MODE_LISTENING;
+    modebtn.setLabel("Switch to Manual Mode");
+  }
+  else if (conjurer.mode == MODE_LISTENING) {
+    conjurer.mode = MODE_MANUAL;
+    modebtn.setLabel("Switch to Kinect Mode");
+    kinectServer = null;
+  }
   
+  println(conjurer.mode);
+}

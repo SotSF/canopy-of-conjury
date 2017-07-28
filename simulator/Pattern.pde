@@ -69,10 +69,7 @@ public class CartesianPattern extends Pattern {
     return new CanopyCoord(s, l);
   }
   
-  boolean scraped = false;
   public void scrapeWindow(Strip[] strips) {
-    if (scraped) return;
-    clearStrips();
     for (int y = 0; y < dimension; y++) {
       for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
@@ -81,8 +78,9 @@ public class CartesianPattern extends Pattern {
         if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }
-        
-        strips[co.strip].leds[l] = get(x,y);
+         color c = get(x,y);
+        if (c == color(0) || c == 0) { continue; }
+        strips[co.strip].leds[l] = c;
       }
     }
   }
@@ -96,7 +94,8 @@ public class CartesianPattern extends Pattern {
         if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }
-         color c = img.get(x,y);
+        color c = img.get(x,y);
+        if (c == color(0) || c == 0) { continue; }
         strips[co.strip].leds[l] = c;
         
       }
@@ -121,6 +120,11 @@ public class CartesianPattern extends Pattern {
 class ImgPattern extends CartesianPattern {
   String filename;
   PImage img;
+   public ImgPattern(PImage img) {
+    this.img = img;
+    this.img.resize(dimension,dimension);
+  }
+  
   public ImgPattern(String filename) {
     this.filename = filename;
     img = loadImage(filename);

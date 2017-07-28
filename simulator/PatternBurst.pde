@@ -1,4 +1,5 @@
 /* Given x,y coords, create a firework on the Canopy */
+// Intended for use with Kinect
 
 class PatternBurst extends CartesianPattern {
   ArrayList<Burst> targets;
