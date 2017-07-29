@@ -50,26 +50,27 @@ class Conjurer {
     }
     burst.run(ledstrips);
     rainbowRing.run(ledstrips);
-    if (this.drawing != null) {
-      canvas.drawing = this.drawing;
-      canvas.run(ledstrips);
-    }
+    canvas.run(ledstrips);
+  }
+  
+  public void paint(PImage img) {
+    canvas.addToCanvas(img);
   }
 }
 
 class ConjurerCanvas extends CartesianPattern {
-  PImage drawing;
   public void run(Strip[] strips) {
+    scrapeWindow(strips);
+  }
+  
+  private void addToCanvas(PImage drawing) {
     if (drawing != null) {
       for (int y = 0; y < drawing.height; y++) {
         for (int x = 0; x < drawing.width; x++) {
           color c = drawing.get(x,y);
-          if (c != color(0) && c != 0) {
-            set(x,y,c);
-          }
+          if (c != color(0) && c != 0) { set(x,y,c); }
         }
       }
-      scrapeWindow(strips);
     }
   }
 }

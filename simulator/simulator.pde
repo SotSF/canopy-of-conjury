@@ -87,7 +87,7 @@ void draw() {
         byte[] byteBuffer = client.readBytes();
         try {
           PImage img = jpg.decode(byteBuffer);
-          conjurer.drawing = img;
+          conjurer.paint(img);
         } 
         catch (Exception e) {
         }
