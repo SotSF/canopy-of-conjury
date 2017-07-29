@@ -143,9 +143,11 @@ void controlEvent(ControlEvent theEvent) {
     if (getFileExtension(f).toLowerCase().trim().equals("gif")) {
       println("[GIF SELECTED]" + d.getItem(index).get("value").toString());
       selectedGif = d.getItem(index).get("value").toString();
+      setPattern(8);
     } else {
       println("[IMAGE SELECTED]" + d.getItem(index).get("value").toString());
       selectedImg = d.getItem(index).get("value").toString();
+      setPattern(7);
     }
   }
   // VIDEO
