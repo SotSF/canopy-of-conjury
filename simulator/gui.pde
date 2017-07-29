@@ -97,7 +97,7 @@ void UpdateDropdownList(ScrollableList list, String folder) {
   String path = sketchPath() + folder;
   String[] filenames = listFileNames(path);
   for (String s : filenames) {
-    list.addItem(s, folder + "/" + s);
+    list.addItem(s, path + "/" + s);
   }
 }
 
