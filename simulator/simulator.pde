@@ -72,7 +72,7 @@ void setup() {
 JPGEncoder jpg = new JPGEncoder();
 
 void draw() {
-  clearStrips();
+ 
   if (conjurer.mode == MODE_LISTENING) {
     if (kinectServer != null) {
       Client client = kinectServer.available();
@@ -97,7 +97,7 @@ void draw() {
   switch (conjurer.mode) {
     case MODE_MANUAL: 
       if (isFadingOut){ fadeStrips(); }
-      else { pattern.run(ledstrips); }
+      else {  clearStrips(); pattern.run(ledstrips); }
       break;
     case MODE_LISTENING: 
       conjurer.cast();

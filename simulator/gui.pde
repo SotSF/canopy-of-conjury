@@ -7,9 +7,27 @@ String selectedImg;
 String selectedGif;
 String selectedVid;
 boolean listeningToMic = false;
-int selectedPattern = 0;
+PatternSelect selectedPattern = PatternSelect.EMPTY;
 
 Button modebtn;
+
+enum PatternSelect {
+  EMPTY("Empty"),
+  SWIRLS("Swirls"),
+  PULSE("Pulse"),
+  HEART_BEAT("Heart Beat"),
+  SOUND("Sound"),
+  GRADIENT_PULSE("Gradient Pulse"),
+  RAINBOW_RINGS("Rainbow Rings"),
+  STILL_IMAGE("Still Image"),
+  GIF_IMAGE("Gif"),
+  VIDEO("Video");
+  
+  private final String displayName;
+  private PatternSelect(String displayName) {
+    this.displayName = displayName;
+  }
+};
 
 class GUI {
   public ControlP5 cp5;
@@ -115,8 +133,8 @@ String[] listFileNames(String dir) {
 void controlEvent(ControlEvent theEvent) {
   if (theEvent.getController().getName() == "PatternSelect") {
    ScrollableList d = (ScrollableList)theEvent.getController();
-   println(d.getValue());
-   setPattern(int(d.getValue()));
+   String patternName = d.getItem(int(d.getValue())).get("value").toString();
+   setPattern(PatternSelect.valueOf(patternName));
   }
   // AUDIO
   if (theEvent.getController().getName() == "AudioFiles") {
@@ -143,11 +161,11 @@ void controlEvent(ControlEvent theEvent) {
     if (getFileExtension(f).toLowerCase().trim().equals("gif")) {
       println("[GIF SELECTED]" + d.getItem(index).get("value").toString());
       selectedGif = d.getItem(index).get("value").toString();
-      setPattern(8);
+      setPattern(PatternSelect.GIF_IMAGE);
     } else {
       println("[IMAGE SELECTED]" + d.getItem(index).get("value").toString());
       selectedImg = d.getItem(index).get("value").toString();
-      setPattern(7);
+      setPattern(PatternSelect.STILL_IMAGE);
     }
   }
   // VIDEO
@@ -167,46 +185,44 @@ void controlEvent(ControlEvent theEvent) {
     else return "";
 }
 
-String[] patterns = {"Empty", "Swirls", "Pulse", "Heart Beat", "Sound", "Gradient Pulse", "Rainbow Rings", "Still Image", "GIF", "Video"};
 void addPatterns(ScrollableList list) {
-  
-  for (int i = 0; i < patterns.length; i++) {
-    list.addItem(patterns[i], i);
+  PatternSelect[] patternNames = PatternSelect.values();
+  for (int i = 0; i < patternNames.length; i++) {
+    list.addItem(((PatternSelect)patternNames[i]).displayName, patternNames[i]);
   }
 }
 
-void setPattern(int val) {
-  selectedPattern = val;
-  String name = patterns[val];
+void setPattern(PatternSelect val) {
   FadeLEDs();
-  switch (name) {
-    case "Empty":
+  switch (val) {
+    case EMPTY:
       pattern = new EmptyPattern(); break;
-    case "Swirls":
+    case SWIRLS:
       pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
-    case "Pulse":
+    case PULSE:
       pattern = new PatternPulseMulti(20, color(10,255,10)); break;
-    case "Heart Beat":
+    case HEART_BEAT:
       pattern = new PatternHeartPulse(0.08, -0.1, 3, 0.5); break;
-    case "Sound":
+    case SOUND:
       pattern = new PatternSound(); break;
-    case "Gradient Pulse":
+    case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
-    case "Rainbow Rings":
+    case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
-    case "Still Image":
+    case STILL_IMAGE:
       if (selectedImg == null) { println("[WARNING] Still image not selected"); }
       else { pattern = new ImgPattern(selectedImg); }
       break;
-    case "GIF":
+    case GIF_IMAGE:
       if (selectedGif == null) { println("[WARNING] GIF not selected"); }
       else { pattern = new GifPattern(this, selectedGif); }
       break;
-    case "Video":
+    case VIDEO:
       if (selectedVid == null) { println("[WARNING] No video selected"); }
       else { pattern = new MoviePattern(true, false); }
       break;
   }
+  selectedPattern = val;
 }
  
 void PlayAudio() {
@@ -232,7 +248,7 @@ void PauseAudio() {
 
 void PlayVideo() {
   if (movie != null) {
-    if (patterns[selectedPattern] == "Video") {
+     if (selectedPattern == PatternSelect.VIDEO) {
       movie.play();
     }
   }
@@ -240,7 +256,7 @@ void PlayVideo() {
 
 void PauseVideo() {
   if (movie != null) {
-    if (patterns[selectedPattern] == "Video") {
+     if (selectedPattern == PatternSelect.VIDEO) {
       movie.pause();
     }
   }
@@ -255,7 +271,7 @@ void MuteVideo() {
 
 void StopVideo() {
   if (movie != null) {
-    if (patterns[selectedPattern] == "Video") {
+    if (selectedPattern == PatternSelect.VIDEO) {
       movie.stop();
       pattern = new EmptyPattern();
       FadeLEDs();
