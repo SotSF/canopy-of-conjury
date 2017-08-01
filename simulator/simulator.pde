@@ -65,14 +65,14 @@ void setup() {
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
-  conjurer = new Conjurer(this);   
+  conjurer = new Conjurer(this);
   pattern = new EmptyPattern();
 }
 
 JPGEncoder jpg = new JPGEncoder();
 
 void draw() {
- 
+  clearStrips();
   if (conjurer.mode == MODE_LISTENING) {
     if (kinectServer != null) {
       Client client = kinectServer.available();
@@ -97,9 +97,10 @@ void draw() {
   switch (conjurer.mode) {
     case MODE_MANUAL: 
       if (isFadingOut){ fadeStrips(); }
-      else {  clearStrips(); pattern.run(ledstrips); }
+      else {  pattern.run(ledstrips); }
       break;
     case MODE_LISTENING: 
+      conjurer.cast();
       conjurer.cast();
       break;
   }

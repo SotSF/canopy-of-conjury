@@ -15,6 +15,7 @@ enum PatternSelect {
   EMPTY("Empty"),
   SWIRLS("Swirls"),
   PULSE("Pulse"),
+  BURST("Fireworks"),
   HEART_BEAT("Heart Beat"),
   SOUND("Sound"),
   GRADIENT_PULSE("Gradient Pulse"),
@@ -201,6 +202,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
     case PULSE:
       pattern = new PatternPulseMulti(20, color(10,255,10)); break;
+    case BURST:
+      pattern = new PatternBurst(this); break;
     case HEART_BEAT:
       pattern = new PatternHeartPulse(0.08, -0.1, 3, 0.5); break;
     case SOUND:

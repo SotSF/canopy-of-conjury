@@ -1,5 +1,4 @@
-/* Given x,y coords, create a firework on the Canopy */
-// Intended for use with Kinect
+/* Given x,y coords, create a firework burst on the Canopy */
 
 class PatternBurst extends CartesianPattern {
   ArrayList<Burst> targets;
@@ -22,6 +21,9 @@ class PatternBurst extends CartesianPattern {
   }
   
   public void runDefault(Strip[] strips) {
+    if (conjurer.mode == MODE_MANUAL) {
+      if (random(100) > 50) addBurst(int(random(dimension)), int(random(dimension)));
+    }
     clearWindow();
     for (Burst b : this.targets) {
       plopBurst(b);

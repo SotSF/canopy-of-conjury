@@ -3,7 +3,12 @@ interface IPattern {
 }
 
 class Pattern implements IPattern {
-  public void run() {
-    clear();
+  void run() {
+    background(0);
   }
+}
+
+enum PatternSelect {
+  EMPTY,
+  WISP
 }

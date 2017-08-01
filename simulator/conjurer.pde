@@ -5,6 +5,10 @@
 *
 * Commands are received in the simulator.draw() method as a string, 
 * and then sent to parseCmd(), which then passes a Command to the Conjurer.
+*
+* The Conjurer can also receive PImages, passed to the Canopy from a 
+* Renderer client sketch. These images are added to the Canopy via the
+* ConjurerCanvas.
 */
 import java.awt.image.BufferedImage;
 import javax.imageio.ImageIO;
@@ -32,6 +36,10 @@ class Conjurer {
     this.command = cmd;
   }
   
+  public void castOFF() {
+    canvas.run(ledstrips);
+  }
+  
   public void cast() {
     if (this.command != null) {
       switch (command.action) {
@@ -42,8 +50,7 @@ class Conjurer {
           rainbowRing.addRing();
           break;
         case "TEST":
-        println("SENDING PING TO :5024");
-          renderServer.write("PING\n");
+          renderServer.write("TEST\n");
           break;
       }
       this.command = null;
@@ -54,24 +61,17 @@ class Conjurer {
   }
   
   public void paint(PImage img) {
-    canvas.addToCanvas(img);
+    if (img != null) canvas.drawing = img;
   }
 }
 
 class ConjurerCanvas extends CartesianPattern {
+  PImage drawing;
   public void run(Strip[] strips) {
-    scrapeWindow(strips);
-  }
-  
-  private void addToCanvas(PImage drawing) {
+    clearWindow();
     if (drawing != null) {
-      for (int y = 0; y < drawing.height; y++) {
-        for (int x = 0; x < drawing.width; x++) {
-          color c = drawing.get(x,y);
-          if (c != color(0) && c != 0) { set(x,y,c); }
-        }
-      }
-    }
+      scrapeImage(drawing, strips);
+    }   
   }
 }
 
@@ -98,7 +98,6 @@ void parseCmd(String cmd) {
 
 
 public class JPGEncoder {
-
   byte[] encode(PImage img) throws IOException {
     ByteArrayOutputStream imgbaso = new ByteArrayOutputStream();
     ImageIO.write((BufferedImage) img.getNative(), "jpg", imgbaso);
