@@ -10,7 +10,7 @@ PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
 Minim minim;
-AudioInput audio; 
+AudioInput audio;
 AudioPlayer player;
 BeatDetect beat;
 FFT fft;
@@ -61,7 +61,7 @@ void setup() {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
-  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 2);
+  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 1.1);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
@@ -88,28 +88,28 @@ void draw() {
         try {
           PImage img = jpg.decode(byteBuffer);
           conjurer.paint(img);
-        } 
+        }
         catch (Exception e) {
         }
       }
     }
   }
   switch (conjurer.mode) {
-    case MODE_MANUAL: 
+    case MODE_MANUAL:
       if (isFadingOut){ fadeStrips(); }
       else {  pattern.run(ledstrips); }
       break;
-    case MODE_LISTENING: 
+    case MODE_LISTENING:
       conjurer.cast();
       conjurer.cast();
       break;
   }
-  
- 
+
+
   /** TODO: push from ledstrips to PixelPusher strips - this will require some math
   * Which of the two PixelPushers (0-47 will be on PP1, 48-95 will be on PP2)
   * Which of the 8 outputs, and then which of the LEDs on that output correspond to the LED we're targeting.
-  * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration, 
+  * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration,
   * making 6 out of 96 of our strips per output.
   */
 
@@ -122,7 +122,7 @@ void draw() {
 
 void renderCanopy() {
   background(50);
-  
+
   // Large circle
   pushMatrix();
   rotateX(PI/2);
@@ -130,7 +130,7 @@ void renderCanopy() {
   noFill();
   ellipse(0, 0, BASE_DIAMETER, BASE_DIAMETER);
   popMatrix();
-  
+
   // Small circle
   pushMatrix();
   translate(0, -h);
@@ -139,7 +139,7 @@ void renderCanopy() {
   noFill();
   ellipse(0, 0, APEX_DIAMETER, APEX_DIAMETER);
   popMatrix();
-  
+
   // Render the strips
   for (int i = 0; i < NUM_STRIPS; i++) {
     renderStrip(i);
@@ -149,10 +149,10 @@ void renderCanopy() {
 void renderStrip(int i) {
   Strip s = ledstrips[i]; // this has all of our colors
   float angle = i * (2 * PI) / NUM_STRIPS;
-  
+
   pushMatrix();
   rotateY(angle);
-  
+
   // Draw the cord holding the LEDs
   int j;
   noFill();
@@ -163,7 +163,7 @@ void renderStrip(int i) {
     curveVertex(coord[0], coord[1]);
   }
   endShape();
-  
+
   // Draw the LEDs
   for (j = 0; j < catenaryCoords.length; j++) {
     float[] coord = catenaryCoords[j];
@@ -174,8 +174,8 @@ void renderStrip(int i) {
     box(1,1,1);
     popMatrix();
   }
-  
-  
+
+
   popMatrix();
 }
 
@@ -190,11 +190,15 @@ class Strip {
   public Strip(color[] leds) {
     this.leds = leds;
   }
-  
+
   public void clear() {
     for (int i = 0; i < leds.length; i++) {
       leds[i] = color(0);
     }
+  }
+
+  public int length () {
+    return leds.length;
   }
 }
 
@@ -211,9 +215,9 @@ void keyPressed () {
 void adjustApexHeight (float deltaHeightFeet) {
   float newHeight = h + deltaHeightFeet * scaleFactor;
   if (abs(newHeight) > MAX_HEIGHT_FEET * scaleFactor) {
-    newHeight = (newHeight > 0 ? MAX_HEIGHT_FEET : -MAX_HEIGHT_FEET) * scaleFactor; 
+    newHeight = (newHeight > 0 ? MAX_HEIGHT_FEET : -MAX_HEIGHT_FEET) * scaleFactor;
   }
-  
+
   // Update the height and coordinates
   h = newHeight;
   getCatenaryCoords();
@@ -229,7 +233,7 @@ void getCatenaryCoords () {
   float[] apexCoord = { APEX_RADIUS / scaleFactor, -h / scaleFactor };
   float[] baseCoord = { BASE_RADIUS / scaleFactor, 0 };
   float[][] newCoords = catenary(baseCoord, apexCoord, STRIP_LENGTH_FEET, NUM_LEDS_PER_STRIP);
-  
+
   for (int i = 0; i < newCoords.length; i++) {
     catenaryCoords[i][0] = newCoords[i][0] * scaleFactor;
     catenaryCoords[i][1] = newCoords[i][1] * scaleFactor;
