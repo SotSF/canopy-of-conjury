@@ -101,24 +101,35 @@ void draw() {
       break;
     case MODE_LISTENING:
       conjurer.cast();
-      conjurer.cast();
       break;
   }
 
-
-  /** TODO: push from ledstrips to PixelPusher strips - this will require some math
-  * Which of the two PixelPushers (0-47 will be on PP1, 48-95 will be on PP2)
-  * Which of the 8 outputs, and then which of the LEDs on that output correspond to the LED we're targeting.
-  * Each output will have 450 LEDs, using out (from apex)-in-out-in-out-in configuration,
-  * making 6 out of 96 of our strips per output.
-  */
-
+  //push();
   rotateZ(PI);
   renderCanopy();
   tick++;
   gui.run();
 }
 
+// push data to PixelPushers
+void push() {
+  // PP1
+  for (int s = 0; s < NUM_STRIPS; s++) {
+    for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
+      int strip = s;
+      int outputPP = strip < NUM_STRIPS / 2 ? 1 : 2;
+      if (outputPP == 2) strip -= NUM_STRIPS / 2;
+      int outputPin = floor(strip / 6); // 6 strips per output
+      int outputStripOnPin = strip % 6; // Strip 0-5 on the triple zig
+      int led = NUM_LEDS_PER_STRIP * outputStripOnPin + l; 
+      if (outputStripOnPin % 2 != 0) { // even numbers stream out, odds stream in (backwards)
+        led = (NUM_LEDS_PER_STRIP * outputStripOnPin) + (NUM_LEDS_PER_STRIP - l - 1);
+      }
+      // TODO : push to outputPP on outputPin to led
+      println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led); 
+    }
+  }
+}
 
 void renderCanopy() {
   background(50);
@@ -174,8 +185,6 @@ void renderStrip(int i) {
     box(1,1,1);
     popMatrix();
   }
-
-
   popMatrix();
 }
 

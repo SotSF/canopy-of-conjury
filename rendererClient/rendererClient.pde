@@ -13,17 +13,17 @@ void setup() {
 }
 
 void draw() {
- clear();
- if (testing) {
-   render.command = PatternSelect.WISP;
-   render.run();
- }
- else {
-   if (tick % 3 == 0){ 
-     render.run();
-     sendImg();
-   }
- }
+    if (tick % 3 == 0){ 
+     clear();
+     if (testing) {
+       if (random(100) > 50) { render.command = PatternSelect.WISP; }
+       render.run();
+     }
+     else {
+       render.run();
+       sendImg();
+     }
+  }
   tick++;
 }
 
@@ -63,7 +63,7 @@ class Renderer {
         case EMPTY:
           break;
         case WISP:
-          if (wisp.timer >= 100) { wisp.reset(); }
+          wisp.addWisp(random(dimension), random(dimension), random(dimension), random(dimension));
           break;
       }
     }

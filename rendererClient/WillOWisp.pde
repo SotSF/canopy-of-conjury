@@ -3,82 +3,85 @@
 * Currently moves a single Will-o-Wisp in an arc
 */
 class PatternWillOWisp extends Pattern {
-  int scale = 3;
-  int direction = 1;
-  int numParticles = 50;
-  ArrayList<Particle> particles;
-  float x;
-  float y;
-  float targetx;
-  float targety;
-  color base = #4DFFEF;
-  int ydirection = -1;
-  int xdirection = 1;
-  int timer = 999;
-  PatternWillOWisp() {
-    this.particles = new ArrayList<Particle>();
-  }
-  
+  color base = #4DFFEF; // it's blue
+  ArrayList<Wisp> wisps = new ArrayList<Wisp>();
   void run() {
-    if (timer >= 100) { clear(); return; }
-    noStroke();
-    int red = (base >> 16) & 0xFF;
-    int green = (base >> 8) & 0xFF;
-    int blue = base & 0xFF;  
-    // draw the sphere
-    for (int i = 0; i < 10; i++) {
-      int r = 255 - (255 - red) * (i + 1)/10;
-      int g = 255 - (255 - green) * (i + 1)/10;
-      int b = 255 - (255 - blue) * (i + 1)/10;
-      fill(color(r,g,b));
-      ellipse(x,y,70 - scale * i,70 - scale * i);
+    for (int i = wisps.size() - 1; i >= 0; i--) {
+      wisps.get(i).run();
+      if (wisps.get(i).removeMe) {
+        wisps.remove(i);
+      }
     }
-    pushMatrix();
-    translate(x,y); // center off the orb
-    if (particles.size() < numParticles) {
-      Particle p = new Particle();
-      particles.add(p);
-    }
-    for (Particle p : particles) {
-      fill(p.c);
-      ellipse(p.x, p.y, p.size, p.size);
-      p.update();
-    }
-    for (int i = particles.size() - 1; i >= 0; i--) {
-      Particle p = particles.get(i);
-      if (p.fade >= 25) particles.remove(p);
-    }
-    popMatrix();
-    updatePosition();
-    timer++;
   }
   
-  
-  void updatePosition() {
-    pushMatrix();
-    translate(width/2, height/2);
-    fill(color(255,0,0));
-    // translate the center coordinates
-    float x1 = x - width / 2;
-    float y1 = y - height / 2;
-    // get the coords in Polar
-    float r = sqrt(x1 * x1 + y1 * y1);
-    float theta = atan2(y1,x1);
-    // increment angle
-    theta += radians(1);
-    // get new cartesian coordinates
-    this.x = r * cos(theta) + width / 2;
-    this.y = r * sin(theta) + height / 2;
-    xdirection = x - (x1 + width / 2) > 0 ? 1 : -1;
-    popMatrix();
+  void addWisp(float x, float y, float x1, float y1) {
+    this.wisps.add(new Wisp(x,y,x1,y1));
   }
   
-  void reset() {
-    x = random(dimension);
-    y = random(dimension);
-    timer = 0;
+  private class Wisp {
+    int scale = 3;
+    int numParticles = 50;
+    ArrayList<Particle> particles;
+    float x;
+    float y;
+    float targetx;
+    float targety;
+    boolean pathComplete = true;
+    int fade = 0;
+    boolean removeMe = false;
+    float speed = 1;
+    
+    Wisp(float x0, float y0, float x1, float y1) {
+       this.particles = new ArrayList<Particle>();
+       this.x = x0;
+       this.y = y0;
+       this.targetx = x1;
+       this.targety = y1;
+    }
+    
+    void run() {
+      if (pathComplete) fade += 10;
+      if (fade >= 255) removeMe = true;
+      noStroke();
+      int red = (base >> 16) & 0xFF;
+      int green = (base >> 8) & 0xFF;
+      int blue = base & 0xFF;  
+      // draw the sphere
+      for (int i = 0; i < 10; i++) {
+        int r = 255 - (255 - red) * (i + 1)/10;
+        int g = 255 - (255 - green) * (i + 1)/10;
+        int b = 255 - (255 - blue) * (i + 1)/10;
+        fill(color(r,g,b,255-fade));
+        ellipse(x,y,70 - scale * i,70 - scale * i);
+      }
+      pushMatrix();
+      translate(x,y); // center off the orb
+      if (particles.size() < numParticles) {
+        Particle p = new Particle();
+        particles.add(p);
+      }
+      for (Particle p : particles) {
+        fill(p.c);
+        ellipse(p.x, p.y, p.size, p.size);
+        p.update();
+      }
+      for (int i = particles.size() - 1; i >= 0; i--) {
+        Particle p = particles.get(i);
+        if (p.fade >= 25) particles.remove(p);
+      }
+      popMatrix();
+      updatePosition();
+    }
+    
+    void updatePosition() {
+      if (targetx > x) x += speed;
+      else if (targetx < x) x -= speed;
+      if (targety > y) y += speed;
+      else if (targety < y) y -= speed;
+      speed += 0.4;
+    }
   }
-  
+
   private class Particle {
     float x;
     float y;
