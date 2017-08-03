@@ -43,8 +43,7 @@ class Pattern implements IPattern {
 public class CartesianPattern extends Pattern {
   int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
-  
-  // helper classes
+ 
   public int mapCartesian(int x) {
     return x - dimension / 2;
   }
@@ -100,20 +99,31 @@ public class CartesianPattern extends Pattern {
         
       }
     }
-    //scraped = true;
   }
   
   public void clearWindow() {
     clear();
   }
   
-  public class CanopyCoord {
+  // describe a point on the Canopy, by strip number and LED number
+  class CanopyCoord {
     int strip;
     int led;
     public CanopyCoord(int s, int l) {
       this.strip = s;
       this.led = l;
     }
+  }
+   
+   // describe a point in the Cartesian plane, 0 <= x < 500 and 0 <= y < 500,
+   // i.e., a point on our drawing window
+  class Position {
+     int x;
+     int y;
+     Position(int x, int y) {
+       this.x = x;
+       this.y = y;
+     }
   }
 }
 

@@ -71,8 +71,7 @@ void setup() {
 
 JPGEncoder jpg = new JPGEncoder();
 
-void draw() {
-  clearStrips();
+void draw() {  
   if (conjurer.mode == MODE_LISTENING) {
     if (kinectServer != null) {
       Client client = kinectServer.available();
@@ -97,19 +96,38 @@ void draw() {
   switch (conjurer.mode) {
     case MODE_MANUAL:
       if (isFadingOut){ fadeStrips(); }
-      else {  pattern.run(ledstrips); }
+      else {  clearStrips(); pattern.run(ledstrips); }
       break;
     case MODE_LISTENING:
+      clearStrips();
       conjurer.cast();
       break;
   }
 
+  
   //push();
+  background(50);
   rotateZ(PI);
+  
+  // DEMO ONLY
+  if (selectedPattern == PatternSelect.BURST) {
+    for (PatternBurst.Burst b : ((PatternBurst)pattern).targets) {
+      pushMatrix();
+      translate(b.origin.x,b.origin.y,b.origin.z);
+      noStroke();
+      fill(255);
+      sphere(5);
+      stroke(color(255,0,255));
+      line(0,0,0,b.vector.x * 500, b.vector.y * 500, b.vector.z * 500);
+      popMatrix();
+    }
+  }
+  
   renderCanopy();
   tick++;
   gui.run();
 }
+
 
 // push data to PixelPushers
 void push() {
@@ -132,7 +150,13 @@ void push() {
 }
 
 void renderCanopy() {
-  background(50);
+  // axes - blue x, red y, green z
+  stroke(color(0,0,255));
+  line(-500,0,0,500,0,0);
+  stroke(color(255,0,0));
+  line(0,-500,0,0,500,0);
+  stroke(color(0,255,0));
+  line(0,0,-500,0,0,500);
 
   // Large circle
   pushMatrix();
@@ -157,6 +181,8 @@ void renderCanopy() {
   }
 }
 
+
+
 void renderStrip(int i) {
   Strip s = ledstrips[i]; // this has all of our colors
   float angle = i * (2 * PI) / NUM_STRIPS;
@@ -177,7 +203,7 @@ void renderStrip(int i) {
 
   // Draw the LEDs
   for (j = 0; j < catenaryCoords.length; j++) {
-    float[] coord = catenaryCoords[j];
+    float[] coord = catenaryCoords[j]; //(x,y,0)
     pushMatrix();
     translate(coord[0], coord[1]);
     fill(s.leds[j]);

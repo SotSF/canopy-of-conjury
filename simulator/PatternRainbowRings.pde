@@ -27,7 +27,7 @@ class PatternRainbowRings extends Pattern {
       }
     }
         
-    for (int i = 0; i < lightTracks.size(); i++) {
+    for (int i = lightTracks.size() - 1; i >= 0; i--) {
       for (Strip s : strips) {
         s.leds[lightTracks.get(i)] = color(currHue, 100, 100);
         if (lightTracks.get(i) + 1 < NUM_LEDS_PER_STRIP) {
@@ -38,11 +38,8 @@ class PatternRainbowRings extends Pattern {
       }
       int l = lightTracks.get(i) + 2;
       lightTracks.set(i, l);
-    }
-    
-    for (int l = lightTracks.size() - 1; l >= 0 ; l--) {
-      if (lightTracks.get(l) >= NUM_LEDS_PER_STRIP) {
-        lightTracks.remove(l);
+      if (lightTracks.get(i) >= NUM_LEDS_PER_STRIP) {
+        lightTracks.remove(i);
       }
     }
     

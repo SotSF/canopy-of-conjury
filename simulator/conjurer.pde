@@ -23,6 +23,7 @@ class Conjurer {
   int mode = 0; // 0 = manual, 1 = kinect
   PImage drawing;
   int drawingTimer = 0;
+  String cmdString;
   Command command;
   PatternBurst burst;
   PatternRainbowRings rainbowRing;
@@ -44,13 +45,16 @@ class Conjurer {
     if (this.command != null) {
       switch (command.action) {
         case "CLAP":
-          burst.addBurst(command.x, command.y);
+          burst.addBurst(command.origin,command.vector);
           break;
         case "WAVE":
           rainbowRing.addRing();
           break;
         case "TEST":
-          renderServer.write("TEST\n");
+          renderServer.write(cmdString + "\n");
+          break;
+        case "VECTOR":
+          //lightPath.addPath(command.origin, command.vector);
           break;
       }
       this.command = null;
@@ -76,28 +80,54 @@ class ConjurerCanvas extends CartesianPattern {
 }
 
 class Command {
-  int x;
-  int y;
+  Point origin;
+  Point vector;
   String action;
-  public Command(int x, int y, String action) {
-    this.x = x;
-    this.y = y;
+  Command(Point origin, Point vector, String action) {
+    this.origin = origin;
+    this.vector = vector;
     this.action = action;
   }
+}
+
+// describe a point in R3, for interfacing the the Kinect
+class Point {
+  float x;
+  float y;
+  float z;
+  Point(float x, float y, float z) {
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
+}
+
+/* Given the Canopy coordinates by strip and LED position, determine coordinate in R3 */
+Point transformReal(int s, int l) {
+  float angle = s * (2 * PI) / NUM_STRIPS;
+  float x = cos(angle) * catenaryCoords[l][0] + sin(angle) * 0;
+  float y = catenaryCoords[l][1];
+  float z = -sin(angle) * catenaryCoords[l][0] + cos(angle) * 0;
+  return new Point(x,y,z);
 }
 
 void parseCmd(String cmd) {
     println(cmd);
     JSONObject json = parseJSONObject(cmd);
-    int x = json.getInt("x");
-    int y = json.getInt("y");
-    String action = json.getString("action");
-    conjurer.command = new Command(x,y,action);
+    String origin = json.getString("origin").trim(); // (x,y,z)
+    String[] oCoords = origin.substring(1,origin.length() - 1).split(",");
+    Point o = new Point(float(oCoords[0]), float(oCoords[1]), float(oCoords[2]));
+    String vector = json.getString("vector").trim(); // (v1,v2,v3);
+    String[] vCoords = vector.substring(1,vector.length() - 1).split(",");
+    Point v = new Point(float(vCoords[0]), float(vCoords[1]), float(vCoords[2]));
+    String action = json.getString("action").trim();
+    conjurer.cmdString = cmd;
+    conjurer.command = new Command(o,v,action);
 }
 
 
 
-public class JPGEncoder {
+class JPGEncoder {
   byte[] encode(PImage img) throws IOException {
     ByteArrayOutputStream imgbaso = new ByteArrayOutputStream();
     ImageIO.write((BufferedImage) img.getNative(), "jpg", imgbaso);

@@ -27,7 +27,7 @@ class PatternGradientPulse extends Pattern {
     }
     
     // go through every position in beatList, and light up the corresponding LED in all strips
-    for (int i = 0; i < beatList.size(); i++) {
+    for (int i = beatList.size() - 1; i >= 0; i--) {
       for (int j = 0; j < NUM_STRIPS; j++) {
 
           Strip s = strips[j];
@@ -37,15 +37,13 @@ class PatternGradientPulse extends Pattern {
       // increment the position of each beat for the next go-around
       int l = beatList.get(i).pos + 1;
       beatList.get(i).pos = l;
-    }
-    
-    // if any updated positions are too big, remove the beat from the list
-    for (int l = beatList.size() - 1; l >= 0 ; l--) {
-      if (beatList.get(l).pos >= NUM_LEDS_PER_STRIP) {
-        beatList.remove(l);
+      
+      // remove if the position is too big
+      if (beatList.get(i).pos >= NUM_LEDS_PER_STRIP) {
+        beatList.remove(i);
       }
     }
-    
+
     // switch back to RGB color (in case this interferes with anything after visualize()
     colorMode(RGB,255);
   }
@@ -98,7 +96,7 @@ class PatternGradientPulse extends Pattern {
     }
     
     // go through every position in beatList, and light up the corresponding LED in all strips
-    for (int i = 0; i < beatList.size(); i++) {
+    for (int i = beatList.size() - 1; i >= 0; i--) {
       for (int j = 0; j < NUM_STRIPS; j++) {
 
           Strip s = strips[j];
@@ -108,12 +106,10 @@ class PatternGradientPulse extends Pattern {
       // increment the position of each beat for the next go-around
       int l = beatList.get(i).pos + 1;
       beatList.get(i).pos = l;
-    }
-    
-    // if any updated positions are too big, remove the beat from the list
-    for (int l = beatList.size() - 1; l >= 0 ; l--) {
-      if (beatList.get(l).pos >= NUM_LEDS_PER_STRIP) {
-        beatList.remove(l);
+      
+      // remove if the position is too big
+      if (beatList.get(i).pos >= NUM_LEDS_PER_STRIP) {
+        beatList.remove(i);
       }
     }
     
