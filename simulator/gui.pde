@@ -17,6 +17,7 @@ enum PatternSelect {
   PULSE("Pulse"),
   BURST("Fireworks"),
   SUNFLOWER("Sunflower"),
+  FLOWER("Blossom"),
   HEART_BEAT("Heart Beat"),
   SOUND("Sound"),
   GRADIENT_PULSE("Gradient Pulse"),
@@ -208,6 +209,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternBurst(this); break;
     case SUNFLOWER:
       pattern = new PatternSunflower(); break;
+    case FLOWER:
+      pattern = new PatternBlossom(); break;
     case HEART_BEAT:
       pattern = new PatternHeartPulse(0.1, -0.07, 5, 0.5); break;
     case SOUND:

@@ -49,7 +49,6 @@ class PatternRainbowRings extends Pattern {
   }
   
   public void visualize(Strip[] strips) {
-    clearStrips();
     fftForward();
     
     // switch to HSB colors for this method
