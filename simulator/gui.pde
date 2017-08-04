@@ -176,6 +176,7 @@ void controlEvent(ControlEvent theEvent) {
     println("[VIDEO SELECTED]" + d.getItem(index).get("name").toString());
     selectedVid = d.getItem(index).get("name").toString();
     movie = new Movie(this, selectedVid);
+    setPattern(PatternSelect.VIDEO);
   }
 }
 
@@ -250,8 +251,11 @@ void PauseAudio() {
 }
 
 void PlayVideo() {
-  if (movie != null) {
-     if (selectedPattern == PatternSelect.VIDEO) {
+  if (movie != null) {    
+    if (selectedPattern != PatternSelect.VIDEO) {
+      setPattern(PatternSelect.VIDEO);
+    }
+    if (selectedPattern == PatternSelect.VIDEO) {       
       movie.play();
     }
   }
@@ -276,8 +280,9 @@ void StopVideo() {
   if (movie != null) {
     if (selectedPattern == PatternSelect.VIDEO) {
       movie.stop();
-      pattern = new EmptyPattern();
+      setPattern(PatternSelect.EMPTY);
       FadeLEDs();
+      movie = new Movie(this, selectedVid);
     }
   }
 }
