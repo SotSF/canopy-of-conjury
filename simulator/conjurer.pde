@@ -114,11 +114,11 @@ Point transformReal(int s, int l) {
 void parseCmd(String cmd) {
     println(cmd);
     JSONObject json = parseJSONObject(cmd);
-    String origin = json.getString("origin").trim(); // (x,y,z)
-    String[] oCoords = origin.substring(1,origin.length() - 1).split(",");
+    String origin = json.getString("origin").trim(); // x,y,z
+    String[] oCoords = origin.split(",");
     Point o = new Point(float(oCoords[0]), float(oCoords[1]), float(oCoords[2]));
     String vector = json.getString("vector").trim(); // (v1,v2,v3);
-    String[] vCoords = vector.substring(1,vector.length() - 1).split(",");
+    String[] vCoords = vector.split(",");
     Point v = new Point(float(vCoords[0]), float(vCoords[1]), float(vCoords[2]));
     String action = json.getString("action").trim();
     conjurer.cmdString = cmd;
