@@ -6,6 +6,11 @@ import gifAnimation.*;
 import processing.video.*;
 import processing.net.*;
 
+import com.heroicrobot.dropbit.registry.*;
+import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
+import com.heroicrobot.dropbit.devices.pixelpusher.Strip;
+import java.util.*;
+
 PeasyCam camera;
 
 // == AUDIO VISUALIZER ===
@@ -19,6 +24,9 @@ Movie movie;
 
 Server kinectServer;
 Server renderServer;
+
+TestObserver observer;
+DeviceRegistry registry;
 
 // Constants
 float FEET_PER_METER = 3.28084;
@@ -53,6 +61,10 @@ PMatrix3D currCameraMatrix;
 PGraphics3D g3;
 
 void setup() {
+  registry = new DeviceRegistry();
+  observer = new TestObserver();
+  registry.addObserver(observer);
+  
   kinectServer = new Server(this, 5111);
   renderServer = new Server(this, 5024);
   minim = new Minim(this);
@@ -66,7 +78,7 @@ void setup() {
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
   conjurer = new Conjurer(this);
-  pattern = new PatternFlower();
+  pattern = new PatternEmpty();
 }
 
 JPGEncoder jpg = new JPGEncoder();
@@ -95,35 +107,37 @@ void draw() {
   }
   switch (conjurer.mode) {
     case MODE_MANUAL:
-      if (isFadingOut){ fadeStrips(); }
-      else {  clearStrips(); pattern.run(ledstrips); }
+      if (isFadingOut) { 
+        fadeStrips();
+      } else {  
+        clearStrips(); 
+        pattern.run(ledstrips);
+      }
       break;
     case MODE_LISTENING:
       clearStrips();
       conjurer.cast();
       break;
-  }
-
-  
-  //push();
-  background(50);
-  rotateZ(PI);
-  
-  // DEMO ONLY
-  if (selectedPattern == PatternSelect.BURST) {
-    for (PatternBurst.Burst b : ((PatternBurst)pattern).targets) {
-      pushMatrix();
-      translate(b.origin.x,b.origin.y,b.origin.z);
-      noStroke();
-      fill(255);
-      sphere(5);
-      stroke(color(255,0,255));
-      line(0,0,0,b.vector.x * 500, b.vector.y * 500, b.vector.z * 500);
-      popMatrix();
     }
-  }
   
-  renderCanopy();
+    background(50);
+    rotateZ(PI);
+  
+    // DEMO ONLY
+    if (selectedPattern == PatternSelect.BURST) {
+      for (PatternBurst.Burst b : ((PatternBurst)pattern).targets) {
+        pushMatrix();
+        translate(b.origin.x, b.origin.y, b.origin.z);
+        noStroke();
+        fill(255);
+        sphere(5);
+        stroke(color(255, 0, 255));
+        line(0, 0, 0, b.vector.x * 500, b.vector.y * 500, b.vector.z * 500);
+        popMatrix();
+      }
+    }
+    //push();
+    renderCanopy();
   tick++;
   gui.run();
 }
@@ -131,6 +145,11 @@ void draw() {
 
 // push data to PixelPushers
 void push() {
+  
+   if (!observer.hasStrips) { return; }
+   registry.startPushing();
+   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> strips = registry.getStrips();
+  
   // PP1
   for (int s = 0; s < NUM_STRIPS; s++) {
     for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
@@ -144,21 +163,22 @@ void push() {
         led = (NUM_LEDS_PER_STRIP * outputStripOnPin) + (NUM_LEDS_PER_STRIP - l - 1);
       }
       // TODO : push to outputPP on outputPin to led
-      println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led); 
+      println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
+      com.heroicrobot.dropbit.devices.pixelpusher.Strip ppStrip = strips.get(outputPin);
+      ppStrip.setPixel(ledstrips[s].leds[l], led);
     }
   }
 }
 
 void renderCanopy() {
   // axes - blue x, red y, green z
-  stroke(color(0,0,255));
-  line(-500,0,0,500,0,0);
-  stroke(color(255,0,0));
-  line(0,-500,0,0,500,0);
-  stroke(color(0,255,0));
-  line(0,0,-500,0,0,500);
-  
-  for (int x = -10; x <= 10; x++) {
+  stroke(color(0, 0, 255));
+  line(-500, 0, 0, 500, 0, 0);
+  stroke(color(255, 0, 0));
+  line(0, -500, 0, 0, 500, 0);
+  stroke(color(0, 255, 0));
+  line(0, 0, -500, 0, 0, 500);
+   for (int x = -10; x <= 10; x++) {
     stroke(color(0, 0, 255));
     line(x * scaleFactor, 0, -10, x * scaleFactor, 0, 10);
     stroke(color(255,0,0));  
@@ -166,6 +186,8 @@ void renderCanopy() {
     stroke(0,255,0);
     line(-10, 0, x * scaleFactor, 10, 0, x * scaleFactor);
   }
+  
+  
 
   // Large circle
   pushMatrix();
@@ -217,7 +239,7 @@ void renderStrip(int i) {
     translate(coord[0], coord[1]);
     fill(s.leds[j]);
     stroke(s.leds[j]);
-    box(1,1,1);
+    box(1, 1, 1);
     popMatrix();
   }
   popMatrix();
@@ -282,4 +304,15 @@ void getCatenaryCoords () {
     catenaryCoords[i][0] = newCoords[i][0] * scaleFactor;
     catenaryCoords[i][1] = newCoords[i][1] * scaleFactor;
   }
+}
+
+class TestObserver implements Observer {
+  public boolean hasStrips = false;
+    public void update(Observable registry, Object updatedDevice) {
+      println("Registry changed!");
+      if (updatedDevice != null) {
+        println("Device change: " + updatedDevice);
+      }
+      this.hasStrips = true;
+    }
 }

@@ -16,8 +16,8 @@ class PatternBurst extends CartesianPattern {
   void runDefault(Strip[] strips) {
     if (conjurer.mode == MODE_MANUAL) {
       if (random(100) > 50) { 
-        Point o = new Point(random(-200,200),-200,random(-200,200));
-        Point v = new Point(random(-2,2),random(0,5),random(-2,2));
+        PVector o = new PVector(random(-200,200),-200,random(-200,200));
+        PVector v = new PVector(random(-2,2),random(0,5),random(-2,2));
         addBurst(o, v);
       }
     }
@@ -30,7 +30,7 @@ class PatternBurst extends CartesianPattern {
     scrapeWindow(strips);
   }
   
-  void addBurst(Point origin, Point vector) {
+  void addBurst(PVector origin, PVector vector) {
     this.targets.add(new Burst(origin, vector));
   }
   
@@ -48,11 +48,11 @@ class PatternBurst extends CartesianPattern {
   }
   
   class Burst {
-    Point origin;
-    Point vector;
+    PVector origin;
+    PVector vector;
     Position center;
     int stage = 0;
-    public Burst(Point o, Point v) {
+    public Burst(PVector o, PVector v) {
       this.origin = o;
       this.vector = v;
       for (int s = 0; s < NUM_STRIPS; s++) {
@@ -64,7 +64,7 @@ class PatternBurst extends CartesianPattern {
       // determine whether the "real" LED falls within a cylinder of radius 10 
       // following the line described by x,y,z 
       void checkIntersect(int s, int l) {
-        Point r = transformReal(s,l);
+        PVector r = transformReal(s,l);
         for (int t = 0; t < 500; t++) {
           float x = origin.x + vector.x * t;
           float y = origin.y + vector.y * t;

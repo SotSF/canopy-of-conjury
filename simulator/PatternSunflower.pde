@@ -82,6 +82,7 @@ class PatternBlossom extends Pattern {
         }
       }
     }
+    
     brightness += bDirection * 5;
     if (brightness > 360) bDirection = -1;
     else if (brightness < 0) bDirection = 1;
@@ -93,7 +94,7 @@ class PatternBlossom extends Pattern {
   void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
-      beat.setSensitivity(100);
+      beat.setSensitivity(120);
       bl = new BeatListener(beat, player);
     }
     if (listeningToMic) { beat.detect(audio.mix); }
@@ -145,13 +146,26 @@ class PatternBlossom extends Pattern {
       }
       petals[i].petalBrightness -= 30;
     }
+    int leafDir = 1;
+    int leafSize = 4;
+    int leafStep = 2;
+    for (int s = 0; s < NUM_STRIPS; s++) {
+      int str = s + stripShift;
+      if (str >= NUM_STRIPS) str -= NUM_STRIPS;
+      for (int l = NUM_LEDS_PER_STRIP - 1; l >= NUM_LEDS_PER_STRIP - leafSize; l--) {
+        strips[str].leds[l] = color(122, 360, 360);
+      }
+      leafSize += leafDir * leafStep;
+      if (leafSize > 14) leafDir = -1;
+      else if (leafSize < 4) leafDir = 1;
+    }
     beatPetal -= shiftDirection;
     if (beatPetal < 0) beatPetal = petals.length - 1;
     else if (beatPetal >= petals.length) beatPetal = 0;
-    colorMode(RGB, 255);
     stripShift += shiftDirection;
     if (stripShift >= NUM_STRIPS) stripShift = 0;
     else if (stripShift < 0) stripShift = NUM_STRIPS - 1;
+     colorMode(RGB, 255);
   }
   
   class Petal {
@@ -162,8 +176,6 @@ class PatternBlossom extends Pattern {
     int step = (petalLength - petalMin) / 4;
     Petal(int strip) {
       this.stripStart = strip;
-      colorMode(HSB,360);
-      colorMode(RGB,255);
     }
   }
 }

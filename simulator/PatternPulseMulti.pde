@@ -57,3 +57,39 @@ class PatternPulseMulti extends Pattern {
   }
  
 }
+
+class PatternRedRings extends Pattern {
+  ArrayList<Light> lights = new ArrayList<Light>();
+  int currentStrip = 0;
+  int currentLed = 0;
+  void runDefault(Strip[] strips) {
+    if (conjurer.mode == MODE_MANUAL) {
+      if (currentStrip < NUM_STRIPS && currentLed < NUM_LEDS_PER_STRIP) {
+        lights.add(new Light(currentStrip, currentLed));
+        currentStrip++;
+        if (currentStrip >= NUM_STRIPS) {
+          currentStrip = 0;
+          currentLed++;
+        }
+      }
+    }
+    
+    for (int i = lights.size() - 1; i >= 0; i--) {
+      Light l = lights.get(i);
+      strips[l.strip].leds[l.led] = color(255,0,0,l.brightness);
+      l.brightness -= 5;
+      if (l.brightness < 0) lights.remove(i);
+    }
+  }
+  
+  private class Light {
+    int strip;
+    int led;
+    int brightness;
+    Light(int s, int l) {
+      this.strip = s;
+      this.led = l;
+      this.brightness = 255;
+    }
+  }
+}

@@ -27,8 +27,10 @@ class Conjurer {
   Command command;
   PatternBurst burst;
   PatternRainbowRings rainbowRing;
+  PatternSpace space;
   ConjurerCanvas canvas;
   public Conjurer(PApplet window) {
+    space = new PatternSpace();
     burst = new PatternBurst(window);
     rainbowRing = new PatternRainbowRings();
     canvas = new ConjurerCanvas();
@@ -59,6 +61,7 @@ class Conjurer {
       }
       this.command = null;
     }
+    space.run(ledstrips);
     burst.run(ledstrips);
     rainbowRing.run(ledstrips);
     canvas.run(ledstrips);
@@ -80,35 +83,23 @@ class ConjurerCanvas extends CartesianPattern {
 }
 
 class Command {
-  Point origin;
-  Point vector;
+  PVector origin;
+  PVector vector;
   String action;
-  Command(Point origin, Point vector, String action) {
+  Command(PVector origin, PVector vector, String action) {
     this.origin = origin;
     this.vector = vector;
     this.action = action;
   }
 }
 
-// describe a point in R3, for interfacing the the Kinect
-class Point {
-  float x;
-  float y;
-  float z;
-  Point(float x, float y, float z) {
-    this.x = x;
-    this.y = y;
-    this.z = z;
-  }
-}
-
 /* Given the Canopy coordinates by strip and LED position, determine coordinate in R3 */
-Point transformReal(int s, int l) {
+PVector transformReal(int s, int l) {
   float angle = s * (2 * PI) / NUM_STRIPS;
   float x = cos(angle) * catenaryCoords[l][0] + sin(angle) * 0;
   float y = catenaryCoords[l][1];
   float z = -sin(angle) * catenaryCoords[l][0] + cos(angle) * 0;
-  return new Point(x,y,z);
+  return new PVector(x,y,z);
 }
 
 void parseCmd(String cmd) {
@@ -116,16 +107,14 @@ void parseCmd(String cmd) {
     JSONObject json = parseJSONObject(cmd);
     String origin = json.getString("origin").trim(); // (x,y,z)
     String[] oCoords = origin.substring(1,origin.length() - 1).split(",");
-    Point o = new Point(float(oCoords[0]), float(oCoords[1]), float(oCoords[2]));
+    PVector o = new PVector(float(oCoords[0]), float(oCoords[1]), float(oCoords[2]));
     String vector = json.getString("vector").trim(); // (v1,v2,v3);
     String[] vCoords = vector.substring(1,vector.length() - 1).split(",");
-    Point v = new Point(float(vCoords[0]), float(vCoords[1]), float(vCoords[2]));
+    PVector v = new PVector(float(vCoords[0]), float(vCoords[1]), float(vCoords[2]));
     String action = json.getString("action").trim();
     conjurer.cmdString = cmd;
     conjurer.command = new Command(o,v,action);
 }
-
-
 
 class JPGEncoder {
   byte[] encode(PImage img) throws IOException {
@@ -134,7 +123,6 @@ class JPGEncoder {
 
     return imgbaso.toByteArray();
   }
-
   PImage decode(byte[] imgbytes) throws IOException {
     BufferedImage imgbuf = ImageIO.read(new ByteArrayInputStream(imgbytes));
     PImage img = new PImage(imgbuf.getWidth(), imgbuf.getHeight(), RGB);
@@ -142,5 +130,4 @@ class JPGEncoder {
     img.updatePixels();
     return img; 
   }
-
 }
