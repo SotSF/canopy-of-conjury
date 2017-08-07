@@ -25,10 +25,8 @@ Movie movie;
 Server kinectServer;
 Server renderServer;
 
-TestObserver observer1;
-TestObserver observer2;
-DeviceRegistry registry1;
-DeviceRegistry registry2;
+TestObserver observer;
+DeviceRegistry registry;
 
 // Constants
 float FEET_PER_METER = 3.28084;
@@ -63,12 +61,9 @@ PMatrix3D currCameraMatrix;
 PGraphics3D g3;
 
 void setup() {
-  registry1 = new DeviceRegistry();
-  registry2 = new DeviceRegistry();
-  observer1 = new TestObserver();
-  observer2 = new TestObserver();
-  registry1.addObserver(observer1);
-  registry2.addObserver(observer2);
+  registry = new DeviceRegistry();
+  observer = new TestObserver();
+  registry.addObserver(observer);
   
   kinectServer = new Server(this, 5111);
   renderServer = new Server(this, 5024);
@@ -141,7 +136,7 @@ void draw() {
         popMatrix();
       }
     }
-    push();
+    //push();
     renderCanopy();
   tick++;
   gui.run();
@@ -152,11 +147,10 @@ void draw() {
 void push() {
   
    if (!observer.hasStrips) { return; }
-   registry1.startPushing();
-   registry2.startPushing();
-   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP1strips = registry1.getStrips();
-   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP2strips = registry2.getStrips();
+   registry.startPushing();
+   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> strips = registry.getStrips();
   
+  // PP1
   for (int s = 0; s < NUM_STRIPS; s++) {
     for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
       int strip = s;
@@ -168,11 +162,9 @@ void push() {
       if (outputStripOnPin % 2 != 0) { // even numbers stream out, odds stream in (backwards)
         led = (NUM_LEDS_PER_STRIP * outputStripOnPin) + (NUM_LEDS_PER_STRIP - l - 1);
       }
-      //println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
-      com.heroicrobot.dropbit.devices.pixelpusher.Strip ppStrip = PP1strips.get(outputPin);
-      if (outputPP == 2) {
-       ppStrip = PP2strips.get(outputPin);
-      }
+      // TODO : push to outputPP on outputPin to led
+      println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
+      com.heroicrobot.dropbit.devices.pixelpusher.Strip ppStrip = strips.get(outputPin);
       ppStrip.setPixel(ledstrips[s].leds[l], led);
     }
   }
