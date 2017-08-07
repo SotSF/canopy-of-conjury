@@ -136,7 +136,7 @@ void draw() {
         popMatrix();
       }
     }
-    //push();
+    push();
     renderCanopy();
   tick++;
   gui.run();
@@ -149,6 +149,7 @@ void push() {
    if (!observer.hasStrips) { return; }
    registry.startPushing();
    List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> strips = registry.getStrips();
+   println(strips.size());
   
   // PP1
   for (int s = 0; s < NUM_STRIPS; s++) {
@@ -157,13 +158,14 @@ void push() {
       int outputPP = strip < NUM_STRIPS / 2 ? 1 : 2;
       if (outputPP == 2) strip -= NUM_STRIPS / 2;
       int outputPin = floor(strip / 6); // 6 strips per output
+      if (outputPP == 2) outputPin *= 2;
       int outputStripOnPin = strip % 6; // Strip 0-5 on the triple zig
       int led = NUM_LEDS_PER_STRIP * outputStripOnPin + l; 
       if (outputStripOnPin % 2 != 0) { // even numbers stream out, odds stream in (backwards)
         led = (NUM_LEDS_PER_STRIP * outputStripOnPin) + (NUM_LEDS_PER_STRIP - l - 1);
       }
       // TODO : push to outputPP on outputPin to led
-      println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
+      //println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
       com.heroicrobot.dropbit.devices.pixelpusher.Strip ppStrip = strips.get(outputPin);
       ppStrip.setPixel(ledstrips[s].leds[l], led);
     }
