@@ -169,6 +169,7 @@ class PlaylistPattern extends CartesianPattern {
     int startTime;
     int runTime;
     int playlistIndex;
+    int playlistLength;
     String foldername;
     PApplet window;
     GifPattern currentGif;
@@ -180,31 +181,31 @@ class PlaylistPattern extends CartesianPattern {
         this.startTime = millis();
         this.runTime = runTime;
         this.playlistIndex = 0;
+        this.playlistLength = listGifsInFolder().length;
         //println("in: initialization, this.foldername =" + this.foldername);
     }
     
     private String[] listGifsInFolder(){
         //println("in: listGifs, this.foldername =" + this.foldername);
-        File playlistFolder = new File(this.foldername);
+        File playlistFolder = new File(foldername);
         String[] gifs = playlistFolder.list();
         return gifs;
     }
 
     private String getNthGif(int n){
         String[] gifs = listGifsInFolder();
-        return this.foldername + "/"+gifs[n];
+        return foldername + "/"+gifs[n];
     }
 
     public void run(Strip[] strips) {
         int currentTime = millis();
-        int currentDuration = currentTime - this.startTime;
-        println("currentTime: "+currentTime);
-        println("currentDuration: "+currentDuration);
-        println("runTime: "+this.runTime);
-        if (currentDuration > this.runTime) {
-            currentGif = new GifPattern(this.window, getNthGif(this.playlistIndex));
-            this.startTime = currentTime;
-            this.playlistIndex++;
+        int currentDuration = currentTime - startTime;
+        if (currentDuration > runTime) {
+            playlistIndex++;
+            if (playlistIndex == playlistLength)
+                playlistIndex = 0;
+            startTime = currentTime;
+            currentGif = new GifPattern(window, getNthGif(playlistIndex));
         }
         currentGif.run(strips);
     } 
