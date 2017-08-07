@@ -147,11 +147,12 @@ class ImgPattern extends CartesianPattern {
 
 }
 
+
 class GifPattern extends CartesianPattern {
  int frame = 0;
  PImage[] frames;
- public GifPattern(PApplet window, String filename) {
-   frames = Gif.getPImages(window, filename);
+ public GifPattern(PApplet window, String filepath) {
+   frames = Gif.getPImages(window, filepath);
  }
  
   public void run(Strip[] strips) {
@@ -162,6 +163,51 @@ class GifPattern extends CartesianPattern {
     if (this.frame >= frames.length) this.frame = 0;
   }
 
+}
+
+class PlaylistPattern extends CartesianPattern {
+    int startTime;
+    int runTime;
+    int playlistIndex;
+    String foldername;
+    PApplet window;
+    GifPattern currentGif;
+
+    public PlaylistPattern(PApplet window, String foldername, int runTime) {
+        this.window = window;
+        this.foldername = foldername;
+        this.currentGif = new GifPattern(window, getNthGif(0));
+        this.startTime = millis();
+        this.runTime = runTime;
+        this.playlistIndex = 0;
+        //println("in: initialization, this.foldername =" + this.foldername);
+    }
+    
+    private String[] listGifsInFolder(){
+        //println("in: listGifs, this.foldername =" + this.foldername);
+        File playlistFolder = new File(this.foldername);
+        String[] gifs = playlistFolder.list();
+        return gifs;
+    }
+
+    private String getNthGif(int n){
+        String[] gifs = listGifsInFolder();
+        return this.foldername + "/"+gifs[n];
+    }
+
+    public void run(Strip[] strips) {
+        int currentTime = millis();
+        int currentDuration = currentTime - this.startTime;
+        println("currentTime: "+currentTime);
+        println("currentDuration: "+currentDuration);
+        println("runTime: "+this.runTime);
+        if (currentDuration > this.runTime) {
+            currentGif = new GifPattern(this.window, getNthGif(this.playlistIndex));
+            this.startTime = currentTime;
+            this.playlistIndex++;
+        }
+        currentGif.run(strips);
+    } 
 }
 
 class MoviePattern extends CartesianPattern {
