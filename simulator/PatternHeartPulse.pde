@@ -18,6 +18,7 @@ class PatternHeartPulse extends CartesianPattern {
   
   float pulse = pulseMin;
   color colorMask = color(255);
+  int brightness = 0;
   
   public PatternHeartPulse(float growStep, float shrinkStep, float pulseMax, float pulseMin) {
     this.growStep = growStep;
@@ -88,10 +89,11 @@ class PatternHeartPulse extends CartesianPattern {
       for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
         if (s.leds[l] == colorMask) {
           int hue = floor(l * this.dimension / NUM_LEDS_PER_STRIP / sin(this.pulse));
-          s.leds[l] = color(hue,100,100);
+          s.leds[l] = color(hue,100,brightness);
         }
       }
     }
+    if (brightness < 100) brightness++;
     colorMode(RGB, 255);
   }
   

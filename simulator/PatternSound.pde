@@ -15,7 +15,6 @@ class PatternSound extends Pattern {
     int offset = int(random(5,10));
 
     for (int i = 0; i < NUM_STRIPS; i++) {
-      strips[i].clear();
       //int lights = int(random(40,50));
       int lights = int(random(20,30));
        lights += offset;
@@ -37,10 +36,10 @@ class PatternSound extends Pattern {
     milliDiff = time - mydelay;
     fftForward();
     colorMode(HSB, 100);
-    int offset = 0;
+    int innerOffset = 0;
+    int outerOffset = 0;
     
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave
-      if (offset > 0) break;
       int lowFreq;
       if ( i == 0 ) { lowFreq = 0; } 
       else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
@@ -55,18 +54,20 @@ class PatternSound extends Pattern {
       
       // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
       // but we could be paying attention to any range of frequencies
-      if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
-        offset = round(amplitude / 5);
+      if (i == 5) {
+        innerOffset = round(amplitude / 4);
+      }
+      if (i == 11) {
+        outerOffset = round(amplitude / 3);
       }
     }
     
     for (int i = 0; i < NUM_STRIPS; i++) {
-      strips[i].clear();
-      //int lights = int(random(40,50));
-      int lights = int(random(20,30));
-       lights += offset;
-       for (int l = 0; l < lights; l++) {
+      int lights = int(random(20,25));
+       for (int l = 0; l < innerOffset + lights; l++) {
          if (l < NUM_LEDS_PER_STRIP) strips[i].leds[l] = getColor(i, l);
+       }
+       for (int l = 0; l < outerOffset + lights; l++) {
          int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
          strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
        }
@@ -75,7 +76,7 @@ class PatternSound extends Pattern {
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     println(bpm);
     if (bpm > 160) { direction = -1 * direction; }
-    else if (offset > 0) { direction = -1 * direction; }
+    else if (innerOffset > 10) { direction = -1 * direction; }
     if (bpm < NUM_STRIPS) { bpm += bpm; }
     colorShifter += bpm / NUM_STRIPS * direction;
     if (colorShifter >= 100) { colorShifter = 0; }

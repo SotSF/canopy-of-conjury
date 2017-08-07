@@ -43,14 +43,10 @@ class Pattern implements IPattern {
 public class CartesianPattern extends Pattern {
   int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
- 
-  public int mapCartesian(int x) {
-    return x - dimension / 2;
-  }
-  
+
   public CanopyCoord mapToCanopy(int x, int y) {
-    int x2 = this.mapCartesian(x);
-    int y2 = this.mapCartesian(y);
+    int x2 = floor(map(x,0,dimension,-dimension/2,dimension/2));
+    int y2 = floor(map(y,0,dimension,-dimension/2,dimension/2));
     float theta = 0;
     if (x2 == 0) {
       if (y2 > 0) theta = PI / 2;
@@ -181,4 +177,27 @@ class MoviePattern extends CartesianPattern {
 
 void movieEvent(Movie m) { 
   m.read(); 
+}
+
+class BeatListener implements AudioListener
+{
+  private BeatDetect beat;
+  private AudioPlayer source;
+  
+  BeatListener(BeatDetect beat, AudioPlayer source)
+  {
+    this.source = source;
+    this.source.addListener(this);
+    this.beat = beat;
+  }
+  
+  void samples(float[] samps)
+  {
+    beat.detect(source.mix);
+  }
+  
+  void samples(float[] sampsL, float[] sampsR)
+  {
+    beat.detect(source.mix);
+  }
 }
