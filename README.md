@@ -7,6 +7,7 @@ Easy to install through the Processing editor, through Sketch > Import Library..
 - [Minim](http://code.compartmental.net/tools/minim/)
 - [Processing Video](https://processing.org:8443/reference/libraries/video/index.html)
 - [ControlP5](http://www.sojamo.de/libraries/controlP5/)
+- PixelPusher
 - [GifAnimation](https://github.com/01010101/GifAnimation) <-- unzip, and drop the `GifAnimation-master` folder into your Processing > libraries folder. Rename `GifAnimation-master` --> `GifAnimation`. Will require you to restart the Processing GUI.
 
 # Overview
