@@ -2,6 +2,7 @@ public interface IPattern {
   void run(Strip[] strips);
   void runDefault(Strip[] strips);
   void visualize(Strip[] strips);
+  void onClose(Strip[] strips);
 }
 
 class EmptyPattern implements IPattern {
@@ -10,6 +11,7 @@ class EmptyPattern implements IPattern {
   }
   public void runDefault(Strip[] strips) { run(strips); }
   public void visualize(Strip[] strips) { run(strips); }
+  public void onClose(Strip[] strips) { run(strips); }
 }
 
 class Pattern implements IPattern {
@@ -31,6 +33,10 @@ class Pattern implements IPattern {
   }
 
   public void visualize(Strip[] strips) {
+    runDefault(strips);
+  }
+  
+  public void onClose(Strip[] strips) {
     runDefault(strips);
   }
 
@@ -69,7 +75,7 @@ public class CartesianPattern extends Pattern {
       for (int x = 0; x < dimension; x++) {
         CanopyCoord co = mapToCanopy(x,y);
         // the center of the cartesian plane doesn't play well with canopy coords
-        int l = co.led - 5;
+        int l = co.led - 10; 
         if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }
@@ -85,7 +91,7 @@ public class CartesianPattern extends Pattern {
       for (int x = 0; x < img.width; x++) {
         CanopyCoord co = mapToCanopy(x,y);
         // the center of the cartesian plane doesn't play well with canopy coords
-        int l = co.led - 5;
+        int l = co.led - 10; 
         if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
           continue;
         }

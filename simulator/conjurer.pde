@@ -27,10 +27,8 @@ class Conjurer {
   Command command;
   PatternBurst burst;
   PatternRainbowRings rainbowRing;
-  PatternSpace space;
   ConjurerCanvas canvas;
   public Conjurer(PApplet window) {
-    space = new PatternSpace();
     burst = new PatternBurst(window);
     rainbowRing = new PatternRainbowRings();
     canvas = new ConjurerCanvas();
@@ -55,13 +53,12 @@ class Conjurer {
         case "TEST":
           renderServer.write(cmdString + "\n");
           break;
-        case "VECTOR":
-          //lightPath.addPath(command.origin, command.vector);
+        case "SKY":
+          renderServer.write(cmdString + "\n");
           break;
       }
       this.command = null;
     }
-    space.run(ledstrips);
     burst.run(ledstrips);
     rainbowRing.run(ledstrips);
     canvas.run(ledstrips);

@@ -18,7 +18,7 @@ void draw() {
     if (tick % 3 == 0){ 
      clear();
      if (testing) {
-       if (random(100) > 50) { render.pattern = PatternSelect.WISP; }
+       if (random(100) > 95) { render.pattern = PatternSelect.WISP; println("WISP"); }
        render.run();
      }
      else {
@@ -67,6 +67,7 @@ class Renderer {
   Command command;
   PatternSelect pattern;
   PatternWillOWisp wisp = new PatternWillOWisp();
+  PatternSky sky = new PatternSky();
   void run() {
     if (pattern != null) { 
       switch(pattern) {
@@ -75,11 +76,13 @@ class Renderer {
         case WISP:
           wisp.addWisp(random(dimension), random(dimension), random(dimension), random(dimension));
           break;
+        case SKY:
+          sky.run();
+          break;
       }
     }
-
+    
     wisp.run(); 
-    pattern = PatternSelect.EMPTY;
   }
   
   void setCommand(Command cmd) {
@@ -87,6 +90,10 @@ class Renderer {
     switch (cmd.action) {
       case "TEST":
         this.pattern = PatternSelect.WISP; break;
+      case "SKY":
+        this.pattern = PatternSelect.SKY; break;
+      case "SKY_OFF":
+        this.pattern = PatternSelect.EMPTY; break;
     }
   }
 }

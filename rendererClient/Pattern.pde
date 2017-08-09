@@ -10,5 +10,6 @@ class Pattern implements IPattern {
 
 enum PatternSelect {
   EMPTY,
-  WISP
+  WISP,
+  SKY
 }

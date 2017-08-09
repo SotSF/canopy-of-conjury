@@ -74,10 +74,22 @@ class PatternWillOWisp extends Pattern {
     }
     
     void updatePosition() {
-      if (targetx > x) x += speed;
-      else if (targetx < x) x -= speed;
-      if (targety > y) y += speed;
-      else if (targety < y) y -= speed;
+      if (targetx > x)  { 
+        x += speed;
+        if (x >= targetx) x = targetx;
+      }
+      else if (targetx < x) { 
+        x -= speed;
+        if (x <= targetx) x = targetx;
+      }
+      if (targety > y) {
+        y += speed;
+        if (y >= targety) y = targety;
+      }
+      else if (targety < y) { 
+        y -= speed;
+        if (y <= targety) y = targety;
+      }
       speed += 0.4;
     }
   }

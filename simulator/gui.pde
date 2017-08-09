@@ -21,6 +21,7 @@ enum PatternSelect {
   SUNFLOWER("Sunflower"),
   FLOWER("Blossom"),
   HEART_BEAT("Heart Beat"),
+  INFINITE_SKY("Infinite Sky"),
   SOUND("Sound"),
   GRADIENT_PULSE("Gradient Pulse"),
   RAINBOW_RINGS("Rainbow Rings"),
@@ -263,6 +264,7 @@ void addPatterns(ScrollableList list) {
 }
 
 void setPattern(PatternSelect val) {
+  pattern.onClose(ledstrips);
   FadeLEDs();
   switch (val) {
     case EMPTY:
@@ -279,6 +281,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternBlossom(); break;
     case HEART_BEAT:
       pattern = new PatternHeartPulse(0.1, -0.07, 5, 0.5); break;
+    case INFINITE_SKY:
+      pattern = new PatternInfiniteSky(); break;
     case SOUND:
       pattern = new PatternSound(); break;
     case GRADIENT_PULSE:
