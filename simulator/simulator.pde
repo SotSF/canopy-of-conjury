@@ -145,6 +145,7 @@ void draw() {
 void push() {
    if (!observer.hasStrips) { return; }
    registry.startPushing();
+   // can we assume the pixelpushers will always register in the same order? otherwise, load strips by group number
    List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP1tripzigs = registry.getStrips(1); //in config file, group=1
    List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP2tripzigs = registry.getStrips(2); //in config file, group=2
    
@@ -163,7 +164,7 @@ void push() {
      }
    }
    for (int i = 0; i < PP2tripzigs.size(); i++) {
-     com.heroicrobot.dropbit.devices.pixelpusher.Strip tripleZig = PP1tripzigs.get(i);
+     com.heroicrobot.dropbit.devices.pixelpusher.Strip tripleZig = PP2tripzigs.get(i);
      // should be 450 total LEDs in 1 triple zig (75 * 6)
      for (int l = 0; l < tripleZig.getLength(); l++) {
        int strip = floor(l / NUM_LEDS_PER_STRIP); // which strip on the triple zig
@@ -316,10 +317,6 @@ void getCatenaryCoords () {
 class TestObserver implements Observer {
   public boolean hasStrips = false;
     public void update(Observable registry, Object updatedDevice) {
-      println("Registry changed!");
-      if (updatedDevice != null) {
-        println("Device change: " + updatedDevice);
-      }
       this.hasStrips = true;
     }
 }
