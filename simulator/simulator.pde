@@ -64,7 +64,7 @@ void setup() {
   registry = new DeviceRegistry();
   observer = new TestObserver();
   registry.addObserver(observer);
-  
+  delay(500);
   kinectServer = new Server(this, 5111);
   renderServer = new Server(this, 5024);
   minim = new Minim(this);
@@ -92,16 +92,16 @@ void draw() {
         parseCmd(cmd);
       }
     }
-    if (renderServer != null) {
-      Client client = renderServer.available();
-      if (client != null) {
-        byte[] byteBuffer = client.readBytes();
-        try {
-          PImage img = jpg.decode(byteBuffer);
-          conjurer.paint(img);
-        }
-        catch (Exception e) {
-        }
+  }
+  if (renderServer != null) {
+    Client client = renderServer.available();
+    if (client != null) {
+      byte[] byteBuffer = client.readBytes();
+      try {
+        PImage img = jpg.decode(byteBuffer);
+        conjurer.paint(img);
+      }
+      catch (Exception e) {
       }
     }
   }
@@ -142,34 +142,39 @@ void draw() {
   gui.run();
 }
 
-
-// push data to PixelPushers
 void push() {
-  
    if (!observer.hasStrips) { return; }
    registry.startPushing();
-   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> strips = registry.getStrips();
-   println(strips.size());
-  
-  // PP1
-  for (int s = 0; s < NUM_STRIPS; s++) {
-    for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
-      int strip = s;
-      int outputPP = strip < NUM_STRIPS / 2 ? 1 : 2;
-      if (outputPP == 2) strip -= NUM_STRIPS / 2;
-      int outputPin = floor(strip / 6); // 6 strips per output
-      if (outputPP == 2) outputPin *= 2;
-      int outputStripOnPin = strip % 6; // Strip 0-5 on the triple zig
-      int led = NUM_LEDS_PER_STRIP * outputStripOnPin + l; 
-      if (outputStripOnPin % 2 != 0) { // even numbers stream out, odds stream in (backwards)
-        led = (NUM_LEDS_PER_STRIP * outputStripOnPin) + (NUM_LEDS_PER_STRIP - l - 1);
-      }
-      // TODO : push to outputPP on outputPin to led
-      //println("Strip " + s + " LED " + l + " ==> PP" + outputPP + ", OUT_PIN " + outputPin + ", LED " + led);
-      com.heroicrobot.dropbit.devices.pixelpusher.Strip ppStrip = strips.get(outputPin);
-      ppStrip.setPixel(ledstrips[s].leds[l], led);
-    }
-  }
+   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP1tripzigs = registry.getStrips(1); //in config file, group=1
+   List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> PP2tripzigs = registry.getStrips(2); //in config file, group=2
+   
+   // should be 8 triple zigs, each having out-in-out-in-out-in
+   for (int i = 0; i < PP1tripzigs.size(); i++) {
+     com.heroicrobot.dropbit.devices.pixelpusher.Strip tripleZig = PP1tripzigs.get(i);
+     // should be 450 total LEDs in 1 triple zig (75 * 6)
+     for (int l = 0; l < tripleZig.getLength(); l++) {
+       int strip = floor(l / NUM_LEDS_PER_STRIP); // which strip on the triple zig
+       int led = l - (NUM_LEDS_PER_STRIP * strip);
+       if (strip % 2 != 0) { // we have an INNIE strip, go backwards
+         led = NUM_LEDS_PER_STRIP - led - 1;
+       }
+       strip += 6 * i; // which strip in simulator ledstrips
+       tripleZig.setPixel(ledstrips[strip].leds[led], l);
+     }
+   }
+   for (int i = 0; i < PP2tripzigs.size(); i++) {
+     com.heroicrobot.dropbit.devices.pixelpusher.Strip tripleZig = PP1tripzigs.get(i);
+     // should be 450 total LEDs in 1 triple zig (75 * 6)
+     for (int l = 0; l < tripleZig.getLength(); l++) {
+       int strip = floor(l / NUM_LEDS_PER_STRIP); // which strip on the triple zig
+       int led = l - (NUM_LEDS_PER_STRIP * strip);
+       if (strip % 2 != 0) { // we have an INNIE strip, go backwards
+         led = NUM_LEDS_PER_STRIP - led -1;
+       }
+       strip += 6 * i + NUM_STRIPS / 2; // which strip in simulator ledstrips
+       tripleZig.setPixel(ledstrips[strip].leds[led], l);
+     }
+   }
 }
 
 void renderCanopy() {
