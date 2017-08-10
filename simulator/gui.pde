@@ -21,10 +21,14 @@ enum PatternSelect {
   SUNFLOWER("Sunflower"),
   FLOWER("Blossom"),
   HEART_BEAT("Heart Beat"),
-  INFINITE_SKY("Infinite Sky"),
   SOUND("Sound"),
   GRADIENT_PULSE("Gradient Pulse"),
   RAINBOW_RINGS("Rainbow Rings"),
+  INFINITE_SKY("Infinite Sky (Renderer)"),
+  TEST_SNAKE("Snake (Test)"),
+  TEST_ID_TRIPLETS("Identify Triple Zigs (Test)"),
+  TEST_ID_STRIP_0("Identify Strip Zero (Test)"),
+  TEST_RED_RING("Red Ring (Test)"),
   STILL_IMAGE("Still Image"),
   GIF_IMAGE("Gif"),
   VIDEO("Video"),
@@ -289,6 +293,14 @@ void setPattern(PatternSelect val) {
       pattern = new PatternGradientPulse(); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
+    case TEST_SNAKE:
+      pattern = new Snakes(); break;
+    case TEST_ID_TRIPLETS:
+      pattern = new IdentifyTripleZigs(); break;
+    case TEST_ID_STRIP_0:
+      pattern = new IdentifyStripZero(); break;
+    case TEST_RED_RING:
+      pattern = new RedRing(); break;
     case STILL_IMAGE:
       if (selectedImg == null) { println("[WARNING] Still image not selected"); }
       else { pattern = new ImgPattern(selectedImg); }
