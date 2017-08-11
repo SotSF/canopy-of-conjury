@@ -23,6 +23,7 @@ enum PatternSelect {
   HEART_BEAT("Heart Beat"),
   SOUND("Sound"),
   GRADIENT_PULSE("Gradient Pulse"),
+  GRADIENT("Gradient"),
   RAINBOW_RINGS("Rainbow Rings"),
   INFINITE_SKY("Infinite Sky (Renderer)"),
   TEST_SNAKE("Snake (Test)"),
@@ -291,6 +292,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternSound(); break;
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
+    case GRADIENT:
+      pattern = new PatternGradient(color(255,0,0), color(0,255,0)); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
     case TEST_SNAKE:
