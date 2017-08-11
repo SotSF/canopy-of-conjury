@@ -67,22 +67,6 @@ public class CartesianPattern extends Pattern {
     return new CanopyCoord(s, l);
   }
 
-  public void scrapeWindow(Strip[] strips) {
-    for (int y = 0; y < dimension; y++) {
-      for (int x = 0; x < dimension; x++) {
-        CanopyCoord co = mapToCanopy(x,y);
-        // the center of the cartesian plane doesn't play well with canopy coords
-        int l = co.led - 10; 
-        if (l < 0 || l >= NUM_LEDS_PER_STRIP) {
-          continue;
-        }
-         color c = get(x,y);
-        if (c == color(0) || c == 0) { continue; }
-        strips[co.strip].leds[l] = c;
-      }
-    }
-  }
-
   public void scrapeImage(PImage img, Strip[] strips) {
     for (int y = 0; y < img.height; y++) {
       for (int x = 0; x < img.width; x++) {

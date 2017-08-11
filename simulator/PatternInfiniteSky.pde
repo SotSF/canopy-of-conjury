@@ -21,9 +21,9 @@ class PatternInfiniteSky extends CartesianPattern {
   float[] steps = { (red(night) - red(morning))/lengthOfDay, 
         (green(night) - green(morning))/lengthOfDay, 
         (blue(night) - blue(morning))/lengthOfDay };
-  PGraphics img;
+  PGraphics image;
   PatternInfiniteSky() {
-    img = createGraphics(dimension, dimension);
+    image = createGraphics(dimension, dimension);
   }
   void runDefault(Strip[] strips) {
     clear();
@@ -51,13 +51,12 @@ class PatternInfiniteSky extends CartesianPattern {
         shooters.add(star);
       }
     }
-    img.beginDraw();
-    img.clear();
+    image.beginDraw();
     setBackground();
     animateStars();
     animateClouds();
-    img.endDraw();
-    scrapeImage(img.get(), strips);
+    image.endDraw();
+    scrapeImage(image.get(), strips);
   }
   
   private void setBackground() {
@@ -67,15 +66,15 @@ class PatternInfiniteSky extends CartesianPattern {
     if(stormy && timer < lengthOfDay * 0.8) {
       sky -= color(50,50,50);
     }
-    img.background(sky);
+    image.background(sky);
   }
   
   private void animateStars() {
     for (int i = stars.size() - 1; i >= 0; i--) {
       Star star = stars.get(i);
-      img.noStroke();
-      img.fill(color(random(150,255), random(200,220), random(200,255), star.brightness));
-      img.ellipse(star.pos.x, star.pos.y, 10, 10);
+      image.noStroke();
+      image.fill(color(random(150,255), random(200,220), random(200,255), star.brightness));
+      image.ellipse(star.pos.x, star.pos.y, 10, 10);
       star.update();
       
       if (star.timer >= starLifespan + random(-20,20)) { stars.remove(star); }
@@ -84,9 +83,9 @@ class PatternInfiniteSky extends CartesianPattern {
     for (int i = shooters.size() - 1; i >= 0; i--) {
       ShootingStar star = shooters.get(i);
       color c = color(random(10,50), random(200,220), random(100,200));
-      img.fill(c);
+      image.fill(c);
       noStroke();
-      img.ellipse(star.head.x,star.head.y,20,20);
+      image.ellipse(star.head.x,star.head.y,20,20);
       star.update();
       if (star.head.x >= star.target.x && star.head.y >= star.target.y) {
         shooters.remove(star);
@@ -97,19 +96,19 @@ class PatternInfiniteSky extends CartesianPattern {
   private void animateClouds() {
     for (int i = clouds.size() - 1; i >= 0; i--) {
       Cloud cloud = clouds.get(i);
-      img.noStroke();
+      image.noStroke();
       
       for (int j = 0; j < cloud.particles.size(); j++) {
         Position p = cloud.particles.get(j);
         float size = cloud.sizes.get(j);
         float brightness = cloud.brightness.get(j);
         if (stormy) {
-          img.fill(color(100,100,100,brightness));
+          image.fill(color(100,100,100,brightness));
         } 
         else { 
-          img.fill(color(255,255,255,brightness));
+          image.fill(color(255,255,255,brightness));
         }
-        img.ellipse(p.x, p.y, size, size);
+        image.ellipse(p.x, p.y, size, size);
       }
       cloud.update();
       if (cloud.remove) clouds.remove(i);

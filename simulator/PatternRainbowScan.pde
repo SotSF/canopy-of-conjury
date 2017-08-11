@@ -3,6 +3,7 @@
 */
 
 class PatternRainbowScan extends CartesianPattern {
+  PGraphics image = createGraphics(dimension, dimension);
   int shift = 0;
   public void runDefault(Strip[] strips) {
     colorMode(HSB, 100);
@@ -14,7 +15,7 @@ class PatternRainbowScan extends CartesianPattern {
         }
         //pixelWindow[y][x] = color(hue,100,100);;
         //pixels[y * x] = color(hue,100,100);
-        set(x,y, color(hue,100,100));
+        image.set(x,y, color(hue,100,100));
       }
     }
     this.shift += 2;
@@ -22,6 +23,6 @@ class PatternRainbowScan extends CartesianPattern {
       this.shift = 0;
     }
     colorMode(RGB, 255);
-    scrapeWindow(strips);
+    scrapeImage(image.get(), strips);
   }
 }

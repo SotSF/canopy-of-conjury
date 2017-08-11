@@ -6,12 +6,14 @@
 class PatternBurst extends CartesianPattern {
   ArrayList<Burst> targets;
   PImage[] frames;
+  PGraphics image;
   PatternBurst(PApplet window) {
-     this.targets = new ArrayList<Burst>();
-     this.frames = Gif.getPImages(window, "./images/firework.gif");
+     targets = new ArrayList<Burst>();
+     frames = Gif.getPImages(window, "./images/firework.gif");
      for (PImage img : this.frames) {
        img.resize(dimension/3, dimension/3);
      }
+     image = createGraphics(dimension, dimension);
   }
   void runDefault(Strip[] strips) {
     if (conjurer.mode == MODE_MANUAL) {
@@ -21,13 +23,16 @@ class PatternBurst extends CartesianPattern {
         addBurst(o, v);
       }
     }
-    clearWindow();
+    
+    image.beginDraw();
+    image.background(0);
     for (int i = targets.size() - 1; i >= 0; i--) {
       if (targets.get(i).center == null) { targets.remove(i); continue; }
       plopBurst(targets.get(i));
       if (targets.get(i).stage >= frames.length) targets.remove(i);
     }
-    scrapeWindow(strips);
+    image.endDraw();
+    scrapeImage(image, strips);
   }
   
   void addBurst(PVector origin, PVector vector) {
@@ -37,14 +42,8 @@ class PatternBurst extends CartesianPattern {
   void plopBurst(Burst b) {
     PImage img = frames[b.stage];
     b.stage++;
-    for (int i = 0; i < img.height; i++) {
-      for (int j = 0; j < img.width; j++) {
-        color c = img.get(j,i);
-        if (c > color(5,5,5)) {
-          set(int(b.center.x) + j - img.width/2, int(b.center.y) + i - img.height/2, c);
-        }
-      }
-    }
+    image.image(img, b.center.x - img.width/2 ,b.center.y - img.height/2);
+    
   }
   
   class Burst {

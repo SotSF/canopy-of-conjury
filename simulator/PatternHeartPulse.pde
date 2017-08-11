@@ -20,33 +20,28 @@ class PatternHeartPulse extends CartesianPattern {
   color colorMask = color(255);
   int brightness = 0;
   
+  PGraphics image;
   public PatternHeartPulse(float growStep, float shrinkStep, float pulseMax, float pulseMin) {
     this.growStep = growStep;
     this.shrinkStep = shrinkStep;
     this.pulseMax = pulseMax;
     this.pulseMin = pulseMin;
+    image = createGraphics(dimension, dimension);
+    image.noSmooth();
   }
   
   public void runDefault(Strip[] strips) {
-    clearWindow();
+    image.beginDraw();
+    image.background(0);
     while (t < 1000) {
-      // this is Cartesian
       int x = floor((1 + this.pulse) * (16 * sin(t) * sin(t) * sin(t)));
       int y = floor((1 + this.pulse) * (13 * cos(t) - 5 * cos(2*t) - 2 * cos(3*t) - cos(4*t)));
       // this is PixelWindow
       int x2 = round(x * 2 + (dimension / 2));
       int y2 = round(y * 2 + (dimension / 2));
-     
-       // overcompensate the lines
-      drawPoint(x2,y2);
-      drawPoint(x2+1, y2);
-      drawPoint(x2-1, y2);
-      drawPoint(x2, y2+1);
-      drawPoint(x2, y2-1);
-      t++;
+      image.ellipse(x2,y2,10,10);
+     t++;
     }
-    t = 0;
-    
     if (this.grow) { this.pulse += growStep; }
     else { this.pulse += shrinkStep; }
     if (this.pulse > pulseMax) {
@@ -55,20 +50,13 @@ class PatternHeartPulse extends CartesianPattern {
     if (this.pulse < pulseMin) {
       this.grow = true;
     }
-
-    this.scrapeWindow(strips); // only gets heart outline
+    t = 0;
+    image.endDraw();
+    scrapeImage(image.get(), strips);
     fillHeart(strips); // so roughly fill in the heart
     colorOverlay(strips);
-  }
-  
-  private void drawPoint(int x, int y) {
-     set(x,y,colorMask);
-     set(x, y+1, colorMask);
-     set(x,y-1,colorMask);
-     set(x+1, y, colorMask);
-     set(x-1, y, colorMask);
-     set(x+1, y+1, colorMask);
-     set(x-1, y+1, colorMask);
+    
+    
   }
   
   private void fillHeart(Strip[] strips) {
