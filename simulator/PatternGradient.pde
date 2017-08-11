@@ -53,8 +53,8 @@ class PatternGradient extends Pattern {
       this.flipDirection();
     }
   }
-
-  public void onClick (int x, int y) {
+  
+  public void onMousePressed (int x, int y) {
     println(x, y);
   }
 

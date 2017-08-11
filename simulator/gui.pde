@@ -325,6 +325,7 @@ void setPattern(PatternSelect val) {
       break;
   }
   selectedPattern = val;
+  pattern.initialize();
 }
 
 void PlayAudio() {
