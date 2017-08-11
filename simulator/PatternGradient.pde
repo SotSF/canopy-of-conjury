@@ -54,6 +54,10 @@ class PatternGradient extends Pattern {
     }
   }
 
+  public void onClick (int x, int y) {
+    println(x, y);
+  }
+
   private color[] interpolateColors () {
     color[] interpolatedColors = new color[NUM_LEDS_PER_STRIP];
 

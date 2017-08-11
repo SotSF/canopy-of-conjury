@@ -2,6 +2,9 @@ public interface IPattern {
   void run(Strip[] strips);
   void runDefault(Strip[] strips);
   void visualize(Strip[] strips);
+
+  // Event methods
+  void onClick(int x, int y);
   void onClose(Strip[] strips);
 }
 
@@ -11,6 +14,7 @@ class EmptyPattern implements IPattern {
   }
   public void runDefault(Strip[] strips) { run(strips); }
   public void visualize(Strip[] strips) { run(strips); }
+  public void onClick(int x, int y) {};
   public void onClose(Strip[] strips) { run(strips); }
 }
 
@@ -28,17 +32,9 @@ class Pattern implements IPattern {
     }
   }
 
-  public void runDefault(Strip[] strips) {
-    clearStrips();
-  }
-
-  public void visualize(Strip[] strips) {
-    runDefault(strips);
-  }
-  
-  public void onClose(Strip[] strips) {
-    runDefault(strips);
-  }
+  public void runDefault(Strip[] strips) { clearStrips(); }
+  public void onClick(int x, int y) {};
+  public void onClose(Strip[] strips) { runDefault(strips); }
 
   public void fftForward() {
     if (listeningToMic) fft.forward(audio.mix);

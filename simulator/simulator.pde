@@ -273,6 +273,10 @@ void keyPressed () {
   }
 }
 
+void mousePressed () {
+  pattern.onClick(mouseX, mouseY);
+}
+
 void adjustApexHeight (float deltaHeightFeet) {
   float newHeight = h + deltaHeightFeet * scaleFactor;
   if (abs(newHeight) > MAX_HEIGHT_FEET * scaleFactor) {
