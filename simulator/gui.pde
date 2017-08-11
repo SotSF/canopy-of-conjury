@@ -25,7 +25,7 @@ enum PatternSelect {
   GRADIENT_PULSE("Gradient Pulse"),
   GRADIENT("Gradient"),
   RAINBOW_RINGS("Rainbow Rings"),
-  INFINITE_SKY("Infinite Sky (Renderer)"),
+  INFINITE_SKY("Infinite Sky"),
   TEST_SNAKE("Snake (Test)"),
   TEST_ID_TRIPLETS("Identify Triple Zigs (Test)"),
   TEST_ID_STRIP_0("Identify Strip Zero (Test)"),

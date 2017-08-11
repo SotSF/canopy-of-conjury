@@ -1,7 +1,7 @@
 public interface IPattern {
-  void run(Strip[] strips);
-  void runDefault(Strip[] strips);
-  void visualize(Strip[] strips);
+  void run(Strip[] strips); // the overhead controller that determines whether or not to visualize() to audio or to runDefault()
+  void runDefault(Strip[] strips); // the default pattern
+  void visualize(Strip[] strips); // the pattern modified to visualize audio
 
   // Event methods
   void onClick(int x, int y);
@@ -33,6 +33,7 @@ class Pattern implements IPattern {
   }
 
   public void runDefault(Strip[] strips) { clearStrips(); }
+  public void visualize(Strip[] strips) { runDefault(strips); }
   public void onClick(int x, int y) {};
   public void onClose(Strip[] strips) { runDefault(strips); }
 
