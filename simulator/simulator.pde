@@ -140,23 +140,29 @@ void draw() {
   tick++;
   gui.run();
 }
+
 void push() {
-   if (!observer.hasStrips) { return; }
-   registry.startPushing();
-   // can we assume the pixelpushers will always register in the same order? otherwise, load strips by group number
-   
-   // should be 8 triple zigs, each having out-in-out-in-out-in
-     // should be 450 total LEDs in 1 triple zig (75 * 6)
-     for (int l = 0; l < tripleZig.getLength(); l++) {
-       int strip = floor(l / NUM_LEDS_PER_STRIP); // which strip on the triple zig
-       int led = l - (NUM_LEDS_PER_STRIP * strip);
-       if (strip % 2 != 0) { // we have an INNIE strip, go backwards
-         led = NUM_LEDS_PER_STRIP - led - 1;
-       }
-       strip += 6 * i; // which strip in simulator ledstrips
-       tripleZig.setPixel(ledstrips[strip].leds[led], l);
-     }
-   }
+  if (!observer.hasStrips) { return; }
+  registry.startPushing();
+  
+  // get the triple-zigs from the pixel pushers
+  List<com.heroicrobot.dropbit.devices.pixelpusher.Strip> tripleZigs = registry.getStrips();
+  
+  // should be 8 triple zigs, each having out-in-out-in-out-in
+  for (int i = 0; i < tripleZigs.size(); i++) {
+    com.heroicrobot.dropbit.devices.pixelpusher.Strip tripleZig = tripleZigs.get(i);
+    
+    // should be 450 total LEDs in 1 triple zig (75 * 6)
+    for (int l = 0; l < tripleZig.getLength(); l++) {
+      int strip = floor(l / NUM_LEDS_PER_STRIP); // which strip on the triple zig
+      int led = l - (NUM_LEDS_PER_STRIP * strip);
+      if (strip % 2 != 0) { // we have an INNIE strip, go backwards
+        led = NUM_LEDS_PER_STRIP - led - 1;
+      }
+      strip += 6 * i; // which strip in simulator ledstrips
+      tripleZig.setPixel(ledstrips[strip].leds[led], l);
+    }
+  }
 }
 
 void renderCanopy() {
