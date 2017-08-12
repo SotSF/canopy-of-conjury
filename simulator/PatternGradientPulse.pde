@@ -14,7 +14,6 @@ class PatternGradientPulse extends Pattern {
   }
   
   public void runDefault(Strip[] strips) {
-    clearStrips();
     // switch to HSB colors for this method
     colorMode(HSB, 100);
     
@@ -49,7 +48,6 @@ class PatternGradientPulse extends Pattern {
   }
   
   public void visualize(Strip[] strips) {
-    clearStrips();
     fftForward();
     // switch to HSB colors for this method
     colorMode(HSB, 100);
@@ -69,6 +67,7 @@ class PatternGradientPulse extends Pattern {
   
       // calculate the average amplitude of the frequency band
       float amplitude = fft.calcAvg(lowBound, hiBound);
+      if (listeningToMic) amplitude += 5;
       
       // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
       // but we could be paying attention to any range of frequencies

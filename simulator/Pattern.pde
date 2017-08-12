@@ -213,6 +213,7 @@ class BeatListener implements AudioListener
 {
   private BeatDetect beat;
   private AudioPlayer source;
+  private AudioInput input;
 
   BeatListener(BeatDetect beat, AudioPlayer source)
   {
@@ -220,14 +221,22 @@ class BeatListener implements AudioListener
     this.source.addListener(this);
     this.beat = beat;
   }
+  
+  BeatListener(BeatDetect beat, AudioInput input) {
+    this.input = input;
+    this.input.addListener(this);
+    this.beat = beat;
+  }
 
   void samples(float[] samps)
   {
-    beat.detect(source.mix);
+    if (listeningToMic) beat.detect(audio.mix);
+    else beat.detect(source.mix);
   }
 
   void samples(float[] sampsL, float[] sampsR)
   {
-    beat.detect(source.mix);
+    if (listeningToMic) beat.detect(audio.mix);
+    else beat.detect(source.mix);
   }
 }

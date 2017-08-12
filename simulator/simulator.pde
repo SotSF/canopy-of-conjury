@@ -76,7 +76,7 @@ void setup() {
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
   conjurer = new Conjurer(this);
-  pattern = new PatternBeatDetect();
+  pattern = new EmptyPattern();
 }
 
 JPGEncoder jpg = new JPGEncoder();

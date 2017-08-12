@@ -15,6 +15,7 @@ Button modebtn;
 
 enum PatternSelect {
   EMPTY("Empty"),
+  BEAT_DETECT("Beat Detect"),
   SWIRLS("Swirls"),
   PULSE("Pulse"),
   BURST("Fireworks"),
@@ -274,7 +275,9 @@ void setPattern(PatternSelect val) {
   FadeLEDs();
   switch (val) {
     case EMPTY:
-      pattern = new EmptyPattern(); break;
+      pattern = new EmptyPattern(); break;  
+    case BEAT_DETECT:
+      pattern = new PatternBeatDetect(); break;
     case SWIRLS:
       pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
     case PULSE:
