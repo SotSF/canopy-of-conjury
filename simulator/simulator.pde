@@ -260,9 +260,26 @@ void keyPressed () {
   }
 }
 
+
+/******************************************************************************
+ * MOUSE EVENTS
+ *****************************************************************************/
 void mousePressed () {
-  pattern.onClick(mouseX, mouseY);
+  pattern.onMousePressed(mouseX, mouseY);
 }
+
+void mouseReleased () {
+  pattern.onMouseReleased(mouseX, mouseY);
+}
+
+void mouseClicked () {
+  pattern.onMouseClicked(mouseX, mouseY);
+}
+
+void mouseDragged () {
+  pattern.onMouseDragged(mouseX, mouseY);
+}
+
 
 void adjustApexHeight (float deltaHeightFeet) {
   float newHeight = h + deltaHeightFeet * scaleFactor;

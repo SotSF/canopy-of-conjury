@@ -1,25 +1,39 @@
 public interface IPattern {
-  void run(Strip[] strips); // the overhead controller that determines whether or not to visualize() to audio or to runDefault()
-  void runDefault(Strip[] strips); // the default pattern
-  void visualize(Strip[] strips); // the pattern modified to visualize audio
+  // Rendering methods
+  void run(Strip[] strips);
+  void runDefault(Strip[] strips);
+  void visualize(Strip[] strips);
 
   // Event methods
-  void onClick(int x, int y);
+  void onMousePressed  (int x, int y);
+  void onMouseReleased (int x, int y);
+  void onMouseClicked  (int x, int y);
+  void onMouseDragged  (int x, int y);
+
+  // Set up and tear down
+  void initialize();
   void onClose(Strip[] strips);
 }
 
 class EmptyPattern implements IPattern {
-  public void run(Strip[] strips) {
-    clearStrips();
-  }
+  // Rendering methods
+  public void run(Strip[] strips) { clearStrips(); }
   public void runDefault(Strip[] strips) { run(strips); }
   public void visualize(Strip[] strips) { run(strips); }
-  public void onClick(int x, int y) {};
+
+  // Event methods
+  void onMousePressed  (int x, int y) {};
+  void onMouseReleased (int x, int y) {};
+  void onMouseClicked  (int x, int y) {};
+  void onMouseDragged  (int x, int y) {};
+
+  // Set up and tear down
+  public void initialize() {};
   public void onClose(Strip[] strips) { run(strips); }
 }
 
 class Pattern implements IPattern {
-  public int sampleRate = 44100;
+  // Rendering methods
   public void run(Strip[] strips) {
     if (listeningToMic){
       visualize(strips);
@@ -34,9 +48,21 @@ class Pattern implements IPattern {
 
   public void runDefault(Strip[] strips) { clearStrips(); }
   public void visualize(Strip[] strips) { runDefault(strips); }
-  public void onClick(int x, int y) {};
+
+  // Event methods -- by default no action is taken. Inheriting pattern classes
+  // can implement pattern-specific behavior
+  void onMousePressed  (int x, int y) {};
+  void onMouseReleased (int x, int y) {};
+  void onMouseClicked  (int x, int y) {};
+  void onMouseDragged  (int x, int y) {};
+
+  // Set up and tear down
+  public void initialize() {};
   public void onClose(Strip[] strips) { runDefault(strips); }
 
+  // Audio sampling rate
+  public int sampleRate = 44100;
+  
   public void fftForward() {
     if (listeningToMic) fft.forward(audio.mix);
     else fft.forward(player.mix);
