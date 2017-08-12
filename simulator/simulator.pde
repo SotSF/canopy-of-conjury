@@ -23,7 +23,6 @@ FFT fft;
 Movie movie;
 
 Server kinectServer;
-Server renderServer;
 
 TestObserver observer;
 DeviceRegistry registry;
@@ -66,7 +65,6 @@ void setup() {
   registry.addObserver(observer);
   delay(500);
   kinectServer = new Server(this, 5111);
-  renderServer = new Server(this, 5024);
   minim = new Minim(this);
   audio = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
   for (int i = 0; i < NUM_STRIPS; i++) {
@@ -78,7 +76,7 @@ void setup() {
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
   conjurer = new Conjurer(this);
-  pattern = new EmptyPattern();
+  pattern = new PatternBeatDetect();
 }
 
 JPGEncoder jpg = new JPGEncoder();
@@ -90,18 +88,6 @@ void draw() {
       if (client != null) {
         String cmd = client.readString();
         parseCmd(cmd);
-      }
-    }
-  }
-  if (renderServer != null) {
-    Client client = renderServer.available();
-    if (client != null) {
-      byte[] byteBuffer = client.readBytes();
-      try {
-        PImage img = jpg.decode(byteBuffer);
-        conjurer.paint(img);
-      }
-      catch (Exception e) {
       }
     }
   }

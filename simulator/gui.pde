@@ -26,6 +26,7 @@ enum PatternSelect {
   GRADIENT("Gradient"),
   RAINBOW_RINGS("Rainbow Rings"),
   INFINITE_SKY("Infinite Sky"),
+  DIAMONDS("Diamonds"),
   TEST_SNAKE("Snake (Test)"),
   TEST_ID_TRIPLETS("Identify Triple Zigs (Test)"),
   TEST_ID_STRIP_0("Identify Strip Zero (Test)"),
@@ -296,6 +297,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternGradient(color(255,0,0), color(0,255,0)); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
+    case DIAMONDS:
+      pattern = new PatternDiamonds(); break;
     case TEST_SNAKE:
       pattern = new Snakes(); break;
     case TEST_ID_TRIPLETS:
