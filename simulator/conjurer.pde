@@ -27,20 +27,14 @@ class Conjurer {
   Command command;
   PatternBurst burst;
   PatternRainbowRings rainbowRing;
-  ConjurerCanvas canvas;
   public Conjurer(PApplet window) {
     burst = new PatternBurst(window);
     rainbowRing = new PatternRainbowRings();
-    canvas = new ConjurerCanvas();
   }
   public void sendCommand(Command cmd) {
     this.command = cmd;
   }
-  
-  public void castOFF() {
-    canvas.run(ledstrips);
-  }
-  
+
   public void cast() {
     if (this.command != null) {
       switch (command.action) {
@@ -50,34 +44,15 @@ class Conjurer {
         case "WAVE":
           rainbowRing.addRing();
           break;
-        case "TEST":
-          renderServer.write(cmdString + "\n");
-          break;
-        case "SKY":
-          renderServer.write(cmdString + "\n");
-          break;
       }
       this.command = null;
     }
     burst.run(ledstrips);
     rainbowRing.run(ledstrips);
-    canvas.run(ledstrips);
   }
   
-  public void paint(PImage img) {
-    if (img != null) canvas.drawing = img;
-  }
 }
 
-class ConjurerCanvas extends CartesianPattern {
-  PImage drawing;
-  public void run(Strip[] strips) {
-    clearWindow();
-    if (drawing != null) {
-      scrapeImage(drawing, strips);
-    }   
-  }
-}
 
 class Command {
   PVector origin;

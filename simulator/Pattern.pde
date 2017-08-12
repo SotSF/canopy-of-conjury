@@ -84,10 +84,6 @@ public class CartesianPattern extends Pattern {
     }
   }
 
-  public void clearWindow() {
-    clear();
-  }
-
   // describe a point on the Canopy, by strip number and LED number
   class CanopyCoord {
     int strip;
