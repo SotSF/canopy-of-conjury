@@ -3,6 +3,7 @@ public interface IPattern {
   void run(Strip[] strips);
   void runDefault(Strip[] strips);
   void visualize(Strip[] strips);
+  void renderAuxiliary();
 
   // Event methods
   void onMousePressed  (int x, int y);
@@ -20,6 +21,7 @@ class EmptyPattern implements IPattern {
   public void run(Strip[] strips) { clearStrips(); }
   public void runDefault(Strip[] strips) { run(strips); }
   public void visualize(Strip[] strips) { run(strips); }
+  public void renderAuxiliary() {};
 
   // Event methods
   void onMousePressed  (int x, int y) {};
@@ -48,6 +50,7 @@ class Pattern implements IPattern {
 
   public void runDefault(Strip[] strips) { clearStrips(); }
   public void visualize(Strip[] strips) { runDefault(strips); }
+  public void renderAuxiliary() {};
 
   // Event methods -- by default no action is taken. Inheriting pattern classes
   // can implement pattern-specific behavior
