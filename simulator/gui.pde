@@ -294,7 +294,7 @@ void setPattern(PatternSelect val) {
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
     case GRADIENT:
-      pattern = new PatternGradient(color(255,0,0), color(0,255,0)); break;
+      pattern = new PatternGradient(); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
     case TEST_SNAKE:
