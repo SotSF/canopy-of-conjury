@@ -132,6 +132,7 @@ class GUI {
     camera();
     cp5.draw();
     g3.camera = currCameraMatrix;
+    pattern.renderAuxiliary();
   }
 }
 
