@@ -1,0 +1,14 @@
+pixels=450
+stripsattached=1
+strip1=ws2811
+start1=000099
+order1=rgb
+strip2=ws2811
+start2=009900
+order2=rgb
+strip3=ws2811
+start3=990000
+order3=rgb
+strip4=ws2811
+start4=990099
+order4=rgb
