@@ -55,6 +55,7 @@ Strip[] ledstrips = new Strip[NUM_STRIPS];
 Conjurer conjurer;
 IPattern pattern;
 
+final int backgroundColor = 50;
 int tick = 0;
 GUI gui;
 PMatrix3D currCameraMatrix;
@@ -83,7 +84,7 @@ void setup() {
 
 JPGEncoder jpg = new JPGEncoder();
 
-void draw() {  
+void draw() {
   if (conjurer.mode == MODE_LISTENING) {
     if (kinectServer != null) {
       Client client = kinectServer.available();
@@ -120,23 +121,24 @@ void draw() {
       break;
     }
   
-    background(50);
-    rotateZ(PI);
-  
-    // DEMO ONLY
-    if (selectedPattern == PatternSelect.BURST) {
-      for (PatternBurst.Burst b : ((PatternBurst)pattern).targets) {
-        pushMatrix();
-        translate(b.origin.x, b.origin.y, b.origin.z);
-        noStroke();
-        fill(255);
-        sphere(5);
-        stroke(color(255, 0, 255));
-        line(0, 0, 0, b.vector.x * 500, b.vector.y * 500, b.vector.z * 500);
-        popMatrix();
-      }
+  background(backgroundColor);
+  rotateZ(PI);
+
+  // DEMO ONLY
+  if (selectedPattern == PatternSelect.BURST) {
+    for (PatternBurst.Burst b : ((PatternBurst)pattern).targets) {
+      pushMatrix();
+      translate(b.origin.x, b.origin.y, b.origin.z);
+      noStroke();
+      fill(255);
+      sphere(5);
+      stroke(color(255, 0, 255));
+      line(0, 0, 0, b.vector.x * 500, b.vector.y * 500, b.vector.z * 500);
+      popMatrix();
     }
-    renderCanopy();
+  }
+
+  renderCanopy();
   tick++;
   gui.run();
 }
