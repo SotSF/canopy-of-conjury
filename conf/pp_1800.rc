@@ -1,5 +1,6 @@
 pixels=450
 group=1
+controller=2
 stripsattached=8
 strip1=ws2811
 start1=000099
