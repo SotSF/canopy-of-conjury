@@ -27,7 +27,6 @@ class PatternSwirly extends Pattern {
   }
   
   public void runDefault(Strip[] strips) {
-    clearStrips();
     int d = random(100) > 50 ? 1 : -1;
     int r = int(random(3));
     for (Swirl s : this.swirls) {

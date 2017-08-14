@@ -7,7 +7,6 @@ class PatternInfiniteSky extends CartesianPattern {
   ArrayList<Star> stars = new ArrayList<Star>();
   ArrayList<ShootingStar> shooters = new ArrayList<ShootingStar>();
   int numClouds = 10;
-  boolean stormy = false;
   int numStars = 200;
   int starLifespan = 100;
   color morning = #79D1FF;
@@ -34,7 +33,7 @@ class PatternInfiniteSky extends CartesianPattern {
     updateTimers();
    
     if (timer > 0 && timer < lengthOfDay * 0.5 && direction == 1) {
-      if (clouds.size() < (stormy ? numClouds * 3 : numClouds) && random(100) > 30) {
+      if (clouds.size() < numClouds && random(100) > 30) {
         Cloud cloud = new Cloud(new Position(random(dimension), random(dimension)), int(random(100,300)));
         clouds.add(cloud);
       }
@@ -63,9 +62,6 @@ class PatternInfiniteSky extends CartesianPattern {
     color sky = color(red(morning) + steps[0] * timer, 
       green(morning) + steps[1] * timer, 
       blue(morning) + steps[2] * timer);
-    if(stormy && timer < lengthOfDay * 0.8) {
-      sky -= color(50,50,50);
-    }
     image.background(sky);
   }
   
@@ -102,12 +98,7 @@ class PatternInfiniteSky extends CartesianPattern {
         Position p = cloud.particles.get(j);
         float size = cloud.sizes.get(j);
         float brightness = cloud.brightness.get(j);
-        if (stormy) {
-          image.fill(color(100,100,100,brightness));
-        } 
-        else { 
-          image.fill(color(255,255,255,brightness));
-        }
+        image.fill(color(255,255,255,brightness));
         image.ellipse(p.x, p.y, size, size);
       }
       cloud.update();
@@ -127,11 +118,9 @@ class PatternInfiniteSky extends CartesianPattern {
       timer += direction;
       if (timer > lengthOfDay) { 
         direction = -1;
-        stormy = false;
       }
       else if (timer < 0) { 
         direction = 1; 
-        if (random(100) > 95) { stormy = true; println("STORMY!");} 
       }
     }
   }
@@ -207,15 +196,14 @@ class PatternInfiniteSky extends CartesianPattern {
     float speed;
     boolean remove = false;
     Cloud(Position base, int size) {
-      speed = random(1); 
+      speed = random(1,3); 
       particles = new ArrayList<Position>();
       sizes = new ArrayList<Float>();
       brightness = new ArrayList<Float>();
       direction = new ArrayList<Integer>();
       for (int i = 0; i < size; i++) {
         particles.add(new Position(base.x + i * random(-1,1) / 2, base.y + i * random(-0.5,0.5) / 2 ));
-        if (stormy) { sizes.add(random(40,70)); }
-        else { sizes.add(random(20,40)); }
+        sizes.add(random(20,40)); 
         brightness.add(random(3));
         direction.add(1);
       }

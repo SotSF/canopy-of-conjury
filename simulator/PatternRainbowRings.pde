@@ -17,7 +17,6 @@ class PatternRainbowRings extends Pattern {
     colorMode(HSB, 100);
     
     if (conjurer.mode == MODE_MANUAL) {
-     clearStrips();
      if (delayCount == 0) {
         lightTracks.add(0);
         added = true;

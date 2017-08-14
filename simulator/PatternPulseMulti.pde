@@ -18,7 +18,6 @@ class PatternPulseMulti extends Pattern {
   }
   
   public void runDefault(Strip[] strips) {
-    clearStrips();
     boolean add = random(100) > 80;
     if (add && rows.size() < max) {
       rows.add(0);
