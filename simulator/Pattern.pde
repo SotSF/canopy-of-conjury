@@ -6,10 +6,10 @@ public interface IPattern {
   void renderAuxiliary();
 
   // Event methods
-  void onMousePressed  (int x, int y);
-  void onMouseReleased (int x, int y);
-  void onMouseClicked  (int x, int y);
-  void onMouseDragged  (int x, int y);
+  void onMousePressed  ();
+  void onMouseReleased ();
+  void onMouseClicked  ();
+  void onMouseDragged  ();
 
   // Set up and tear down
   void initialize();
@@ -24,10 +24,10 @@ class EmptyPattern implements IPattern {
   public void renderAuxiliary() {};
 
   // Event methods
-  void onMousePressed  (int x, int y) {};
-  void onMouseReleased (int x, int y) {};
-  void onMouseClicked  (int x, int y) {};
-  void onMouseDragged  (int x, int y) {};
+  void onMousePressed  () {};
+  void onMouseReleased () {};
+  void onMouseClicked  () {};
+  void onMouseDragged  () {};
 
   // Set up and tear down
   public void initialize() {};
@@ -54,10 +54,10 @@ class Pattern implements IPattern {
 
   // Event methods -- by default no action is taken. Inheriting pattern classes
   // can implement pattern-specific behavior
-  void onMousePressed  (int x, int y) {};
-  void onMouseReleased (int x, int y) {};
-  void onMouseClicked  (int x, int y) {};
-  void onMouseDragged  (int x, int y) {};
+  void onMousePressed  () {};
+  void onMouseReleased () {};
+  void onMouseClicked  () {};
+  void onMouseDragged  () {};
 
   // Set up and tear down
   public void initialize() {};

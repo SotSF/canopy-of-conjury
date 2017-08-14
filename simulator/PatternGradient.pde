@@ -19,6 +19,7 @@ class PatternGradient extends Pattern {
   private int csPadding = 10;
   private int csY = height - csDimensions - csPadding;
   private int csX = csPadding;
+  private int indicatorRadius = 5;
 
   // state attributes
   GradientTravelDirection curDirection;
@@ -69,12 +70,35 @@ class PatternGradient extends Pattern {
 
   public void renderAuxiliary () {
     image(colorSelector, csX, csY, csDimensions, csDimensions);
+
+    // If there are active colors, show black circles to indicate them. Show
+    // the active colors with black circles, and the staged colors with ????
+    ColorSelectionState state = this.colorState;
+
+    stroke(255);
+    fill(0);
+    if (state.active1.isSet()) this.renderColorIndicator(state.active1);
+    if (state.active2.isSet()) this.renderColorIndicator(state.active2);
+
+    fill(200);
+    if (state.staged1.isSet()) this.renderColorIndicator(state.staged1);
+    if (state.staged2.isSet()) this.renderColorIndicator(state.staged2);
+
+    // Determine if we are hovered over any of the indicators
+    state.checkHovering();
+  }
+
+  private void renderColorIndicator (ColorCoord colorCoord) {
+    ellipse(colorCoord.x, colorCoord.y, indicatorRadius, indicatorRadius);
   }
 
   /**
    * Determine if the mouse press occurred within the color selector
    */
-  public void onMousePressed (int x, int y) {
+  public void onMousePressed () {
+    int x = mouseX;
+    int y = mouseY;
+
     boolean xInBounds = csX < x && x < csX + csDimensions;
     boolean yInBounds = csY < y && y < csY + csDimensions; 
     if (!xInBounds || !yInBounds) {
@@ -93,6 +117,17 @@ class PatternGradient extends Pattern {
 
     // got a valid color, update the state
     this.colorState.addColor(x, y, clickedColor);
+
+    // initialize any indicator-dragging
+    this.colorState.initDragging();
+  }
+
+  public void onMouseDragged () {
+    this.colorState.dragSelectors();
+  }
+
+  public void onMouseReleased () {
+    this.colorState.ceaseDragging();
   }
 
   private void interpolateColors () {
@@ -101,8 +136,8 @@ class PatternGradient extends Pattern {
     // use HSB for this
     colorMode(HSB, 100);
 
-    color color1 = this.colorState.active1;
-    color color2 = this.colorState.active2;
+    color color1 = this.colorState.active1.c;
+    color color2 = this.colorState.active2.c;
 
     float hueStart    = hue(color1);
     float satStart    = saturation(color1);
@@ -156,12 +191,14 @@ class PatternGradient extends Pattern {
   }
 
   private class ColorSelectionState {
-    color active1;
-    color active2;
+    ColorCoord active1;
+    ColorCoord active2;
     ColorCoord staged1;
     ColorCoord staged2;
 
     public ColorSelectionState () {
+      this.active1 = new ColorCoord();
+      this.active2 = new ColorCoord();
       this.staged1 = new ColorCoord();
       this.staged2 = new ColorCoord();
     }
@@ -189,8 +226,8 @@ class PatternGradient extends Pattern {
       this.staged2.setParams(x, y, c);
 
       // move the colors into the active registries
-      this.active1 = this.staged1.c;
-      this.active2 = this.staged2.c;
+      this.active1.clone(this.staged1);
+      this.active2.clone(this.staged2);
 
       // regenerate the interpolated colors
       interpolateColors();
@@ -199,39 +236,115 @@ class PatternGradient extends Pattern {
       this.reset();
     }
 
-    private class ColorCoord {
-      int x;
-      int y;
-      color c;
+    /**
+     * Checks if any of the ColorCoords are being hovered
+     */
+    private void checkHovering () {
+      this.active1.checkHovering();
+      this.active2.checkHovering();
+      this.staged1.checkHovering();
+      this.staged2.checkHovering();
+    }
 
-      public ColorCoord () {
-        this(-1, -1, 0);
-      }
+    /**
+     * Called in the `onMousePressed` method. This checks to see if any of the
+     * ColorCoords are hovered over, and initiates the ColorCoord's dragging
+     * if so.
+     */
+    public void initDragging () {
+      this.active1.initDragging();
+      this.active2.initDragging();
+      this.staged1.initDragging();
+      this.staged2.initDragging();
+    }
 
-      public ColorCoord (int x, int y, color c) {
-        this.x = x;
-        this.y = y;
-        this.c = c;
-      }
+    /**
+     * Called in the `onMouseDragged` method. If any of the ColorCoords are
+     * currently being dragged, they will be moved
+     */
+    private void dragSelectors () {
+      this.active1.drag();
+      this.active2.drag();
+      this.staged1.drag();
+      this.staged2.drag();
+    }
 
-      /**
-       * If the color is 0, the ColorCoord has not been set
-       */
-      public boolean isSet () {
-        return this.c != 0;
-      }
+    private void ceaseDragging () {
+      this.active1.dragging = false;
+      this.active2.dragging = false;
+      this.staged1.dragging = false;
+      this.staged2.dragging = false;
+    }
+  }
 
-      public void setParams (int x, int y, color c) {
-        this.x = x;
-        this.y = y;
-        this.c = c;
-      }
+  private class ColorCoord {
+    int x;
+    int y;
+    color c;
 
-      public void reset () {
-        this.x = -1;
-        this.y = -1;
-        this.c = 0;
-      }
+    // Dragging parameters
+    boolean hovering = false;
+    boolean dragging = false;
+    int gripOffsetX;
+    int gripOffsetY;
+
+    public ColorCoord () {
+      this(-1, -1, 0);
+    }
+
+    public ColorCoord (int x, int y, color c) {
+      this.x = x;
+      this.y = y;
+      this.c = c;
+    }
+
+    /**
+     * Clones the parameters of another color coord
+     */
+    private void clone (ColorCoord otherColor) {
+      this.x = otherColor.x;
+      this.y = otherColor.y;
+      this.c = otherColor.c;
+    }
+
+    /**
+     * If the color is 0, the ColorCoord has not been set
+     */
+    public boolean isSet () {
+      return this.c != 0;
+    }
+
+    public void setParams (int x, int y, color c) {
+      this.x = x;
+      this.y = y;
+      this.c = c;
+    }
+
+    public void reset () {
+      this.x = -1;
+      this.y = -1;
+      this.c = 0;
+    }
+
+    public void checkHovering () {
+      int difX = mouseX - this.x;
+      int difY = mouseY - this.y;
+      this.hovering = sqrt(pow(difX, 2) + pow(difY, 2)) < indicatorRadius;
+    }
+
+    public void initDragging () {
+      if (this.hovering) this.dragging = true;
+      gripOffsetX = this.x - mouseX;
+      gripOffsetY = this.y - mouseY;
+    }
+
+    public void drag () {
+      if (!this.dragging) return;
+      this.x = mouseX + gripOffsetX;
+      this.y = mouseY + gripOffsetY;
+      this.c = get(this.x, this.y);
+
+      interpolateColors();
     }
   }
 }

@@ -267,19 +267,19 @@ void keyPressed () {
  * MOUSE EVENTS
  *****************************************************************************/
 void mousePressed () {
-  pattern.onMousePressed(mouseX, mouseY);
+  pattern.onMousePressed();
 }
 
 void mouseReleased () {
-  pattern.onMouseReleased(mouseX, mouseY);
+  pattern.onMouseReleased();
 }
 
 void mouseClicked () {
-  pattern.onMouseClicked(mouseX, mouseY);
+  pattern.onMouseClicked();
 }
 
 void mouseDragged () {
-  pattern.onMouseDragged(mouseX, mouseY);
+  pattern.onMouseDragged();
 }
 
 
