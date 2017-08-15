@@ -62,7 +62,7 @@ void push() {
        }
        strip += 6 * i; // which strip in simulator ledstrips
        if (i >= 8) strip += NUM_STRIPS / 2;
-       tripleZig.setPixel(ledstrips[strip].leds[led], l);
+       //tripleZig.setPixel(ledstrips[strip].leds[led], l);
      }
    }
 }

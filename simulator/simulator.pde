@@ -127,6 +127,7 @@ void draw() {
   renderCanopy();
   tick++;
   gui.run();
+  push();
 }
 
 void push() {
@@ -148,7 +149,7 @@ void push() {
         led = NUM_LEDS_PER_STRIP - led - 1;
       }
       strip += 6 * i; // which strip in simulator ledstrips
-       if (i >= 8) strip += NUM_STRIPS / 2;
+      //if (i >= 8) strip += NUM_STRIPS / 2;
       tripleZig.setPixel(ledstrips[strip].leds[led], l);
     }
   }
