@@ -9,19 +9,21 @@ class PatternInfiniteSky extends CartesianPattern {
   int numClouds = 10;
   int numStars = 200;
   int starLifespan = 100;
-  color morning = #79D1FF;
+  color morning = #29A0FF;
   color night = #2D2155;
-  int lengthOfDay = 250;
+  int lengthOfDay = 500;
   int timer = 0;
   boolean holdSky = false;
   int holdTimer = 0;
   int holdUntil = 50;
   int direction = 1;
+  boolean nightOnly = false;
   float[] steps = { (red(night) - red(morning))/lengthOfDay, 
         (green(night) - green(morning))/lengthOfDay, 
         (blue(night) - blue(morning))/lengthOfDay };
   PGraphics image;
-  PatternInfiniteSky() {
+  PatternInfiniteSky(boolean nightOnly) {
+    this.nightOnly = nightOnly;
     image = createGraphics(dimension, dimension);
   }
   void runDefault(Strip[] strips) {
@@ -32,14 +34,14 @@ class PatternInfiniteSky extends CartesianPattern {
    
     updateTimers();
    
-    if (timer > 0 && timer < lengthOfDay * 0.5 && direction == 1) {
+    if ((timer > 0 && timer < lengthOfDay * 0.5 && direction == 1) || nightOnly) {
       if (clouds.size() < numClouds && random(100) > 30) {
         Cloud cloud = new Cloud(new Position(random(dimension), random(dimension)), int(random(100,300)));
         clouds.add(cloud);
       }
     }
    
-    if (timer > lengthOfDay * 0.66) {
+    if (timer > lengthOfDay * 0.66 || nightOnly) {
       if (random(100) > 50) {
         Star star = new Star(new Position(int(random(dimension)), int(random(dimension))), 10);
         stars.add(star);
@@ -59,6 +61,7 @@ class PatternInfiniteSky extends CartesianPattern {
   }
   
   private void setBackground() {
+    if (nightOnly) { image.background(night); return; }
     color sky = color(red(morning) + steps[0] * timer, 
       green(morning) + steps[1] * timer, 
       blue(morning) + steps[2] * timer);
