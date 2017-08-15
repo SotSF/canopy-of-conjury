@@ -3,6 +3,7 @@
 */
 
 class PatternSound extends Pattern {
+  BeatListener bl;
   int colorShifter = 0;
   int direction = 1;
   
@@ -32,6 +33,11 @@ class PatternSound extends Pattern {
   }
   
   public void visualize(Strip[] strips) {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat, player);
+    }
     time = millis();
     milliDiff = time - mydelay;
     fftForward();
@@ -54,7 +60,7 @@ class PatternSound extends Pattern {
       
       // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
       // but we could be paying attention to any range of frequencies
-      if (i == 5) {
+      if (i == 7) {
         innerOffset = round(amplitude / 4);
       }
       if (i == 11) {

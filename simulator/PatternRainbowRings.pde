@@ -3,6 +3,7 @@
 */
 
 class PatternRainbowRings extends Pattern {
+  BeatListener bl;
   ArrayList<Integer> lightTracks;
   int currHue = 0;
   int delay = 14;
@@ -48,6 +49,11 @@ class PatternRainbowRings extends Pattern {
   }
   
   public void visualize(Strip[] strips) {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat, player);
+    }
     fftForward();
     
     // switch to HSB colors for this method

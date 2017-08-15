@@ -8,6 +8,7 @@ class PatternGradientPulse extends Pattern {
   float lastAvg = 0;
   int offSet = 10;
   int currHue = 0;
+  BeatListener bl;
   
   public PatternGradientPulse() {
     this.beatList = new ArrayList<Beat>();
@@ -48,6 +49,11 @@ class PatternGradientPulse extends Pattern {
   }
   
   public void visualize(Strip[] strips) {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat, player);
+    }
     fftForward();
     // switch to HSB colors for this method
     colorMode(HSB, 100);
@@ -71,7 +77,7 @@ class PatternGradientPulse extends Pattern {
       
       // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
       // but we could be paying attention to any range of frequencies
-      if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
+      if (i == 7 && amplitude > 30 || i == 11 && amplitude > 30) {
          color c = color(currHue, 100, amplitude);
          currHue += 1;
          if (currHue > 100) currHue = 0;

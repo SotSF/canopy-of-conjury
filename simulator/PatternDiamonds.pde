@@ -5,7 +5,7 @@ class PatternDiamonds extends CartesianPattern {
   
   int bassShape = 0;
   int trebleShape = numShapes - 1;
-  
+  BeatListener bl;
   Pattern gradient = new PatternGradientPulse();
   Diamond[] diamonds;
   PatternDiamonds() {
@@ -47,6 +47,11 @@ class PatternDiamonds extends CartesianPattern {
   }
   
   void visualize(Strip[] strips) {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat, player);
+    }
     gradient.visualize(strips);
     colorMode(HSB, 360);
     fftForward();

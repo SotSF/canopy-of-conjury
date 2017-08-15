@@ -97,8 +97,6 @@ class PatternBlossom extends Pattern {
       beat.setSensitivity(120);
       bl = new BeatListener(beat, player);
     }
-    if (listeningToMic) { beat.detect(audio.mix); }
-    else { beat.detect(player.mix); }
     int targetBrightness = petals[beatPetal].petalBrightness;
     fftForward();
     
