@@ -259,6 +259,8 @@ void keyPressed () {
       adjustApexHeight(0.2);
     }
   }
+
+  pattern.onKeyPressed();
 }
 
 

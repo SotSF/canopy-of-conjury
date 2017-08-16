@@ -10,6 +10,7 @@ public interface IPattern {
   void onMouseReleased ();
   void onMouseClicked  ();
   void onMouseDragged  ();
+  void onKeyPressed    ();
 
   // Set up and tear down
   void initialize();
@@ -28,6 +29,7 @@ class EmptyPattern implements IPattern {
   void onMouseReleased () {};
   void onMouseClicked  () {};
   void onMouseDragged  () {};
+  void onKeyPressed    () {};
 
   // Set up and tear down
   public void initialize() {};
@@ -58,6 +60,7 @@ class Pattern implements IPattern {
   void onMouseReleased () {};
   void onMouseClicked  () {};
   void onMouseDragged  () {};
+  void onKeyPressed    () {};
 
   // Set up and tear down
   public void initialize() {};
