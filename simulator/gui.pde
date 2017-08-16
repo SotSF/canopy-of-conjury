@@ -16,26 +16,29 @@ Button modebtn;
 enum PatternSelect {
   EMPTY("Empty"),
   BEAT_DETECT("Beat Detect"),
-  SWIRLS("Swirls"),
-  PULSE("Pulse"),
-  BURST("Fireworks"),
-  SUNFLOWER("Sunflower"),
   FLOWER("Blossom"),
-  HEART_BEAT("Heart Beat"),
-  SOUND("Sound"),
+  DIAMONDS("Diamonds"),
+  FIREFLIES("Fireflies"),
+  BURST("Fireworks"),
   GRADIENT_PULSE("Gradient Pulse"),
   GRADIENT("Gradient"),
-  RAINBOW_RINGS("Rainbow Rings"),
+  HEART_BEAT("Heart Beat"),
   INFINITE_SKY("Infinite Sky"),
-  DIAMONDS("Diamonds"),
-  TEST_SNAKE("Snake (Test)"),
-  TEST_ID_TRIPLETS("Identify Triple Zigs (Test)"),
-  TEST_ID_STRIP_0("Identify Strip Zero (Test)"),
-  TEST_RED_RING("Red Ring (Test)"),
+  INFINITE_NIGHT("Infinite Night"),
+  PULSE("Pulse"),
+  RAINBOW_RINGS("Rainbow Rings"),
+  SOUND("Sound"),
+  SOUND_BLOB("Sound Blob"),
+  SUNFLOWER("Sunflower"),
+  SWIRLS("Swirls"),
   STILL_IMAGE("Still Image"),
   GIF_IMAGE("Gif"),
   VIDEO("Video"),
-  PLAYLIST("Playlist");
+  PLAYLIST("Playlist"),
+  TEST_SNAKE("Snake (Test)"),
+  TEST_ID_TRIPLETS("Identify Triple Zigs (Test)"),
+  TEST_ID_STRIP_0("Identify Strip Zero (Test)"),
+  TEST_RED_RING("Red Ring (Test)");
 
   private final String displayName;
   private PatternSelect(String displayName) {
@@ -211,14 +214,16 @@ void controlEvent(ControlEvent theEvent) {
     println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
     selectedAudio = d.getItem(index).get("value").toString();
     if (player != null) player.mute();
-    if (selectedAudio.equals("Speaker Audio")) {
+    if (selectedAudio.equals("Speaker Audio")) { //<>// //<>// //<>// //<>// //<>//
       listeningToMic = true;
       fft = new FFT(audio.bufferSize(), audio.sampleRate());
+      fft.logAverages(11, 1);
     }
     else {
       listeningToMic = false;
       player = minim.loadFile(selectedAudio, 1024);
       fft = new FFT(player.bufferSize(), player.sampleRate());
+      fft.logAverages(11, 1);
     }
   }
   // GIF and IMGs
@@ -287,14 +292,20 @@ void setPattern(PatternSelect val) {
       pattern = new PatternBurst(this); break;
     case SUNFLOWER:
       pattern = new PatternSunflower(); break;
+    case FIREFLIES:
+      pattern = new PatternFireFlies(); break;
     case FLOWER:
       pattern = new PatternBlossom(); break;
     case HEART_BEAT:
       pattern = new PatternHeartPulse(0.1, -0.07, 5, 0.5); break;
     case INFINITE_SKY:
-      pattern = new PatternInfiniteSky(); break;
+      pattern = new PatternInfiniteSky(false); break;
+    case INFINITE_NIGHT:
+      pattern = new PatternInfiniteSky(true); break;
     case SOUND:
       pattern = new PatternSound(); break;
+    case SOUND_BLOB:
+      pattern = new PatternSoundBlob(); break;
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
     case GRADIENT:
@@ -341,6 +352,7 @@ void PlayAudio() {
     else {
       player = minim.loadFile(selectedAudio, 1024);
       fft = new FFT(player.bufferSize(), player.sampleRate());
+      fft.logAverages(11, 1);
     }
   }
   if (!player.isPlaying() && !listeningToMic) {
