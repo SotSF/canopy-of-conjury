@@ -80,8 +80,6 @@ void setup() {
   pattern = new EmptyPattern();
 }
 
-JPGEncoder jpg = new JPGEncoder();
-
 void draw() {
   if (conjurer.mode == MODE_LISTENING) {
     if (kinectServer != null) {

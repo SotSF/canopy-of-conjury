@@ -5,16 +5,7 @@
 *
 * Commands are received in the simulator.draw() method as a string, 
 * and then sent to parseCmd(), which then passes a Command to the Conjurer.
-*
-* The Conjurer can also receive PImages, passed to the Canopy from a 
-* Renderer client sketch. These images are added to the Canopy via the
-* ConjurerCanvas.
 */
-import java.awt.image.BufferedImage;
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
-import java.io.ByteArrayInputStream;
-
 
 final int MODE_MANUAL = 0;
 final int MODE_LISTENING = 1; //listening for commands from Kinect
@@ -86,20 +77,4 @@ void parseCmd(String cmd) {
     String action = json.getString("action").trim();
     conjurer.cmdString = cmd;
     conjurer.command = new Command(o,v,action);
-}
-
-class JPGEncoder {
-  byte[] encode(PImage img) throws IOException {
-    ByteArrayOutputStream imgbaso = new ByteArrayOutputStream();
-    ImageIO.write((BufferedImage) img.getNative(), "jpg", imgbaso);
-
-    return imgbaso.toByteArray();
-  }
-  PImage decode(byte[] imgbytes) throws IOException {
-    BufferedImage imgbuf = ImageIO.read(new ByteArrayInputStream(imgbytes));
-    PImage img = new PImage(imgbuf.getWidth(), imgbuf.getHeight(), RGB);
-    imgbuf.getRGB(0, 0, img.width, img.height, img.pixels, 0, img.width);
-    img.updatePixels();
-    return img; 
-  }
 }
