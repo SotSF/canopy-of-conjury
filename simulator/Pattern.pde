@@ -37,12 +37,15 @@ class EmptyPattern implements IPattern {
 }
 
 class Pattern implements IPattern {
+  BeatListener bl;
   // Rendering methods
   public void run(Strip[] strips) {
     if (listeningToMic){
+      fftForward();
       visualize(strips);
     } else {
       if (player != null && player.isPlaying()) {
+        fftForward();
         visualize(strips);
       } else {
         runDefault(strips);
@@ -70,6 +73,11 @@ class Pattern implements IPattern {
   public int sampleRate = 44100;
   
   public void fftForward() {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat);
+    }
     if (listeningToMic) fft.forward(audio.mix);
     else fft.forward(player.mix);
   }
@@ -288,7 +296,7 @@ class BeatListener implements AudioListener
 
   synchronized void samples(float[] sampsL, float[] sampsR)
   {
-    if (listeningToMic) {
+    if (listeningToMic) { //<>//
       beat.detect(audio.mix);
     }
     else { 
@@ -299,7 +307,7 @@ class BeatListener implements AudioListener
   
   synchronized void checkSource() {
     if (!listeningToMic && this.source == null) {
-      this.source = player; //<>//
+      this.source = player;
       this.source.addListener(this);
     }
   }

@@ -57,34 +57,12 @@ We make use of the Minim library and its fast Fourier transform methods to analy
 Using `getAmplitudeForBand(int band)`, we can get the average amplitude of each octave as a `float` value, and use that value to control anything we can think of--color values, including hue and brightness; sizes of objects; positions of objects; and so on. We're most interested in bands 5 through 11, with 5-7 corresponding to "bass-y", 8 and 9 to mids, and 10 and 11 to "treble-y". I've found it is enough to use just 7 for bass and 11 for treble visualization.
 
 ### visualize()-ing
-All audio-reactive patterns need to instantiate a `BeatListener` in their code, which is a Minim AudioListener that holds onto our sample buffers as we receive them from our audio source.
-All `visualize()` methods should start like so:
+The `Pattern` parent class contains a BeatListener object, which is a Minim audio listener that holds onto our sample buffers as we receive them from our audio source. It contains some `samples()` methods which are `synchronized` to our `visualize()` method to prevent our waveform from being made up of two different buffers. The `run()` method takes care of setting up our `BeatListener` and calling `fftFoward()` which performs the fast Fourier transform analysis on our audio source samples.
+
+Using the `getAmplitudeForBand()` method, we can then get values to manipulate our drawing, and visualize the audio source.
 
 ```java
 synchronized void visualize(Strip[] strips) {
-  if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
- fftForward();
- /* analysis and drawing code below */
-}
-```
-
-This method is `synchronized` to our BeatListener's `samples()` methods to prevent our waveform from being made up of two different buffers. 
-
-Using the `getAmplitudeForBand()` method, we can get values to manipulate our drawing, and visualize the audio source.
-
-```java
-synchronized void visualize(Strip[] strips) {
-  if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
- fftForward();
- /* analysis and drawing code below */
  colorMode(HSB, 360);
  for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - each corresponds to an octave
     float amplitude = getAmplitudeForBand(i);

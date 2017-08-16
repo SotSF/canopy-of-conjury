@@ -49,13 +49,6 @@ class PatternRainbowRings extends Pattern {
   }
   
   synchronized void visualize(Strip[] strips) {
-    if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
-    fftForward();
-    
     // switch to HSB colors for this method
     colorMode(HSB, 100);
     boolean added = false;

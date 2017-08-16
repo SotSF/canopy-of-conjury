@@ -92,14 +92,7 @@ class PatternBlossom extends Pattern {
   }
   
   synchronized void visualize(Strip[] strips) {
-    if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
     int targetBrightness = petals[beatPetal].petalBrightness;
-    fftForward();
-    
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
       float amplitude = getAmplitudeForBand(i);

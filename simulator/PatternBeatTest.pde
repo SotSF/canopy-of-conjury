@@ -5,12 +5,6 @@ class PatternBeatDetect extends CartesianPattern {
     image.noSmooth();
   }
   synchronized void visualize(Strip[] strips) {
-    if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
-    fftForward();
     colorMode(HSB, 360);
     image.beginDraw();
     image.clear();

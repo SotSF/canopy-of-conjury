@@ -44,15 +44,8 @@ class PatternDiamonds extends CartesianPattern {
   }
   
   synchronized void visualize(Strip[] strips) {
-    if (beat == null) { 
-      beat = new BeatDetect();
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
     gradient.visualize(strips);
     colorMode(HSB, 360);
-    fftForward();
-
     diamonds[bassShape].hue = int(random(270,290));
     diamonds[bassShape].satOffset = round(getAmplitudeForBand(5) * 10); 
     diamonds[trebleShape].hue = int(random(250,270));
