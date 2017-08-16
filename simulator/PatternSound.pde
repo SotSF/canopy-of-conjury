@@ -103,7 +103,6 @@ class PatternSoundBlob extends CartesianPattern {
   float trebleAmp = 0;
   float colorShift = 0;
   PatternSoundBlob() {
-    image = createGraphics(500, 500);
     image.noSmooth();
   }
   void runDefault(Strip[] strips) {

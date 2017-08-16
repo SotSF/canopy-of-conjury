@@ -19,14 +19,11 @@ class PatternHeartPulse extends CartesianPattern {
   float pulse = pulseMin;
   color colorMask = color(255);
   int brightness = 0;
-  
-  PGraphics image;
   public PatternHeartPulse(float growStep, float shrinkStep, float pulseMax, float pulseMin) {
     this.growStep = growStep;
     this.shrinkStep = shrinkStep;
     this.pulseMax = pulseMax;
     this.pulseMin = pulseMin;
-    image = createGraphics(dimension, dimension);
     image.noSmooth();
   }
   

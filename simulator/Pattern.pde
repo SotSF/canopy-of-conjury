@@ -93,7 +93,7 @@ class Pattern implements IPattern {
 public class CartesianPattern extends Pattern {
   int dimension = 500;
   float maxRadius = sqrt(2 * dimension * dimension);
-
+  PGraphics image = createGraphics(dimension, dimension);
   public CanopyCoord mapToCanopy(int x, int y) {
     int x2 = floor(map(x,0,dimension,-dimension/2,dimension/2));
     int y2 = floor(map(y,0,dimension,-dimension/2,dimension/2));

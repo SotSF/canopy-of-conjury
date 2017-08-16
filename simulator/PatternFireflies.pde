@@ -7,10 +7,7 @@ class PatternFireFlies extends CartesianPattern {
   int fireflyHue = 50;
   int lifespan = 1000;
   ArrayList<Firefly> fireflies = new ArrayList<Firefly>();
-  PGraphics image;
-
   PatternFireFlies() {
-    image = createGraphics(dimension, dimension);
     image.noStroke();
   }
   void runDefault(Strip[] strips) {

@@ -3,7 +3,6 @@
 */
 
 class PatternRainbowScan extends CartesianPattern {
-  PGraphics image = createGraphics(dimension, dimension);
   int shift = 0;
   public void runDefault(Strip[] strips) {
     colorMode(HSB, 100);

@@ -1,15 +1,12 @@
 class PatternDiamonds extends CartesianPattern {
-  PGraphics image;
   int numShapes = 16;
   int currentShape = 0;
-  
   int bassShape = 0;
   int trebleShape = numShapes - 1;
   BeatListener bl;
   Pattern gradient = new PatternGradientPulse();
   Diamond[] diamonds;
   PatternDiamonds() {
-    image = createGraphics(dimension, dimension);
     image.noSmooth();
     diamonds = new Diamond[numShapes];
     for (int i = 0; i < diamonds.length; i++) {

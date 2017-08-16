@@ -21,10 +21,9 @@ class PatternInfiniteSky extends CartesianPattern {
   float[] steps = { (red(night) - red(morning))/lengthOfDay, 
         (green(night) - green(morning))/lengthOfDay, 
         (blue(night) - blue(morning))/lengthOfDay };
-  PGraphics image;
+        
   PatternInfiniteSky(boolean nightOnly) {
     this.nightOnly = nightOnly;
-    image = createGraphics(dimension, dimension);
   }
   void runDefault(Strip[] strips) {
     clear();

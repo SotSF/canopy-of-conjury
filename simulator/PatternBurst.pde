@@ -6,14 +6,12 @@
 class PatternBurst extends CartesianPattern {
   ArrayList<Burst> targets;
   PImage[] frames;
-  PGraphics image;
   PatternBurst(PApplet window) {
      targets = new ArrayList<Burst>();
      frames = Gif.getPImages(window, "./images/firework.gif");
      for (PImage img : this.frames) {
        img.resize(dimension/3, dimension/3);
      }
-     image = createGraphics(dimension, dimension);
   }
   void runDefault(Strip[] strips) {
     if (conjurer.mode == MODE_MANUAL) {
