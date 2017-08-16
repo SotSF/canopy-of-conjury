@@ -4,14 +4,22 @@
 
 enum GradientTravelDirection {
   inwards,
-  outwards;
+  outwards
+}
+
+// The color gradient travels from one color to the other and then back again.
+// The states of this enum indicate which direction the gradient is currently
+// traveling in
+enum GradientPolarity {
+  forwards,
+  backwards
 }
 
 
 class PatternGradient extends Pattern {
-  ArrayList<RingColor> ringColors;
+  color[] ringColors = new color[NUM_LEDS_PER_STRIP];
   color[] interpolation;
-  ColorSelectionState colorState;
+  ColorSelectionState colorState = new ColorSelectionState();
 
   // color selector attributes
   private PImage colorSelector;
@@ -22,15 +30,10 @@ class PatternGradient extends Pattern {
   private int indicatorRadius = 5;
 
   // state attributes
-  GradientTravelDirection curDirection;
-  int curPosition;
-
-  public PatternGradient() {
-    this.ringColors = new ArrayList<RingColor>();
-    this.curDirection = GradientTravelDirection.outwards;
-    this.curPosition = 0;
-    this.colorState = new ColorSelectionState();
-  }
+  private GradientTravelDirection curDirection = GradientTravelDirection.outwards;
+  private GradientPolarity curPolarity = GradientPolarity.forwards;
+  private int curPosition = 0;
+  private int velocity = 1;
 
   public void initialize () {
     // Load the color selector image
@@ -41,28 +44,37 @@ class PatternGradient extends Pattern {
     // if no gradient has been initialized yet, don't do anything
     if (this.interpolation == null) return;
 
-    // add the next color to the front of the list
-    color nextColor = this.getColor();
-    ringColors.add(0, new RingColor(nextColor));
-
-    // remove the last color if the list is now greater than the number of leds
-    if (ringColors.size() > NUM_LEDS_PER_STRIP) {
-      ringColors.remove(NUM_LEDS_PER_STRIP);
-    }
-
-    // go through every position in ringColors, and light up the corresponding LED in all strips
-    for (int i = 0; i < ringColors.size(); i++) {
-      for (int j = 0; j < NUM_STRIPS; j++) {
-        Strip s = strips[j];
-        s.leds[i] = ringColors.get(i).c;
+    // move the colors along
+    if (curDirection == GradientTravelDirection.outwards) {
+      for (int v = NUM_LEDS_PER_STRIP - 1; v >= velocity; v--) {
+        ringColors[v] = ringColors[v - velocity];
+      }
+    } else {
+      for (int v = 0; v <= NUM_LEDS_PER_STRIP - 1 - velocity; v++) {
+        ringColors[v] = ringColors[v + velocity];
       }
     }
 
-    // Augment the position, flipping the color direction if appropriate
-    curPosition++;
-    if (curPosition == NUM_LEDS_PER_STRIP) {
-      curPosition = 0;
-      this.flipDirection();
+    // add new colors, flipping the gradient polarity if appropriate
+    for (int i = 0; i < velocity; i++) {
+      curPosition++;
+      if (curPosition == NUM_LEDS_PER_STRIP) {
+        curPosition = 0;
+        this.togglePolarity();
+      }
+
+      int ledToUpdate = curDirection == GradientTravelDirection.outwards
+        ? i
+        : NUM_LEDS_PER_STRIP - 1 - i;
+
+      ringColors[ledToUpdate] = this.getColor();
+    }
+
+    // update the strips
+    for (int j = 0; j < NUM_LEDS_PER_STRIP; j++) {
+      for (int k = 0; k < NUM_STRIPS; k++) {
+        strips[k].leds[j] = ringColors[j];
+      }
     }
   }
 
@@ -128,6 +140,19 @@ class PatternGradient extends Pattern {
     this.colorState.ceaseDragging();
   }
 
+  public void onKeyPressed () {
+    switch (key) {
+      case 'a':
+        if (velocity > 1) velocity--;
+        break;
+      case 'u':
+        if (velocity < 15) velocity++;
+        break;
+      case 's':
+        this.toggleGradientDirection();
+    }
+  }
+
   private void interpolateColors () {
     color[] interpolatedColors = new color[NUM_LEDS_PER_STRIP];
 
@@ -166,26 +191,31 @@ class PatternGradient extends Pattern {
 
   private color getColor () {
     // use the position, direction, and the pre-computed interpolation to retrieve the next color
-    if (curDirection == GradientTravelDirection.outwards) {
+    if (curPolarity == GradientPolarity.forwards) {
       return interpolation[curPosition];
     } else {
       return interpolation[NUM_LEDS_PER_STRIP - curPosition - 1];
     }
   }
 
-  private void flipDirection () {
-    if (curDirection == GradientTravelDirection.outwards) {
-      curDirection = GradientTravelDirection.inwards;
+  private void togglePolarity () {
+    if (curPolarity == GradientPolarity.forwards) {
+      curPolarity = GradientPolarity.backwards;
     } else {
-      curDirection = GradientTravelDirection.outwards;
+      curPolarity = GradientPolarity.forwards;
     }
   }
 
-  private class RingColor {
-    color c;
-    public RingColor(color c) {
-      this.c = c;
-    }
+  /**
+   * Toggles the direction that the gradient travels in (i.e. from the apex to the base, or the
+   * other way around.
+   */
+  private void toggleGradientDirection () {
+    curDirection = curDirection == GradientTravelDirection.outwards
+      ? GradientTravelDirection.inwards
+      : GradientTravelDirection.outwards;
+
+    curPosition = NUM_LEDS_PER_STRIP - 1 - curPosition;
   }
 
   private class ColorSelectionState {
