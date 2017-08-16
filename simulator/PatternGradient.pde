@@ -41,8 +41,6 @@ class PatternGradient extends Pattern {
     // if no gradient has been initialized yet, don't do anything
     if (this.interpolation == null) return;
 
-    clearStrips();
-
     // add the next color to the front of the list
     color nextColor = this.getColor();
     ringColors.add(0, new RingColor(nextColor));

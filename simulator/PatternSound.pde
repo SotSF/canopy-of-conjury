@@ -46,34 +46,9 @@ class PatternSound extends Pattern {
     milliDiff = time - mydelay;
     fftForward();
     colorMode(HSB, 100);
-    int innerOffset = 0;
-    int outerOffset = 0;
-
-    for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave
-      int lowFreq;
-      if ( i == 0 ) { 
-        lowFreq = 0;
-      } else {  
-        lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));
-      }
-      int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-
-      // we're asking for the index of lowFreq & hiFreq
-      int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
-      int hiBound = fft.freqToIndex(hiFreq); 
-
-      // calculate the average amplitude of the frequency band
-      float amplitude = fft.calcAvg(lowBound, hiBound);
-
-      // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
-      // but we could be paying attention to any range of frequencies
-      if (i == 7) {
-        innerOffset = round(amplitude / 4);
-      }
-      if (i == 11) {
-        outerOffset = round(amplitude / 3);
-      }
-    }
+    int innerOffset = round(getAmplitudeForBand(7) / 4);
+    int outerOffset = round(getAmplitudeForBand(11) / 3);
+    
 
     for (int i = 0; i < NUM_STRIPS; i++) {
       int lights = int(random(20, 25));
