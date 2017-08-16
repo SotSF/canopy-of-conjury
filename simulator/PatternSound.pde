@@ -1,42 +1,46 @@
 /*
 * Two rings, one each at apex and base, simulating sound wave movement.
-*/
+ */
 
 class PatternSound extends Pattern {
   BeatListener bl;
   int colorShifter = 0;
   int direction = 1;
-  
+
   int mydelay = 0;
   int milliDiff = 0;
   int time = 0;
 
   public void runDefault(Strip[] strips) {
     colorMode(HSB, 100);
-    int offset = int(random(5,10));
+    int offset = int(random(5, 10));
 
     for (int i = 0; i < NUM_STRIPS; i++) {
       //int lights = int(random(40,50));
-      int lights = int(random(20,30));
-       lights += offset;
-       for (int l = 0; l < lights; l++) {
-         strips[i].leds[l] = getColor(i, l);
-         int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
-         strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
-       }
+      int lights = int(random(20, 30));
+      lights += offset;
+      for (int l = 0; l < lights; l++) {
+        strips[i].leds[l] = getColor(i, l);
+        int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
+        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
+      }
     }
     if (random(100) > 99) direction = direction * -1;
     colorShifter += 120 / NUM_STRIPS * direction;
-    if (colorShifter >= 100) { colorShifter = 0; }
-    if (colorShifter < 0) { colorShifter = 100; }
-    colorMode(RGB,255);
+    if (colorShifter >= 100) { 
+      colorShifter = 0;
+    }
+    if (colorShifter < 0) { 
+      colorShifter = 100;
+    }
+    colorMode(RGB, 255);
   }
-  
-  public void visualize(Strip[] strips) {
+
+  synchronized void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
       beat.setSensitivity(120);
-      bl = new BeatListener(beat, player);
+      bl = new BeatListener(beat);
     }
     time = millis();
     milliDiff = time - mydelay;
@@ -44,20 +48,23 @@ class PatternSound extends Pattern {
     colorMode(HSB, 100);
     int innerOffset = 0;
     int outerOffset = 0;
-    
+
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave
       int lowFreq;
-      if ( i == 0 ) { lowFreq = 0; } 
-      else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
+      if ( i == 0 ) { 
+        lowFreq = 0;
+      } else {  
+        lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));
+      }
       int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-  
+
       // we're asking for the index of lowFreq & hiFreq
       int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
       int hiBound = fft.freqToIndex(hiFreq); 
-  
+
       // calculate the average amplitude of the frequency band
       float amplitude = fft.calcAvg(lowBound, hiBound);
-      
+
       // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
       // but we could be paying attention to any range of frequencies
       if (i == 7) {
@@ -67,29 +74,38 @@ class PatternSound extends Pattern {
         outerOffset = round(amplitude / 3);
       }
     }
-    
+
     for (int i = 0; i < NUM_STRIPS; i++) {
-      int lights = int(random(20,25));
-       for (int l = 0; l < innerOffset + lights; l++) {
-         if (l < NUM_LEDS_PER_STRIP) strips[i].leds[l] = getColor(i, l);
-       }
-       for (int l = 0; l < outerOffset + lights; l++) {
-         int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
-         strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
-       }
+      int lights = int(random(20, 25));
+      for (int l = 0; l < innerOffset + lights; l++) {
+        if (l < NUM_LEDS_PER_STRIP) strips[i].leds[l] = getColor(i, l);
+      }
+      for (int l = 0; l < outerOffset + lights; l++) {
+        int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
+        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
+      }
     }
     mydelay=time;
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     println(bpm);
-    if (bpm > 160) { direction = -1 * direction; }
-    else if (innerOffset > 10) { direction = -1 * direction; }
-    if (bpm < NUM_STRIPS) { bpm += bpm; }
+    if (bpm > 160) { 
+      direction = -1 * direction;
+    } else if (innerOffset > 10) { 
+      direction = -1 * direction;
+    }
+    if (bpm < NUM_STRIPS) { 
+      bpm += bpm;
+    }
     colorShifter += bpm / NUM_STRIPS * direction;
-    if (colorShifter >= 100) { colorShifter = 0; }
-    if (colorShifter < 0) { colorShifter = 100; }
-    colorMode(RGB,255);
+    if (colorShifter >= 100) { 
+      colorShifter = 0;
+    }
+    if (colorShifter < 0) { 
+      colorShifter = 100;
+    }
+    colorMode(RGB, 255);
   }
-  
+
   private color getColor(int s, int l) {
     int hue = s * 100 / NUM_STRIPS + colorShifter;
     if (hue > 100) {
@@ -99,6 +115,125 @@ class PatternSound extends Pattern {
       hue += 100;
     }
     int sat = 100 - l;
-    return color(hue,sat,100);
+    return color(hue, sat, 100);
+  }
+}
+
+class PatternSoundBlob extends CartesianPattern {
+  PGraphics image;
+  BeatListener bl;
+  float bassTheta = 0;
+  float bassAmp = 0;
+  float trebleTheta = bassTheta + PI;
+  float trebleAmp = 0;
+  float colorShift = 0;
+  PatternSoundBlob() {
+    image = createGraphics(500, 500);
+    image.noSmooth();
+  }
+  void runDefault(Strip[] strips) {
+    bassAmp = random(20, 200);
+    trebleAmp = random(20, 300);
+    image.beginDraw();
+    image.background(0);
+    image.noStroke();
+    image.pushMatrix();
+    image.translate(dimension/2, dimension/2);
+    image.noStroke();
+    image.fill(255);
+
+    renderSpike(bassAmp, bassTheta);
+    renderSpike(trebleAmp, trebleTheta);
+    for (int i = 1; i < 6; i++) {
+      renderSpike(bassAmp, bassTheta + i * PI / 3);
+      renderSpike(trebleAmp - i * 15, trebleTheta + i * PI / 6);
+    }
+
+    bassTheta += PI / 18;
+    //if (bassTheta >= 2 * PI) bassTheta -= 2 * PI;
+
+    trebleTheta += PI / 18;
+    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI; 
+    colorOverlay();
+    image.popMatrix();
+    image.endDraw();
+    scrapeImage(image.get(), strips);
+  }
+  synchronized void visualize(Strip[] strips) {
+    if (beat == null) { 
+      beat = new BeatDetect();
+      beat.setSensitivity(120);
+      bl = new BeatListener(beat);
+    }
+    fftForward();
+    bassAmp = getAmplitudeForBand(7) * 8;
+    trebleAmp = getAmplitudeForBand(11) * 14;
+    image.beginDraw();
+    image.background(0);
+    image.noStroke();
+    image.pushMatrix();
+    image.translate(dimension/2, dimension/2);
+    image.noStroke();
+    image.fill(255);
+
+    renderSpike(bassAmp, bassTheta);
+    renderSpike(trebleAmp, trebleTheta);
+    for (int i = 1; i < 6; i++) {
+      renderSpike(bassAmp, bassTheta + i * PI / 3);
+      if (trebleAmp > 200) { 
+        renderSpike(trebleAmp - i * 15, trebleTheta + i * PI / 6);
+      } else { 
+        renderSpike(trebleAmp, trebleTheta + i * PI / 6);
+      }
+    }
+
+    bassTheta += PI / 18;
+    //if (bassTheta >= 2 * PI) bassTheta -= 2 * PI;
+
+    trebleTheta += PI / 18;
+    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI; 
+    colorOverlay();
+    image.popMatrix();
+    image.endDraw();
+    scrapeImage(image.get(), strips);
+  }
+  void colorOverlay() {
+    colorMode(HSB, 360);
+    for (int x = 0; x < dimension; x++) {
+      for (int y = 0; y < dimension; y++) {
+        if (image.get(x, y) == color(360)) {
+          int xOff = x - dimension / 2;
+          int yOff = y - dimension / 2;
+          float r = sqrt(xOff * xOff + yOff * yOff);
+          float t = atan2(yOff, xOff);
+          if (t < 0) t += 2 * PI;
+          float hue = degrees(t) + colorShift;
+
+          if (hue >= 360) hue -= 360;
+          image.set(x, y, color(hue, r * 10, 360));
+        }
+      }
+    }
+    colorMode(RGB, 255);
+    colorShift += 0.5;
+    if (colorShift >= 360) colorShift = 0;
+  }
+
+  void renderSpike(float rad, float theta) {
+    float spokeWidth = 50;
+    float x = rad * cos(theta);
+    float y = rad * sin(theta);
+    float xr = spokeWidth * cos(theta + PI / 2);
+    float yr = spokeWidth * sin(theta + PI / 2);
+    float xl = spokeWidth * cos(theta - PI / 2);
+    float yl = spokeWidth * sin(theta - PI / 2);
+
+    image.beginShape();
+    image.curveVertex(xr, yr);
+    image.curveVertex(xr, yr);
+    image.curveVertex(x, y);
+    image.curveVertex(xl, yl);
+    image.curveVertex(xl, yl);
+    image.endShape();
   }
 }

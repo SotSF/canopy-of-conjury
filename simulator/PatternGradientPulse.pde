@@ -48,11 +48,11 @@ class PatternGradientPulse extends Pattern {
     colorMode(RGB,255);
   }
   
-  public void visualize(Strip[] strips) {
+  synchronized public void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
       beat.setSensitivity(120);
-      bl = new BeatListener(beat, player);
+      bl = new BeatListener(beat);
     }
     fftForward();
     // switch to HSB colors for this method
@@ -62,21 +62,7 @@ class PatternGradientPulse extends Pattern {
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
       if (added) { break; } // already added something this run, move on
-      int lowFreq;
-      if ( i == 0 ) { lowFreq = 0; } 
-      else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
-      int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-  
-      // we're asking for the index of lowFreq & hiFreq
-      int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
-      int hiBound = fft.freqToIndex(hiFreq); 
-  
-      // calculate the average amplitude of the frequency band
-      float amplitude = fft.calcAvg(lowBound, hiBound);
-      if (listeningToMic) amplitude += 5;
-      
-      // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
-      // but we could be paying attention to any range of frequencies
+      float amplitude = getAmplitudeForBand(i);
       if (i == 7 && amplitude > 30 || i == 11 && amplitude > 30) {
          color c = color(currHue, 100, amplitude);
          currHue += 1;

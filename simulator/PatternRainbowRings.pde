@@ -48,11 +48,11 @@ class PatternRainbowRings extends Pattern {
     if (delayCount >= delay) delayCount = 0;
   }
   
-  public void visualize(Strip[] strips) {
+  synchronized void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
       beat.setSensitivity(120);
-      bl = new BeatListener(beat, player);
+      bl = new BeatListener(beat);
     }
     fftForward();
     
@@ -63,23 +63,12 @@ class PatternRainbowRings extends Pattern {
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
       if (added) { break; } // already added something this run, move on
-      int lowFreq;
-      if ( i == 0 ) { lowFreq = 0; } 
-      else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
-      int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-
-      int lowBound = fft.freqToIndex(lowFreq); 
-      int hiBound = fft.freqToIndex(hiFreq); 
-      float amplitude = fft.calcAvg(lowBound, hiBound);
-
+      float amplitude = getAmplitudeForBand(i);
       if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
          lightTracks.add(0);
          added = true;
-        
-      } else {
-        if (amplitude >= highAmp) {
-          highAmp = amplitude;
-        }
+      } else if (amplitude >= highAmp) {
+        highAmp = amplitude;
       }
     }
     

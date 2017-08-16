@@ -46,40 +46,21 @@ class PatternDiamonds extends CartesianPattern {
     if (currentShape >= diamonds.length) currentShape = 0;
   }
   
-  void visualize(Strip[] strips) {
+  synchronized void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
       beat.setSensitivity(120);
-      bl = new BeatListener(beat, player);
+      bl = new BeatListener(beat);
     }
     gradient.visualize(strips);
     colorMode(HSB, 360);
     fftForward();
-    for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave
-      int lowFreq;
-      if ( i == 0 ) { lowFreq = 0; } 
-      else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
-      int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-  
-      // we're asking for the index of lowFreq & hiFreq
-      int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
-      int hiBound = fft.freqToIndex(hiFreq); 
-  
-      // calculate the average amplitude of the frequency band
-      float amplitude = fft.calcAvg(lowBound, hiBound);
-      
-      // keep track of high amplitudes in bands 5 (bass freqs) and 11 (treble freqs)
-      // but we could be paying attention to any range of frequencies
-      if (i == 5) {
-        diamonds[bassShape].hue = int(random(270,290));
-        diamonds[bassShape].satOffset = round(amplitude * 10);
-      }
-      if (i == 11) {
-       diamonds[trebleShape].hue = int(random(250,270));
-        diamonds[trebleShape].satOffset = round(amplitude * 10); 
-      }
-    }
-  
+
+    diamonds[bassShape].hue = int(random(270,290));
+    diamonds[bassShape].satOffset = round(getAmplitudeForBand(5) * 10); 
+    diamonds[trebleShape].hue = int(random(250,270));
+    diamonds[trebleShape].satOffset = round(getAmplitudeForBand(11) * 10); 
+
     image.beginDraw();
     image.clear();
     image.background(0);

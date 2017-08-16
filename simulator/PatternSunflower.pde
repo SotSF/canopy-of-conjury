@@ -91,34 +91,25 @@ class PatternBlossom extends Pattern {
     if (stripShift >= NUM_STRIPS) stripShift = 0;
   }
   
-  void visualize(Strip[] strips) {
+  synchronized void visualize(Strip[] strips) {
     if (beat == null) { 
       beat = new BeatDetect();
       beat.setSensitivity(120);
-      bl = new BeatListener(beat, player);
+      bl = new BeatListener(beat);
     }
     int targetBrightness = petals[beatPetal].petalBrightness;
     fftForward();
     
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
-      int lowFreq;
-      if ( i == 0 ) { lowFreq = 0; } 
-      else {  lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - i));  }
-      int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - i));
-
-      int lowBound = fft.freqToIndex(lowFreq); 
-      int hiBound = fft.freqToIndex(hiFreq); 
-      float amplitude = fft.calcAvg(lowBound, hiBound);
-
+      float amplitude = getAmplitudeForBand(i);
       if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
         targetBrightness = round(amplitude * 10);
-      } else {
-        if (amplitude >= highAmp) {
-          highAmp = amplitude;
-          targetBrightness = round(highAmp * 10);
-        }
+      } else if (amplitude >= highAmp) {
+        highAmp = amplitude;
+        targetBrightness = round(highAmp * 10);
       }
+      
     }
     if (beat.isOnset()) { shiftDirection = shiftDirection * -1; }
     petals[beatPetal].petalBrightness = targetBrightness;

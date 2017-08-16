@@ -70,6 +70,21 @@ class Pattern implements IPattern {
     if (listeningToMic) fft.forward(audio.mix);
     else fft.forward(player.mix);
   }
+  
+  public float getAmplitudeForBand(int band) {
+     int lowFreq;
+    if ( band == 0 ) { lowFreq = 0; } 
+    else { lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - band)); }
+    int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - band));
+
+    // we're asking for the index of lowFreq & hiFreq
+    int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
+    int hiBound = fft.freqToIndex(hiFreq); 
+    
+    // calculate the average amplitude of the frequency band
+    float avg = fft.calcAvg(lowBound, hiBound);
+    return avg;
+  }
 }
 
 public class CartesianPattern extends Pattern {
@@ -243,29 +258,46 @@ class BeatListener implements AudioListener
   private BeatDetect beat;
   private AudioPlayer source;
   private AudioInput input;
+  
+  BeatListener(BeatDetect beat) {
+    if (listeningToMic) {
+      this.input = audio;
+      this.input.addListener(this);
+      this.beat = beat;
+    } else 
+    {
+      this.source = player;
+      this.source.addListener(this);
+      this.beat = beat;
+    }
+  }
 
-  BeatListener(BeatDetect beat, AudioPlayer source)
+  synchronized void samples(float[] samps)
   {
-    this.source = source;
-    this.source.addListener(this);
-    this.beat = beat;
+    if (listeningToMic) { 
+      beat.detect(audio.mix);
+    }
+    else {
+      checkSource();
+      beat.detect(source.mix);
+    }
+  }
+
+  synchronized void samples(float[] sampsL, float[] sampsR)
+  {
+    if (listeningToMic) {
+      beat.detect(audio.mix);
+    }
+    else { 
+      checkSource();
+      beat.detect(source.mix);
+    }
   }
   
-  BeatListener(BeatDetect beat, AudioInput input) {
-    this.input = input;
-    this.input.addListener(this);
-    this.beat = beat;
-  }
-
-  void samples(float[] samps)
-  {
-    if (listeningToMic) beat.detect(audio.mix);
-    else beat.detect(source.mix);
-  }
-
-  void samples(float[] sampsL, float[] sampsR)
-  {
-    if (listeningToMic) beat.detect(audio.mix);
-    else beat.detect(source.mix);
+  synchronized void checkSource() {
+    if (!listeningToMic && this.source == null) {
+      this.source = player; //<>//
+      this.source.addListener(this);
+    }
   }
 }
