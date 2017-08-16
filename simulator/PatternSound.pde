@@ -89,8 +89,6 @@ class PatternSound extends Pattern {
 }
 
 class PatternSoundBlob extends CartesianPattern {
-  PGraphics image;
-  BeatListener bl;
   float bassTheta = 0;
   float bassAmp = 0;
   float trebleTheta = bassTheta + PI;
