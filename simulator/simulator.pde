@@ -11,8 +11,6 @@ import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
 import com.heroicrobot.dropbit.devices.pixelpusher.Strip;
 import java.util.*;
 
-PeasyCam camera;
-
 // == AUDIO VISUALIZER ===
 Minim minim;
 AudioInput audio;
@@ -60,6 +58,10 @@ GUI gui;
 PMatrix3D currCameraMatrix;
 PGraphics3D g3;
 
+// == CAMERA STATE ===
+PeasyCam camera;
+final float CAMERA_INITIAL_DISTANCE = BASE_DIAMETER * 1.1;
+
 void setup() {
   registry = new DeviceRegistry();
   observer = new TestObserver();
@@ -72,7 +74,7 @@ void setup() {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
-  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 1.1);
+  camera = new PeasyCam(this, CAMERA_INITIAL_DISTANCE);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
@@ -258,6 +260,18 @@ void keyPressed () {
     } else if (keyCode == DOWN) {
       adjustApexHeight(0.2);
     }
+  }
+
+  // camera manipulation shortcuts
+  switch (key) {
+    case 'B':
+      camera.reset(0);
+      camera.rotateX(-PI / 2);
+      break;
+    case 'T':
+      camera.reset(0);
+      camera.rotateX(PI / 2);
+      break;
   }
 
   pattern.onKeyPressed();
