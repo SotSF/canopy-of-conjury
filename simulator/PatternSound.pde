@@ -157,6 +157,7 @@ class PatternSoundBlob extends CartesianPattern {
     image.endDraw();
     scrapeImage(image.get(), strips);
   }
+  
   void colorOverlay() {
     colorMode(HSB, 360);
     for (int x = 0; x < dimension; x++) {
@@ -175,8 +176,8 @@ class PatternSoundBlob extends CartesianPattern {
       }
     }
     colorMode(RGB, 255);
-    colorShift += 0.5;
-    if (colorShift >= 360) colorShift = 0;
+    colorShift = (colorShift + 0.5) % 360;
+   
   }
 
   void renderSpike(float rad, float theta) {

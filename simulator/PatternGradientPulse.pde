@@ -21,8 +21,7 @@ class PatternGradientPulse extends Pattern {
     int r = int(random(100));
     if (r > 50 && beatList.size() < 25) {
       color c = color(currHue, 100, r * 2);
-       currHue += 1;
-       if (currHue > 100) currHue = 0;
+       currHue = (currHue + 1) % 360;
        beatList.add(new Beat(0, c));
     }
     
@@ -74,8 +73,7 @@ class PatternGradientPulse extends Pattern {
     if (!added) { 
       if (highAmp > 12 && beatList.size() < 25) {
         color c = color(currHue, 100, highAmp * 2);
-         currHue += 1;
-         if (currHue > 100) currHue = 0;
+         currHue = (currHue + 1) % 360;
          beatList.add(new Beat(0, c));
       }
     }
