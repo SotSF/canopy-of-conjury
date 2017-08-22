@@ -83,19 +83,19 @@ class PatternDiamonds extends CartesianPattern {
   }
   
   private class Diamond {
-    int hue;
+    float hue;
     int satOffset;
     int direction = -1;
     Diamond() {
-      this.hue = int(random(360));
+      this.hue = random(360);
       this.satOffset = 0;
     }
     
     void update() {
       //brightness = 0;
       satOffset += direction * 10;
-      if (satOffset > 360) direction = -1;
-      else if (satOffset < 0) direction = 1;
+      if (satOffset > 360) { direction = -1; hue = random(360); }
+      else if (satOffset < 0) { direction = 1; }
     }
   }
 }

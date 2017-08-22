@@ -87,13 +87,12 @@ class PatternKaleidoscope extends CartesianPattern {
     image.stroke(color(w.hue, 360, 360 * w.brightness, 360 - w.t));
     image.strokeWeight(3);
     image.fill(color(w.hue, 360, 360 * w.brightness, 360 - w.t));
-
     for (int i = 0; i < 6; i++) {
       image.rotate(PI / 3);
       image.beginShape();
       for (float x = 0; x < w.t; x += 5) {
         //float y0 = float y = w.amp * sin(x * image.height / w.amp);
-        float y = w.amp * sin(x * 0.2 * w.amp);
+        float y = w.flip * w.amp * sin(x * 0.2 * w.amp);
         image.curveVertex(x, y);
       }
       image.endShape();
@@ -110,14 +109,16 @@ class PatternKaleidoscope extends CartesianPattern {
     int t = 0;
     boolean remove = false;
     float hue;
+    int flip;
     Wave(float amp) {
       this.amp = amp;
       this.hue = random(360);
+      this.flip = random(100) > 50 ? 1 : -1;
     } 
     void update() {
       t += 5;
-      remove = t >= 300;
-      brightness -= 0.005;
+      if (t > 300) brightness -= 0.1;
+      if (brightness < 0) remove = true;
       hue = (hue + 5) % 360;
     }
 
