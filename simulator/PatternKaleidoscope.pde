@@ -3,11 +3,10 @@ class PatternKaleidoscope extends CartesianPattern {
   float throttle = 0;
   float triangleAngle = 0;
   float waveAngle = 0;
-  PGraphics wave = createGraphics(500, 500);
   void runDefault(Strip[] strips) {
+    image.noSmooth();
     image.beginDraw();
     image.background(0);
-
     float bassAmp = random(5, 100);
     if (random(100) > 60 && bassWaves.size() < 3 && millis() - throttle >= 2000) {
       throttle = millis();
@@ -40,7 +39,7 @@ class PatternKaleidoscope extends CartesianPattern {
       bassWaves.add(new Wave(bassAmp));
     }
 
-
+    Collections.sort(bassWaves);
     colorMode(HSB, 360);
     image.translate(image.width / 2, image.height / 2 );
     for (int i = bassWaves.size() - 1; i >= 0; i--) {
@@ -85,16 +84,16 @@ class PatternKaleidoscope extends CartesianPattern {
     image.rotate(w.theta);
     image.rotate( waveAngle );
 
-    image.stroke(color(w.hue, 360, 360, 360 - w.t));
+    image.stroke(color(w.hue, 360, 360 * w.brightness, 360 - w.t));
     image.strokeWeight(3);
-    image.fill(color(w.hue, 360, 360, 360 - w.t));
+    image.fill(color(w.hue, 360, 360 * w.brightness, 360 - w.t));
 
     for (int i = 0; i < 6; i++) {
       image.rotate(PI / 3);
       image.beginShape();
-      for (float x = 0; x < w.t; x += 1) {
+      for (float x = 0; x < w.t; x += 5) {
         //float y0 = float y = w.amp * sin(x * image.height / w.amp);
-        float y = w.amp * sin(x * w.amp);
+        float y = w.amp * sin(x * 0.2 * w.amp);
         image.curveVertex(x, y);
       }
       image.endShape();
@@ -117,8 +116,9 @@ class PatternKaleidoscope extends CartesianPattern {
     } 
     void update() {
       t += 5;
-      remove = t >= 200;
-      hue = (hue + 2) % 360;
+      remove = t >= 300;
+      brightness -= 0.005;
+      hue = (hue + 5) % 360;
     }
 
     public int compareTo(Object w) {

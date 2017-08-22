@@ -50,7 +50,7 @@ enum PatternSelect {
 PatternSelect[] patternNames = PatternSelect.values();
 
 class GUI {
-  public float timeToIdle = 300000; // in millis - 5 minutes
+  public float timeToIdle = 60000; // in millis
   public float lastAction;
   public ControlP5 cp5;
   

@@ -74,7 +74,8 @@ class Pattern implements IPattern {
   
   public void fftForward() {
     if (beat == null) { 
-      beat = new BeatDetect();
+      if (listeningToMic) beat = new BeatDetect(audio.bufferSize(), audio.sampleRate());
+      else beat = new BeatDetect(player.bufferSize(), player.sampleRate());
       beat.setSensitivity(120);
       bl = new BeatListener(beat);
     }
