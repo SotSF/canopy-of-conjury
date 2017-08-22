@@ -121,7 +121,6 @@ void draw() {
       popMatrix();
     }
   }
-
   renderCanopy();
   tick++;
   gui.run();
@@ -268,6 +267,7 @@ void keyPressed () {
  * MOUSE EVENTS
  *****************************************************************************/
 void mousePressed () {
+  gui.lastAction = millis(); // reset the idle timer
   pattern.onMousePressed();
 }
 

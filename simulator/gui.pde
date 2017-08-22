@@ -25,8 +25,10 @@ enum PatternSelect {
   HEART_BEAT("Heart Beat"),
   INFINITE_SKY("Infinite Sky"),
   INFINITE_NIGHT("Infinite Night"),
+  KALEIDOSCOPE("Kaleidoscope"),
   PULSE("Pulse"),
   RAINBOW_RINGS("Rainbow Rings"),
+  RAINBOW_WAVES("Rainbow Waves"),
   SOUND("Sound"),
   SOUND_BLOB("Sound Blob"),
   SUNFLOWER("Sunflower"),
@@ -45,13 +47,16 @@ enum PatternSelect {
     this.displayName = displayName;
   }
 };
+PatternSelect[] patternNames = PatternSelect.values();
 
 class GUI {
+  public float timeToIdle = 300000; // in millis - 5 minutes
+  public float lastAction;
   public ControlP5 cp5;
-
+  
   public GUI(PApplet window) {
     cp5 = new ControlP5(window);
-
+    lastAction = millis();
     // Playlist picker
     ScrollableList playlistDropdown = cp5.addScrollableList("PlaylistFolders")
                                           .setLabel("Select Playlist Folder")
@@ -133,6 +138,11 @@ class GUI {
   }
 
   public void run() {
+    if (millis() - lastAction >= timeToIdle) {
+      PatternSelect p = patternNames[int(random(patternNames.length - 7))];
+      setPattern(p);
+      lastAction = millis();
+    }
     currCameraMatrix = new PMatrix3D(g3.camera);
     camera();
     cp5.draw();
@@ -206,7 +216,7 @@ void controlEvent(ControlEvent theEvent) {
    ScrollableList d = (ScrollableList)theEvent.getController();
    String patternName = d.getItem(int(d.getValue())).get("value").toString();
    setPattern(PatternSelect.valueOf(patternName));
-  }
+  } //<>//
   // AUDIO
   if (theEvent.getController().getName() == "AudioFiles") {
     ScrollableList d = (ScrollableList)theEvent.getController();
@@ -270,7 +280,6 @@ String getFileExtension(File file) {
 }
 
 void addPatterns(ScrollableList list) {
-  PatternSelect[] patternNames = PatternSelect.values();
   for (int i = 0; i < patternNames.length; i++) {
     list.addItem(((PatternSelect)patternNames[i]).displayName, patternNames[i]);
   }
@@ -302,6 +311,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternInfiniteSky(false); break;
     case INFINITE_NIGHT:
       pattern = new PatternInfiniteSky(true); break;
+    case KALEIDOSCOPE:
+      pattern = new PatternKaleidoscope(); break;
     case SOUND:
       pattern = new PatternSound(); break;
     case SOUND_BLOB:
@@ -312,6 +323,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternGradient(); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
+    case RAINBOW_WAVES:
+      pattern = new PatternRainbowWaves(); break;
     case DIAMONDS:
       pattern = new PatternDiamonds(); break;
     case TEST_SNAKE:
@@ -413,8 +426,8 @@ void ToggleMode() {
   }
   else if (conjurer.mode == MODE_LISTENING) {
     conjurer.mode = MODE_MANUAL;
+    conjurer.clean();
     modebtn.setLabel("Switch to Kinect Mode");
-    kinectServer = null;
   }
 
   println(conjurer.mode);
