@@ -19,12 +19,19 @@ class PatternSound extends Pattern {
       //int lights = int(random(40,50));
       int lights = int(random(20, 30));
       lights += offset;
+
       for (int l = 0; l < lights; l++) {
         strips[i].leds[l] = getColor(i, l);
-        int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
-        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
+
+        int oppositeStripIndex = i + NUM_STRIPS / 2 > NUM_STRIPS
+          ? i - NUM_STRIPS / 2
+          : i + NUM_STRIPS / 2;
+
+        // color the LEDs on the outside the opposite color as those on the inside
+        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(oppositeStripIndex, l);
       }
     }
+
     if (random(100) > 99) direction = direction * -1;
     colorShifter += 120 / NUM_STRIPS * direction;
     if (colorShifter >= 100) { 
@@ -49,11 +56,17 @@ class PatternSound extends Pattern {
       for (int l = 0; l < innerOffset + lights; l++) {
         if (l < NUM_LEDS_PER_STRIP) strips[i].leds[l] = getColor(i, l);
       }
+
+      int oppositeStripIndex = i + NUM_STRIPS / 2 > NUM_STRIPS
+          ? i - NUM_STRIPS / 2
+          : i + NUM_STRIPS / 2;
+
       for (int l = 0; l < outerOffset + lights; l++) {
-        int outerColor = i + NUM_STRIPS / 2 > NUM_STRIPS ? i + NUM_STRIPS / 2 - NUM_STRIPS : i + NUM_STRIPS / 2; 
-        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(outerColor, l);
+        // color the LEDs on the outside the opposite color as those on the inside
+        strips[i].leds[NUM_LEDS_PER_STRIP - l - 1] = getColor(oppositeStripIndex, l);
       }
     }
+
     mydelay=time;
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     println(bpm);
@@ -68,22 +81,18 @@ class PatternSound extends Pattern {
     colorShifter += bpm / NUM_STRIPS * direction;
     if (colorShifter >= 100) { 
       colorShifter = 0;
-    }
-    if (colorShifter < 0) { 
+    } else if (colorShifter < 0) {
       colorShifter = 100;
     }
     colorMode(RGB, 255);
   }
 
-  private color getColor(int s, int l) {
-    int hue = s * 100 / NUM_STRIPS + colorShifter;
-    if (hue > 100) {
-      hue += -100;
-    }
-    if (hue < 0) {
-      hue += 100;
-    }
-    int sat = 100 - l;
+  private color getColor(int stripIndex, int ledIndex) {
+    int hue = 100 * stripIndex / NUM_STRIPS + colorShifter;
+    hue = hue % 100;
+    if (hue < 0) hue += 100;
+
+    int sat = 100 - ledIndex;
     return color(hue, sat, 100);
   }
 }

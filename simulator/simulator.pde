@@ -11,8 +11,6 @@ import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
 import com.heroicrobot.dropbit.devices.pixelpusher.Strip;
 import java.util.*;
 
-PeasyCam camera;
-
 // == AUDIO VISUALIZER ===
 Minim minim;
 AudioInput audio;
@@ -51,6 +49,7 @@ float APEX_DIAMETER = APEX_RADIUS * 2;
 float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
 Strip[] ledstrips = new Strip[NUM_STRIPS];
+
 Conjurer conjurer;
 IPattern pattern;
 
@@ -59,6 +58,11 @@ int tick = 0;
 GUI gui;
 PMatrix3D currCameraMatrix;
 PGraphics3D g3;
+Transforms transforms;
+
+// == CAMERA STATE ===
+PeasyCam camera;
+final float CAMERA_INITIAL_DISTANCE = BASE_DIAMETER * 1.1;
 
 void setup() {
   registry = new DeviceRegistry();
@@ -72,12 +76,13 @@ void setup() {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
   size(750, 750, P3D);
-  camera = new PeasyCam(this, 0, 0, 0, BASE_DIAMETER * 1.1);
+  camera = new PeasyCam(this, CAMERA_INITIAL_DISTANCE);
   gui = new GUI(this);
   g3 = (PGraphics3D)g;
   getCatenaryCoords();
   conjurer = new Conjurer(this);
   pattern = new EmptyPattern();
+  transforms = new Transforms(new RotationTransform());
 }
 
 void draw() {
@@ -121,9 +126,15 @@ void draw() {
       popMatrix();
     }
   }
+  ledstrips = transforms.apply(ledstrips);
+
+  // Render to screen
   renderCanopy();
-  tick++;
   gui.run();
+
+  tick++; //<>//
+
+  // Push to PixelPushers
   push();
 }
 
@@ -169,8 +180,6 @@ void renderCanopy() {
     line(-10, 0, x * scaleFactor, 10, 0, x * scaleFactor);
   }
   
-  
-
   // Large circle
   pushMatrix();
   rotateX(PI/2);
@@ -239,6 +248,18 @@ class Strip {
     this.leds = leds;
   }
 
+  // Clones another strip
+  public Strip(Strip otherStrip) {
+    leds = new color[otherStrip.length()];
+    for (int i = 0; i < otherStrip.length(); i++) {
+      color otherStripLed = otherStrip.leds[i];
+      float r = red(otherStripLed);
+      float g = blue(otherStripLed); //<>//
+      float b = green(otherStripLed);
+      leds[i] = color(r, g, b);
+    }
+  }
+
   public void clear() {
     for (int i = 0; i < leds.length; i++) {
       leds[i] = color(0);
@@ -257,6 +278,18 @@ void keyPressed () {
     } else if (keyCode == DOWN) {
       adjustApexHeight(0.2);
     }
+  }
+
+  // camera manipulation shortcuts
+  switch (key) {
+    case 'B':
+      camera.reset(0);
+      camera.rotateX(-PI / 2);
+      break;
+    case 'T':
+      camera.reset(0);
+      camera.rotateX(PI / 2);
+      break;
   }
 
   pattern.onKeyPressed();
