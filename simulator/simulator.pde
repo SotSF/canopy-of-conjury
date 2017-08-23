@@ -49,6 +49,8 @@ float APEX_DIAMETER = APEX_RADIUS * 2;
 float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
 Strip[] ledstrips = new Strip[NUM_STRIPS];
+Strip[] transformedStrips = new Strip[NUM_STRIPS];
+
 Conjurer conjurer;
 IPattern pattern;
 
@@ -57,6 +59,7 @@ int tick = 0;
 GUI gui;
 PMatrix3D currCameraMatrix;
 PGraphics3D g3;
+Transforms transforms;
 
 // == CAMERA STATE ===
 PeasyCam camera;
@@ -80,6 +83,7 @@ void setup() {
   getCatenaryCoords();
   conjurer = new Conjurer(this);
   pattern = new EmptyPattern();
+  transforms = new Transforms(new RotationTransform());
 }
 
 void draw() {
@@ -124,9 +128,15 @@ void draw() {
     }
   }
 
+  transformedStrips = transforms.apply(ledstrips);
+
+  // Render to screen
   renderCanopy();
-  tick++;
   gui.run();
+
+  tick++;
+
+  // Push to PixelPushers
   push();
 }
 
@@ -150,7 +160,7 @@ void push() {
       }
       strip += 6 * i; // which strip in simulator ledstrips
       //if (i >= 8) strip += NUM_STRIPS / 2;
-      tripleZig.setPixel(ledstrips[strip].leds[led], l);
+      tripleZig.setPixel(transformedStrips[strip].leds[led], l);
     }
   }
 }
@@ -200,7 +210,7 @@ void renderCanopy() {
 
 
 void renderStrip(int i) {
-  Strip s = ledstrips[i]; // this has all of our colors
+  Strip s = transformedStrips[i]; // this has all of our colors
   float angle = i * (2 * PI) / NUM_STRIPS;
 
   pushMatrix();
@@ -240,6 +250,21 @@ class Strip {
   color[] leds;
   public Strip(color[] leds) {
     this.leds = leds;
+  }
+
+  // Clones another strip
+  public Strip(Strip otherStrip) {
+    leds = new color[otherStrip.length()];
+    // TODO: do we really need to switch to HSB for this?
+    colorMode(HSB, 100);
+    for (int i = 0; i < otherStrip.length(); i++) {
+      color otherStripLed = otherStrip.leds[i];
+      float h = hue(otherStripLed);
+      float s = saturation(otherStripLed);
+      float b = brightness(otherStripLed);
+      leds[i] = color(h, s, b);
+    }
+    colorMode(RGB, 255);
   }
 
   public void clear() {
