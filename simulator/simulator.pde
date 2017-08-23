@@ -49,7 +49,6 @@ float APEX_DIAMETER = APEX_RADIUS * 2;
 float[][] catenaryCoords = new float[NUM_LEDS_PER_STRIP][2];
 
 Strip[] ledstrips = new Strip[NUM_STRIPS];
-Strip[] transformedStrips = new Strip[NUM_STRIPS];
 
 Conjurer conjurer;
 IPattern pattern;
@@ -128,13 +127,13 @@ void draw() {
     }
   }
 
-  transformedStrips = transforms.apply(ledstrips);
+  ledstrips = transforms.apply(ledstrips);
 
   // Render to screen
   renderCanopy();
   gui.run();
 
-  tick++;
+  tick++; //<>//
 
   // Push to PixelPushers
   push();
@@ -160,7 +159,7 @@ void push() {
       }
       strip += 6 * i; // which strip in simulator ledstrips
       //if (i >= 8) strip += NUM_STRIPS / 2;
-      tripleZig.setPixel(transformedStrips[strip].leds[led], l);
+      tripleZig.setPixel(ledstrips[strip].leds[led], l);
     }
   }
 }
@@ -182,8 +181,6 @@ void renderCanopy() {
     line(-10, 0, x * scaleFactor, 10, 0, x * scaleFactor);
   }
   
-  
-
   // Large circle
   pushMatrix();
   rotateX(PI/2);
@@ -210,7 +207,7 @@ void renderCanopy() {
 
 
 void renderStrip(int i) {
-  Strip s = transformedStrips[i]; // this has all of our colors
+  Strip s = ledstrips[i]; // this has all of our colors
   float angle = i * (2 * PI) / NUM_STRIPS;
 
   pushMatrix();
@@ -255,16 +252,13 @@ class Strip {
   // Clones another strip
   public Strip(Strip otherStrip) {
     leds = new color[otherStrip.length()];
-    // TODO: do we really need to switch to HSB for this?
-    colorMode(HSB, 100);
     for (int i = 0; i < otherStrip.length(); i++) {
       color otherStripLed = otherStrip.leds[i];
-      float h = hue(otherStripLed);
-      float s = saturation(otherStripLed);
-      float b = brightness(otherStripLed);
-      leds[i] = color(h, s, b);
+      float r = red(otherStripLed);
+      float g = blue(otherStripLed); //<>//
+      float b = green(otherStripLed);
+      leds[i] = color(r, g, b);
     }
-    colorMode(RGB, 255);
   }
 
   public void clear() {
