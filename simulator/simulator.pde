@@ -127,7 +127,7 @@ void draw() {
     }
   }
 
-  ledstrips = transforms.apply(ledstrips);
+  transforms.apply(ledstrips);
 
   // Render to screen
   renderCanopy();

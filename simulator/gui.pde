@@ -228,13 +228,18 @@ void controlPatternEvent (ControlEvent event) {
   setPattern(PatternSelect.valueOf(patternName));
 }
 
+void controlTransformEvent (ControlEvent event) {
+  String transformName = getListItemName(event);
+  setTransform(TransformSelect.valueOf(transformName));
+}
+
 void controlAudioEvent (ControlEvent event) {
   ScrollableList d = (ScrollableList)event.getController();
   int index = int(d.getValue());
-  println("[AUDIO SELECTED]" + d.getItem(index).get("value")); //<>// //<>//
+  println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
   selectedAudio = d.getItem(index).get("value").toString();
   if (player != null) player.mute();
-  if (selectedAudio.equals("Speaker Audio")) { //<>// //<>// //<>// //<>// //<>//
+  if (selectedAudio.equals("Speaker Audio")) {
     listeningToMic = true;
     fft = new FFT(audio.bufferSize(), audio.sampleRate());
     fft.logAverages(11, 1);
@@ -284,6 +289,7 @@ void controlEvent(ControlEvent event) {
 
   switch (controllerName) {
     case "PatternSelect"  : controlPatternEvent(event);   break;
+    case "TransformSelect": controlTransformEvent(event); break;
     case "AudioFiles"     : controlAudioEvent(event);     break;
     case "ImgFiles"       : controlImageEvent(event);     break;
     case "VidFiles"       : controlVideoEvent(event);     break;
@@ -380,6 +386,14 @@ void setPattern(PatternSelect val) {
   }
   selectedPattern = val;
   pattern.initialize();
+}
+
+void setTransform (TransformSelect transform) {
+  switch (transform) {
+    case ROTATION:
+      transforms.addTransform(new RotationTransform());
+      break;
+  }
 }
 
 void PlayAudio() {
