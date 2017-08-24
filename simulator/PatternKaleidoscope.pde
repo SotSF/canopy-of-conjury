@@ -1,3 +1,6 @@
+/**
+* Animate variations of a sine wave, rotated 6 times from center
+*/
 class PatternKaleidoscope extends CartesianPattern {
   ArrayList<Wave> bassWaves = new ArrayList<Wave>();
   float throttle = 0;

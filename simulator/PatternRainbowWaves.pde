@@ -1,3 +1,7 @@
+/** 
+* Given Point A (x0,y0) and B (x1,y1), 
+* animate a sine wave between the two 
+*/
 class PatternRainbowWaves extends CartesianPattern {
   ArrayList<Wave> waves = new ArrayList<Wave>();
   void runDefault(Strip[] strips) {

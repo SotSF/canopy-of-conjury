@@ -15,7 +15,7 @@ Button modebtn;
 
 enum PatternSelect {
   EMPTY("Empty"),
-  BEAT_DETECT("Beat Detect"),
+  BUBBLE_SPIRAL("Bubble Spiral"),
   FLOWER("Blossom"),
   DIAMONDS("Diamonds"),
   FIREFLIES("Fireflies"),
@@ -33,6 +33,7 @@ enum PatternSelect {
   SOUND_BLOB("Sound Blob"),
   SUNFLOWER("Sunflower"),
   SWIRLS("Swirls"),
+  TRIANGLES("Triangles"),
   STILL_IMAGE("Still Image"),
   GIF_IMAGE("Gif"),
   VIDEO("Video"),
@@ -291,8 +292,8 @@ void setPattern(PatternSelect val) {
   switch (val) {
     case EMPTY:
       pattern = new EmptyPattern(); break;  
-    case BEAT_DETECT:
-      pattern = new PatternBeatDetect(); break;
+    case BUBBLE_SPIRAL:
+      pattern = new PatternBubbleSpiral(); break;
     case SWIRLS:
       pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
     case PULSE:
@@ -317,6 +318,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternSound(); break;
     case SOUND_BLOB:
       pattern = new PatternSoundBlob(); break;
+    case TRIANGLES:
+      pattern = new PatternTriangles(); break;
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
     case GRADIENT:
