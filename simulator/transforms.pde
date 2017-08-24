@@ -7,6 +7,10 @@ class Transforms {
     transforms.add(transform);
   }
   
+  public Transforms () {
+    transforms = new ArrayList<Transform>();
+  }
+
   Strip[] apply (Strip[] ledStrips) {
     // Copy the strips over
     Strip[] transformStrips = new Strip[NUM_STRIPS];

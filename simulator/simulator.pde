@@ -82,7 +82,7 @@ void setup() {
   getCatenaryCoords();
   conjurer = new Conjurer(this);
   pattern = new EmptyPattern();
-  transforms = new Transforms(new RotationTransform());
+  transforms = new Transforms();
 }
 
 void draw() {
