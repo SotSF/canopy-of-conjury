@@ -34,10 +34,10 @@ class PatternSound extends Pattern {
 
     if (random(100) > 99) direction = direction * -1;
     colorShifter += 120 / NUM_STRIPS * direction;
-    if (colorShifter >= 100) { 
+    if (colorShifter >= 100) {
       colorShifter = 0;
     }
-    if (colorShifter < 0) { 
+    if (colorShifter < 0) {
       colorShifter = 100;
     }
     colorMode(RGB, 255);
@@ -49,7 +49,7 @@ class PatternSound extends Pattern {
     colorMode(HSB, 100);
     int innerOffset = round(getAmplitudeForBand(7) / 4);
     int outerOffset = round(getAmplitudeForBand(11) / 3);
-    
+
 
     for (int i = 0; i < NUM_STRIPS; i++) {
       int lights = int(random(20, 25));
@@ -70,16 +70,16 @@ class PatternSound extends Pattern {
     mydelay=time;
     int bpm = 6000 / milliDiff; // this should actually be 60000?
     println(bpm);
-    if (bpm > 160) { 
+    if (bpm > 160) {
       direction = -1 * direction;
-    } else if (innerOffset > 10) { 
+    } else if (innerOffset > 10) {
       direction = -1 * direction;
     }
-    if (bpm < NUM_STRIPS) { 
+    if (bpm < NUM_STRIPS) {
       bpm += bpm;
     }
     colorShifter += bpm / NUM_STRIPS * direction;
-    if (colorShifter >= 100) { 
+    if (colorShifter >= 100) {
       colorShifter = 0;
     } else if (colorShifter < 0) {
       colorShifter = 100;
@@ -128,7 +128,7 @@ class PatternSoundBlob extends CartesianPattern {
     //if (bassTheta >= 2 * PI) bassTheta -= 2 * PI;
 
     trebleTheta += PI / 18;
-    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI; 
+    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI;
     colorOverlay();
     image.popMatrix();
     image.endDraw();
@@ -149,9 +149,9 @@ class PatternSoundBlob extends CartesianPattern {
     renderSpike(trebleAmp, trebleTheta);
     for (int i = 1; i < 6; i++) {
       renderSpike(bassAmp, bassTheta + i * PI / 3);
-      if (trebleAmp > 200) { 
+      if (trebleAmp > 200) {
         renderSpike(trebleAmp - i * 15, trebleTheta + i * PI / 6);
-      } else { 
+      } else {
         renderSpike(trebleAmp, trebleTheta + i * PI / 6);
       }
     }
@@ -160,7 +160,7 @@ class PatternSoundBlob extends CartesianPattern {
     //if (bassTheta >= 2 * PI) bassTheta -= 2 * PI;
 
     trebleTheta += PI / 18;
-    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI; 
+    //if (trebleTheta >= 2 * PI) trebleTheta -= 2 * PI;
     colorOverlay();
     image.popMatrix();
     image.endDraw();
