@@ -46,6 +46,15 @@ enum PatternSelect {
   }
 };
 
+enum TransformSelect {
+  ROTATION("Rotation");
+
+  private final String displayName;
+  private TransformSelect(String displayName) {
+    this.displayName = displayName;
+  }
+}
+
 class GUI {
   public ControlP5 cp5;
 
@@ -127,6 +136,14 @@ class GUI {
                                     .setPosition(10,10)
                                     .setOpen(false);
     addPatterns(patternList);
+
+    ScrollableList transformList = cp5.addScrollableList("TransformSelect")
+                                    .setLabel("Select Transform")
+                                    .setSize(150,200)
+                                    .setPosition(10,50)
+                                    .setOpen(false);
+
+    addTransforms(transformList);
 
     cp5.addButton("DebugLedstrips").setLabel("Debug").setPosition(0,220);
     cp5.setAutoDraw(false);
@@ -285,6 +302,13 @@ void addPatterns(ScrollableList list) {
   PatternSelect[] patternNames = PatternSelect.values();
   for (int i = 0; i < patternNames.length; i++) {
     list.addItem(((PatternSelect)patternNames[i]).displayName, patternNames[i]);
+  }
+}
+
+void addTransforms(ScrollableList list) {
+  TransformSelect[] transformNames = TransformSelect.values();
+  for (int i = 0; i < transformNames.length; i++) {
+    list.addItem(((TransformSelect)transformNames[i]).displayName, transformNames[i]);
   }
 }
 
