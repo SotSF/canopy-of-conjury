@@ -201,64 +201,76 @@ String[] listFileNames(String dir) {
   }
 }
 
-void controlEvent(ControlEvent theEvent) {
-  if (theEvent.getController().getName() == "PatternSelect") {
-   ScrollableList d = (ScrollableList)theEvent.getController();
-   String patternName = d.getItem(int(d.getValue())).get("value").toString();
-   setPattern(PatternSelect.valueOf(patternName));
-  }
-  // AUDIO
-  if (theEvent.getController().getName() == "AudioFiles") {
-    ScrollableList d = (ScrollableList)theEvent.getController();
-    int index = int(d.getValue());
-    println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
-    selectedAudio = d.getItem(index).get("value").toString();
-    if (player != null) player.mute();
-    if (selectedAudio.equals("Speaker Audio")) { //<>// //<>// //<>// //<>// //<>//
-      listeningToMic = true;
-      fft = new FFT(audio.bufferSize(), audio.sampleRate());
-      fft.logAverages(11, 1);
-    }
-    else {
-      listeningToMic = false;
-      player = minim.loadFile(selectedAudio, 1024);
-      fft = new FFT(player.bufferSize(), player.sampleRate());
-      fft.logAverages(11, 1);
-    }
-  }
-  // GIF and IMGs
-  if (theEvent.getController().getName() == "ImgFiles") {
-    ScrollableList d = (ScrollableList)theEvent.getController();
-    int index = int(d.getValue());
-    File f = new File(d.getItem(index).get("value").toString());
-    println(getFileExtension(f).toLowerCase().trim());
-    if (getFileExtension(f).toLowerCase().trim().equals("gif")) {
-      println("[GIF SELECTED]" + d.getItem(index).get("value").toString());
-      selectedGif = d.getItem(index).get("value").toString();
-      setPattern(PatternSelect.GIF_IMAGE);
-    } else {
-      println("[IMAGE SELECTED]" + d.getItem(index).get("value").toString());
-      selectedImg = d.getItem(index).get("value").toString();
-      setPattern(PatternSelect.STILL_IMAGE);
-    }
-  }
-  // VIDEO
-  if (theEvent.getController().getName() == "VidFiles") {
-    ScrollableList d = (ScrollableList)theEvent.getController();
-    int index = int(d.getValue());
-    println("[VIDEO SELECTED]" + d.getItem(index).get("name").toString());
-    selectedVid = d.getItem(index).get("name").toString();
-    movie = new Movie(this, selectedVid);
-    setPattern(PatternSelect.VIDEO);
-  }
+String getListItemName (ControlEvent event) {
+  ScrollableList d = (ScrollableList)event.getController();
+  return d.getItem(int(d.getValue())).get("value").toString();
+}
 
-  // PLAYLIST
-  if (theEvent.getController().getName() == "PlaylistFolders") {
-    ScrollableList d = (ScrollableList)theEvent.getController();
-    int index = int(d.getValue());
-    println("[PLAYLIST SELECTED]" + d.getItem(index).get("value").toString());
-    selectedPlaylist = d.getItem(index).get("value").toString();
-    setPattern(PatternSelect.PLAYLIST);
+void controlPatternEvent (ControlEvent event) {
+  String patternName = getListItemName(event);
+  setPattern(PatternSelect.valueOf(patternName));
+}
+
+void controlAudioEvent (ControlEvent event) {
+  ScrollableList d = (ScrollableList)event.getController();
+  int index = int(d.getValue());
+  println("[AUDIO SELECTED]" + d.getItem(index).get("value")); //<>// //<>//
+  selectedAudio = d.getItem(index).get("value").toString();
+  if (player != null) player.mute();
+  if (selectedAudio.equals("Speaker Audio")) { //<>// //<>// //<>// //<>// //<>//
+    listeningToMic = true;
+    fft = new FFT(audio.bufferSize(), audio.sampleRate());
+    fft.logAverages(11, 1);
+  } else {
+    listeningToMic = false;
+    player = minim.loadFile(selectedAudio, 1024);
+    fft = new FFT(player.bufferSize(), player.sampleRate());
+    fft.logAverages(11, 1);
+  }
+}
+
+void controlImageEvent (ControlEvent event) {
+  ScrollableList d = (ScrollableList)event.getController();
+  int index = int(d.getValue());
+  File f = new File(d.getItem(index).get("value").toString());
+  println(getFileExtension(f).toLowerCase().trim());
+  if (getFileExtension(f).toLowerCase().trim().equals("gif")) {
+    println("[GIF SELECTED]" + d.getItem(index).get("value").toString());
+    selectedGif = d.getItem(index).get("value").toString();
+    setPattern(PatternSelect.GIF_IMAGE);
+  } else {
+    println("[IMAGE SELECTED]" + d.getItem(index).get("value").toString());
+    selectedImg = d.getItem(index).get("value").toString();
+    setPattern(PatternSelect.STILL_IMAGE);
+  }
+}
+
+void controlVideoEvent (ControlEvent event) {
+  ScrollableList d = (ScrollableList)event.getController();
+  int index = int(d.getValue());
+  println("[VIDEO SELECTED]" + d.getItem(index).get("name").toString());
+  selectedVid = d.getItem(index).get("name").toString();
+  movie = new Movie(this, selectedVid);
+  setPattern(PatternSelect.VIDEO);
+}
+
+void controlPlaylistEvent (ControlEvent event) {
+  ScrollableList d = (ScrollableList)event.getController();
+  int index = int(d.getValue());
+  println("[PLAYLIST SELECTED]" + d.getItem(index).get("value").toString());
+  selectedPlaylist = d.getItem(index).get("value").toString();
+  setPattern(PatternSelect.PLAYLIST);
+}
+
+void controlEvent(ControlEvent event) {
+  String controllerName = event.getController().getName();
+
+  switch (controllerName) {
+    case "PatternSelect"  : controlPatternEvent(event);   break;
+    case "AudioFiles"     : controlAudioEvent(event);     break;
+    case "ImgFiles"       : controlImageEvent(event);     break;
+    case "VidFiles"       : controlVideoEvent(event);     break;
+    case "PlaylistFolders": controlPlaylistEvent(event);  break;
   }
 }
 
@@ -281,7 +293,7 @@ void setPattern(PatternSelect val) {
   FadeLEDs();
   switch (val) {
     case EMPTY:
-      pattern = new EmptyPattern(); break;  
+      pattern = new EmptyPattern(); break;
     case BEAT_DETECT:
       pattern = new PatternBeatDetect(); break;
     case SWIRLS:
