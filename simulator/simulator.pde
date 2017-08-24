@@ -254,10 +254,7 @@ class Strip {
     leds = new color[otherStrip.length()];
     for (int i = 0; i < otherStrip.length(); i++) {
       color otherStripLed = otherStrip.leds[i];
-      float r = red(otherStripLed);
-      float g = blue(otherStripLed); //<>//
-      float b = green(otherStripLed);
-      leds[i] = color(r, g, b);
+      leds[i] = color(otherStripLed);
     }
   }
 
