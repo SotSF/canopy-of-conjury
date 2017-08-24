@@ -130,13 +130,6 @@ class GUI {
     // ADD PARAM BUTTONS HERE
 
     // ======================
-    ScrollableList patternList = cp5.addScrollableList("PatternSelect")
-                                    .setLabel("Select Pattern")
-                                    .setSize(150,200)
-                                    .setPosition(10,10)
-                                    .setOpen(false);
-    addPatterns(patternList);
-
     ScrollableList transformList = cp5.addScrollableList("TransformSelect")
                                     .setLabel("Select Transform")
                                     .setSize(150,200)
@@ -144,6 +137,13 @@ class GUI {
                                     .setOpen(false);
 
     addTransforms(transformList);
+
+    ScrollableList patternList = cp5.addScrollableList("PatternSelect")
+                                    .setLabel("Select Pattern")
+                                    .setSize(150,200)
+                                    .setPosition(10,10)
+                                    .setOpen(false);
+    addPatterns(patternList);
 
     cp5.addButton("DebugLedstrips").setLabel("Debug").setPosition(0,220);
     cp5.setAutoDraw(false);

@@ -32,7 +32,18 @@ abstract class BaseTransform implements ITransform {
 }
 
 class RotationTransform extends BaseTransform {
-  private int offset = 0;
+  // Indicates the current position of the rotation. Ranges from 0 to NUM_STRIPS - 1.
+  // A value of 0 will cause no rotation to occur; a value of NUM_STRIPS / 4 will
+  // cause the pattern to rotate 90 degrees.
+  private int offset = NUM_STRIPS / 4;
+
+  // Controls the direction of the rotation as well as the speed. Positive values
+  // will cause clockwise rotations (when viewed from overhead) while negative
+  // values cause counterclockwise rotations. The magnitude of the velocity indicates
+  // how many strips the pattern will be rotated by with each iteration of the draw
+  // loop.
+  private int velocity = 1;
+
   void apply(Strip[] strips) {
     // strip list that will be moved to the front
     Strip[] lastStrips = new Strip[offset];
