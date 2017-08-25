@@ -24,19 +24,20 @@ class Transforms {
 
 
 public interface ITransform {
-  void apply(Strip[] strips);
+  void apply  (Strip[] strips);
+  void _apply (Strip[] strips);
 }
 
 abstract class BaseTransform implements ITransform {
-  void apply(Strip[] strips) {};
+  // Keeps track of the number of iterations through the draw loop the transform has been operating.
+  int timeStep = 0;
+  void apply(Strip[] strips) {
+    this._apply(strips);
+    timeStep += 1;
+  };
 }
 
 class RotationTransform extends BaseTransform {
-  // Indicates the current position of the rotation. Ranges from 0 to NUM_STRIPS - 1.
-  // A value of 0 will cause no rotation to occur; a value of NUM_STRIPS / 4 will
-  // cause the pattern to rotate 90 degrees.
-  private int offset = NUM_STRIPS / 4;
-
   // Controls the direction of the rotation as well as the speed. Positive values
   // will cause clockwise rotations (when viewed from overhead) while negative
   // values cause counterclockwise rotations. The magnitude of the velocity indicates
@@ -44,7 +45,12 @@ class RotationTransform extends BaseTransform {
   // loop.
   private int velocity = 1;
 
-  void apply(Strip[] strips) {
+  void _apply(Strip[] strips) {
+    // Indicates the current position of the rotation. Ranges from 0 to NUM_STRIPS - 1.
+    // A value of 0 will cause no rotation to occur; a value of NUM_STRIPS / 4 will
+    // cause the pattern to rotate 90 degrees.
+    int offset = timeStep % NUM_STRIPS;
+
     // strip list that will be moved to the front
     Strip[] lastStrips = new Strip[offset];
     for (int i = 0; i < offset; i++) {
