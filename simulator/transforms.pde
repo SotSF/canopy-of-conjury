@@ -66,8 +66,73 @@ class RotationTransform extends BaseTransform {
     for (int i = 0; i < offset; i++) {
       strips[i] = lastStrips[i];
     }
+  }
 
-    offset = (offset + direction) % NUM_STRIPS;
-    if (offset < 0) offset += NUM_STRIPS;
+  void changeDirection () {
+    velocity = velocity * -1;
+  }
+}
+
+
+boolean hsvTransformAutoSlide = false;
+void toggleHsvTransformMode () {
+  hsvTransformAutoSlide = !hsvTransformAutoSlide;
+  if (hsvTransformAutoSlide) println("HSV auto mode engaged");
+  else println("HSV auto mode terminated");
+}
+
+class HSVTransform extends BaseTransform {
+  Slider slider;
+  Button sliderModeButton;
+
+  private int sliderHeight = 200;
+  private int padding = 20;
+  private int sliderY = height - padding - sliderHeight;
+  private int sliderX = padding;
+  private int amplitude = 1;
+  private int sliderScaleFactor = 100;
+  private float hertz = 0.5;
+  private float stepsPerLap = 50;
+
+  public HSVTransform () {
+    super();
+
+    // add a vertical slider
+    slider = gui.cp5.addSlider("saturation")
+     .setPosition(sliderX, sliderY)
+     .setSize(20, sliderHeight)
+     .setRange(0, amplitude * sliderScaleFactor)
+     .setValue(amplitude * sliderScaleFactor)
+     .setSliderMode(Slider.FLEXIBLE);
+
+   sliderModeButton = gui.cp5.addButton("toggleHsvTransformMode")
+     .setLabel("Auto")
+     .setPosition(50, height - 50)
+     .setSize(50, 20);
+  }
+
+  void _apply (Strip[] strips) {
+    colorMode(HSB, 360, 100, 100);
+
+    // Move the value automatically if auto mode is engaged
+    if (hsvTransformAutoSlide) {
+      println(TWO_PI, hertz, timeStep, stepsPerLap, TWO_PI * hertz * timeStep / stepsPerLap);
+      float halfAmplitude = amplitude / 2.;
+      float newValue = halfAmplitude * sin(TWO_PI * hertz * timeStep / stepsPerLap) + halfAmplitude;
+      slider.setValue(newValue * sliderScaleFactor);
+    }
+
+    for (Strip strip : strips) {
+      for (int i = 0; i < strip.length(); i++) {
+        color curColor = strip.leds[i];
+        strip.leds[i] = color(
+          hue(curColor),
+          saturation(curColor) * slider.getValue() / (float)sliderScaleFactor,
+          brightness(curColor)
+        );
+      }
+    }
+
+    colorMode(RGB, 255);
   }
 }

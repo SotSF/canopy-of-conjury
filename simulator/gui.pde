@@ -47,7 +47,8 @@ enum PatternSelect {
 };
 
 enum TransformSelect {
-  ROTATION("Rotation");
+  ROTATION("Rotation"),
+  HSV("HSV");
 
   private final String displayName;
   private TransformSelect(String displayName) {
@@ -392,6 +393,9 @@ void setTransform (TransformSelect transform) {
   switch (transform) {
     case ROTATION:
       transforms.addTransform(new RotationTransform());
+      break;
+    case HSV:
+      transforms.addTransform(new HSVTransform());
       break;
   }
 }
