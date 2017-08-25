@@ -52,20 +52,20 @@ scrapeImage(image.get(), strips);
 The image is scraped after the draw, and applied to the virtual LED strips.
 
 ## Sound Reactivity
-We make use of the Minim library and its fast Fourier transform methods to analyze audio sources. There's good reading on the [Minim website](http://code.compartmental.net/2007/03/21/fft-averages/) if you're interested in how it works. For our purposes, we're looking at 12 logarithmically spaced averaged bands, each of which corresponds to an octave.
+We make use of the Minim library and its fast Fourier transform methods to analyze audio sources. There's good reading on the [Minim website](http://code.compartmental.net/2007/03/21/fft-averages/) if you're interested in how it works. For our purposes, we're looking at 12 logarithmically spaced averaged bands, each of which corresponds to an octave. Minim related objects are available in the `Sound` class in `Sound.pde`.
 
-Using `getAmplitudeForBand(int band)`, we can get the average amplitude of each octave as a `float` value, and use that value to control anything we can think of--color values, including hue and brightness; sizes of objects; positions of objects; and so on. We're most interested in bands 5 through 11, with 5-7 corresponding to "bass-y", 8 and 9 to mids, and 10 and 11 to "treble-y". I've found it is enough to use just 7 for bass and 11 for treble visualization.
+Using `sound.getAmplitudeForBand(int band)`, we can get the average amplitude of each octave as a `float` value, and use that value to control anything we can think of--color values, including hue and brightness; sizes of objects; positions of objects; and so on. We're most interested in bands 5 through 11, with 5-7 typically corresponding to "bass-y", 8 and 9 to mids, and 10 and 11 to "treble-y". I've found it is enough to use just 7 for bass and 11 for treble visualization.
 
 ### visualize()-ing
-The `Pattern` parent class contains a BeatListener object, which is a Minim audio listener that holds onto our sample buffers as we receive them from our audio source. It contains some `samples()` methods which are `synchronized` to our `visualize()` method to prevent our waveform from being made up of two different buffers. The `run()` method takes care of setting up our `BeatListener` and calling `fftFoward()` which performs the fast Fourier transform analysis on our audio source samples.
+The `Sound` class contains a `BeatListener` object, which is a Minim audio listener that holds onto our sample buffers as we receive them from our audio source. It contains some `samples()` methods which are `synchronized` to our `visualize()` method to prevent our waveform from being made up of two different buffers. The BeatListener is configured whenever a new audio source is selected from the Audio dropdown list.
 
-Using the `getAmplitudeForBand()` method, we can then get values to manipulate our drawing, and visualize the audio source.
+Using the `sound.getAmplitudeForBand()` function, we can then get values to manipulate our drawing, and visualize the audio source. Also available are the Sound's `BeatDetect` functions: `sound.beat.isOnset()`, `sound.beat.isKick()`, `sound.beat.isSnare()`, and `sound.beat.isHat()` - these all return boolean values.
 
 ```java
 synchronized void visualize(Strip[] strips) {
  colorMode(HSB, 360);
  for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - each corresponds to an octave
-    float amplitude = getAmplitudeForBand(i);
+    float amplitude = sound.getAmplitudeForBand(i);
     // if the amplitude of a given octave is greater than 10, save it for later
     // we'll be using our amplitudes to control the brightness of an object
     if (amplitude > 10) { 
@@ -77,7 +77,7 @@ synchronized void visualize(Strip[] strips) {
   image.background(0);
   image.translate(dimension/2, dimension/2);
   for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave
-    float amplitude = getAmplitudeForBand(i);
+    float amplitude = sound.getAmplitudeForBand(i);
     image.rotate(2 * PI / 12);
     if (amplitude > 10) { 
       brightness[i] = round(amplitude * 10);
@@ -93,5 +93,3 @@ synchronized void visualize(Strip[] strips) {
   colorMode(RGB, 255);
 }
 ```
-
-The code above is available in `PatternBeatTest.pde`. It's typically enough to `getAmplitudeForBand(7)` for bass-y values and `getAmplitudeForBand(11)` for treble-y values, depending on what you're trying to animate.
