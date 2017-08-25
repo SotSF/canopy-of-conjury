@@ -3,7 +3,6 @@
  */
 
 class PatternSound extends Pattern {
-  BeatListener bl;
   int colorShifter = 0;
   int direction = 1;
 
@@ -47,8 +46,8 @@ class PatternSound extends Pattern {
     time = millis();
     milliDiff = time - mydelay;
     colorMode(HSB, 100);
-    int innerOffset = round(getAmplitudeForBand(7) / 4);
-    int outerOffset = round(getAmplitudeForBand(11) / 3);
+    int innerOffset = round(sound.getAmplitudeForBand(7) / 4);
+    int outerOffset = round(sound.getAmplitudeForBand(11) / 3);
     
 
     for (int i = 0; i < NUM_STRIPS; i++) {
@@ -135,8 +134,8 @@ class PatternSoundBlob extends CartesianPattern {
     scrapeImage(image.get(), strips);
   }
   synchronized void visualize(Strip[] strips) {
-    bassAmp = getAmplitudeForBand(7) * 8;
-    trebleAmp = getAmplitudeForBand(11) * 14;
+    bassAmp = sound.getAmplitudeForBand(7) * 8;
+    trebleAmp = sound.getAmplitudeForBand(11) * 14;
     image.beginDraw();
     image.background(0);
     image.noStroke();

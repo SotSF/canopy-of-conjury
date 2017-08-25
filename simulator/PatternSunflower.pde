@@ -44,7 +44,6 @@ class PatternSunflower extends Pattern {
 }
 
 class PatternBlossom extends Pattern {
-  BeatListener bl;
   int minHue = 280;
   int maxHue = 310;
   int stripShift = 0;
@@ -95,7 +94,7 @@ class PatternBlossom extends Pattern {
     int targetBrightness = petals[beatPetal].petalBrightness;
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
-      float amplitude = getAmplitudeForBand(i);
+      float amplitude = sound.getAmplitudeForBand(i);
       if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
         targetBrightness = round(amplitude * 10);
       } else if (amplitude >= highAmp) {
@@ -104,7 +103,7 @@ class PatternBlossom extends Pattern {
       }
       
     }
-    if (beat.isOnset()) { shiftDirection = shiftDirection * -1; }
+    if (sound.beat.isOnset()) { shiftDirection = shiftDirection * -1; }
     petals[beatPetal].petalBrightness = targetBrightness;
     colorMode(HSB, 360);
     for (int i = 0; i < petals.length; i++) {

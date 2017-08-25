@@ -3,7 +3,6 @@
 */
 
 class PatternRainbowRings extends Pattern {
-  BeatListener bl;
   ArrayList<Integer> lightTracks;
   int currHue = 0;
   int delay = 14;
@@ -55,7 +54,7 @@ class PatternRainbowRings extends Pattern {
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
       if (added) { break; } // already added something this run, move on
-      float amplitude = getAmplitudeForBand(i);
+      float amplitude = sound.getAmplitudeForBand(i);
       if (i == 5 && amplitude > 30 || i == 11 && amplitude > 30) {
          lightTracks.add(0);
          added = true;

@@ -8,7 +8,6 @@ class PatternGradientPulse extends Pattern {
   float lastAvg = 0;
   int offSet = 10;
   int currHue = 0;
-  BeatListener bl;
   
   public PatternGradientPulse() {
     this.beatList = new ArrayList<Beat>();
@@ -55,7 +54,7 @@ class PatternGradientPulse extends Pattern {
     float highAmp = 0;
     for (int i = 0; i < 12; i++) {  // 12 frequency bands/ranges - these correspond to an octave 
       if (added) { break; } // already added something this run, move on
-      float amplitude = getAmplitudeForBand(i);
+      float amplitude = sound.getAmplitudeForBand(i);
       if (i == 7 && amplitude > 30 || i == 11 && amplitude > 30) {
          color c = color(currHue, 100, amplitude);
          currHue += 1;

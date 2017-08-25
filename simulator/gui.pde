@@ -1,4 +1,4 @@
-int fadeSpeed = 10;
+int fadeSpeed = 10; //<>// //<>//
 int playlistRuntime = 3 * 1000;
 boolean isFadingOut = false;
 boolean stopCurrentAudio = true;
@@ -8,7 +8,6 @@ String selectedImg;
 String selectedGif;
 String selectedVid;
 String selectedPlaylist;
-boolean listeningToMic = false;
 PatternSelect selectedPattern = PatternSelect.EMPTY;
 
 Button modebtn;
@@ -224,17 +223,14 @@ void controlEvent(ControlEvent theEvent) {
     int index = int(d.getValue());
     println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
     selectedAudio = d.getItem(index).get("value").toString();
-    if (player != null) player.mute();
+    if (sound.player != null) sound.player.mute();
     if (selectedAudio.equals("Speaker Audio")) { //<>// //<>// //<>// //<>// //<>//
-      listeningToMic = true;
-      fft = new FFT(audio.bufferSize(), audio.sampleRate());
-      fft.logAverages(11, 1);
+      sound.listeningToMic = true;
+      sound.processMicSignal();
     }
     else {
-      listeningToMic = false;
-      player = minim.loadFile(selectedAudio, 1024);
-      fft = new FFT(player.bufferSize(), player.sampleRate());
-      fft.logAverages(11, 1);
+      sound.listeningToMic = false;
+      sound.processAudioFile(selectedAudio);
     }
   }
   // GIF and IMGs
@@ -363,25 +359,23 @@ void setPattern(PatternSelect val) {
 }
 
 void PlayAudio() {
-  if (player == null) {
+  if (sound.player == null) {
     if (selectedAudio == null) { println("[WARNING] No audio selected!"); }
     else {
-      player = minim.loadFile(selectedAudio, 1024);
-      fft = new FFT(player.bufferSize(), player.sampleRate());
-      fft.logAverages(11, 1);
+      sound.processAudioFile(selectedAudio);
     }
   }
-  if (!player.isPlaying() && !listeningToMic) {
-    player.play();
+  if (!sound.player.isPlaying() && !sound.listeningToMic) {
+    sound.player.play();
   }
 }
 
 void StopAudio() {
-  if (player != null && player.isPlaying()) { player.pause(); player.rewind(); }
+  if (sound.player != null && sound.player.isPlaying()) { sound.player.pause(); sound.player.rewind(); }
 }
 
 void PauseAudio() {
-  if (player != null && player.isPlaying()) { player.pause(); }
+  if (sound.player != null && sound.player.isPlaying()) { sound.player.pause(); }
 }
 
 void PlayVideo() {
@@ -402,7 +396,7 @@ void PauseVideo() {
     }
   }
 }
-
+ //<>//
 void MuteVideo() {
   if (movie != null) {
     if (videoMuted) { movie.volume(100); videoMuted = false; }
@@ -410,7 +404,7 @@ void MuteVideo() {
   }
 }
 
-void StopVideo() {
+void StopVideo() { //<>//
   if (movie != null) {
     if (selectedPattern == PatternSelect.VIDEO) {
       movie.stop();

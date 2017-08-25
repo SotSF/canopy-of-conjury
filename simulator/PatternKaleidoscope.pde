@@ -36,7 +36,7 @@ class PatternKaleidoscope extends CartesianPattern {
     image.beginDraw();
     image.background(0);
 
-    float bassAmp = getAmplitudeForBand(7);
+    float bassAmp = sound.getAmplitudeForBand(7);
     if ((bassAmp > 30 && millis() - throttle > 1000) && bassWaves.size() < 3 || bassWaves.size() < 1) {
       throttle = millis();
       bassWaves.add(new Wave(bassAmp));
@@ -54,7 +54,7 @@ class PatternKaleidoscope extends CartesianPattern {
     waveAngle -= radians(0.2);
     colorMode(RGB, 255);
 
-    renderTriangles(getAmplitudeForBand(10) * 5, beat.isKick());
+    renderTriangles(sound.getAmplitudeForBand(10) * 5, sound.beat.isKick());
     triangleAngle += radians(1);
 
 

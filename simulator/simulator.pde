@@ -11,13 +11,6 @@ import com.heroicrobot.dropbit.devices.pixelpusher.Pixel;
 import com.heroicrobot.dropbit.devices.pixelpusher.Strip;
 import java.util.*;
 
-// == AUDIO VISUALIZER ===
-Minim minim;
-AudioInput audio;
-AudioPlayer player;
-BeatDetect beat;
-FFT fft;
-
 Movie movie;
 
 Server kinectServer;
@@ -58,6 +51,7 @@ int tick = 0;
 GUI gui;
 PMatrix3D currCameraMatrix;
 PGraphics3D g3;
+Sound sound;
 Transforms transforms;
 
 // == CAMERA STATE ===
@@ -65,13 +59,12 @@ PeasyCam camera;
 final float CAMERA_INITIAL_DISTANCE = BASE_DIAMETER * 1.1;
 
 void setup() {
+  sound = new Sound(this);
   registry = new DeviceRegistry();
   observer = new TestObserver();
   registry.addObserver(observer);
   delay(500);
   kinectServer = new Server(this, 5111);
-  minim = new Minim(this);
-  audio = minim.getLineIn(Minim.STEREO, 1024, 192000.0);
   for (int i = 0; i < NUM_STRIPS; i++) {
     ledstrips[i] = new Strip(new color[NUM_LEDS_PER_STRIP]);
   }
@@ -126,13 +119,13 @@ void draw() {
       popMatrix();
     }
   }
-  ledstrips = transforms.apply(ledstrips);
+  //ledstrips = transforms.apply(ledstrips);
 
   // Render to screen
   renderCanopy();
   gui.run();
 
-  tick++; //<>//
+  tick++;
 
   // Push to PixelPushers
   push();

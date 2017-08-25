@@ -1,4 +1,4 @@
-public interface IPattern {
+public interface IPattern { //<>//
   // Rendering methods
   void run(Strip[] strips);
   void runDefault(Strip[] strips);
@@ -37,15 +37,14 @@ class EmptyPattern implements IPattern {
 }
 
 class Pattern implements IPattern {
-  BeatListener bl;
   // Rendering methods
   public void run(Strip[] strips) {
-    if (listeningToMic){
-      fftForward();
+    if (sound.listeningToMic){
+      sound.fftForward();
       visualize(strips);
     } else {
-      if (player != null && player.isPlaying()) {
-        fftForward();
+      if (sound.player != null && sound.player.isPlaying()) {
+        sound.fftForward();
         visualize(strips);
       } else {
         runDefault(strips);
@@ -68,35 +67,6 @@ class Pattern implements IPattern {
   // Set up and tear down
   public void initialize() {};
   public void onClose(Strip[] strips) { runDefault(strips); }
-
-  // Audio sampling rate
-  public int sampleRate = 44100;
-  
-  public void fftForward() {
-    if (beat == null) { 
-      if (listeningToMic) beat = new BeatDetect(audio.bufferSize(), audio.sampleRate());
-      else beat = new BeatDetect(player.bufferSize(), player.sampleRate());
-      beat.setSensitivity(120);
-      bl = new BeatListener(beat);
-    }
-    if (listeningToMic) fft.forward(audio.mix);
-    else fft.forward(player.mix);
-  }
-  
-  public float getAmplitudeForBand(int band) {
-     int lowFreq;
-    if ( band == 0 ) { lowFreq = 0; } 
-    else { lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - band)); }
-    int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - band));
-
-    // we're asking for the index of lowFreq & hiFreq
-    int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
-    int hiBound = fft.freqToIndex(hiFreq); 
-    
-    // calculate the average amplitude of the frequency band
-    float avg = fft.calcAvg(lowBound, hiBound);
-    return avg;
-  }
 }
 
 public class CartesianPattern extends Pattern {
@@ -263,53 +233,4 @@ class MoviePattern extends CartesianPattern {
 
 void movieEvent(Movie m) {
   m.read();
-}
-
-class BeatListener implements AudioListener
-{
-  private BeatDetect beat;
-  private AudioPlayer source;
-  private AudioInput input;
-  
-  BeatListener(BeatDetect beat) {
-    if (listeningToMic) {
-      this.input = audio;
-      this.input.addListener(this);
-      this.beat = beat;
-    } else 
-    {
-      this.source = player;
-      this.source.addListener(this);
-      this.beat = beat;
-    }
-  }
-
-  synchronized void samples(float[] samps)
-  {
-    if (listeningToMic) { 
-      beat.detect(audio.mix);
-    }
-    else {
-      checkSource();
-      beat.detect(source.mix);
-    }
-  }
-
-  synchronized void samples(float[] sampsL, float[] sampsR)
-  {
-    if (listeningToMic) { //<>//
-      beat.detect(audio.mix);
-    }
-    else { 
-      checkSource();
-      beat.detect(source.mix);
-    }
-  }
-  
-  synchronized void checkSource() {
-    if (!listeningToMic && this.source == null) {
-      this.source = player;
-      this.source.addListener(this);
-    }
-  }
 }
