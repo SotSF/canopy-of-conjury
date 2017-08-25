@@ -120,7 +120,7 @@ class PatternKaleidoscope extends CartesianPattern {
     } 
     void update() {
       t += 5;
-      if (t > 300) brightness -= 0.1;
+      if (t > 300) brightness -= 0.05;
       if (brightness < 0) remove = true;
       hue = (hue + 5) % 360;
     }
