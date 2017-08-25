@@ -3,7 +3,6 @@ class PatternDiamonds extends CartesianPattern {
   int currentShape = 0;
   int bassShape = 0;
   int trebleShape = numShapes - 1;
-  BeatListener bl;
   Pattern gradient = new PatternGradientPulse();
   Diamond[] diamonds;
   PatternDiamonds() {
@@ -12,7 +11,7 @@ class PatternDiamonds extends CartesianPattern {
     for (int i = 0; i < diamonds.length; i++) {
       diamonds[i] = new Diamond();
     }
-    
+
   }
   void runDefault(Strip[] strips) {
     colorMode(HSB, 360, 100, 100);
@@ -22,7 +21,7 @@ class PatternDiamonds extends CartesianPattern {
     image.translate(dimension/2,dimension/2);
     for (int i = 0; i < diamonds.length; i++) {
       if (i == currentShape) diamonds[i].satOffset += 60;
-      
+
       float theta = 2 * PI / numShapes;
       float radius = i % 2 == 0 ? 100 : 50;
       float dist = i % 2 == 0 ? dimension / 3 : dimension / 2;
@@ -42,14 +41,14 @@ class PatternDiamonds extends CartesianPattern {
     currentShape++;
     if (currentShape >= diamonds.length) currentShape = 0;
   }
-  
+
   synchronized void visualize(Strip[] strips) {
     gradient.visualize(strips);
     colorMode(HSB, 360, 100, 100);
     diamonds[bassShape].hue = int(random(270,290));
-    diamonds[bassShape].satOffset = round(getAmplitudeForBand(5) * 10); 
+    diamonds[bassShape].satOffset = round(sound.getAmplitudeForBand(5) * 10);
     diamonds[trebleShape].hue = int(random(250,270));
-    diamonds[trebleShape].satOffset = round(getAmplitudeForBand(11) * 10); 
+    diamonds[trebleShape].satOffset = round(sound.getAmplitudeForBand(11) * 10);
 
     image.beginDraw();
     image.clear();
@@ -57,7 +56,7 @@ class PatternDiamonds extends CartesianPattern {
     image.translate(dimension/2,dimension/2);
     for (int i = 0; i < diamonds.length; i++) {
       if (i == bassShape || i == trebleShape) diamonds[i].satOffset += 60;
-      
+
       float theta = 2 * PI / numShapes;
       float radius = i % 2 == 0 ? 100 : 50;
       float dist = i % 2 == 0 ? dimension / 3 : dimension / 2;
@@ -73,29 +72,29 @@ class PatternDiamonds extends CartesianPattern {
     }
     image.endDraw();
     scrapeImage(image.get(), strips);
-    
+
     bassShape += 2;
     trebleShape -= 2;
     if (bassShape >= diamonds.length) bassShape = 0;
     if (trebleShape < 0) trebleShape = numShapes - 1;
     colorMode(RGB, 255);
-    
+
   }
-  
+
   private class Diamond {
-    int hue;
+    float hue;
     int satOffset;
     int direction = -1;
     Diamond() {
-      this.hue = int(random(360));
+      this.hue = random(360);
       this.satOffset = 0;
     }
-    
+
     void update() {
       //brightness = 0;
       satOffset += direction * 10;
-      if (satOffset > 360) direction = -1;
-      else if (satOffset < 0) direction = 1;
+      if (satOffset > 360) { direction = -1; hue = random(360); }
+      else if (satOffset < 0) { direction = 1; }
     }
   }
 }

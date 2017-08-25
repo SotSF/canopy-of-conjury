@@ -3,7 +3,6 @@
  */
 
 class PatternSound extends Pattern {
-  BeatListener bl;
   int colorShifter = 0;
   int direction = 1;
 
@@ -46,10 +45,10 @@ class PatternSound extends Pattern {
   synchronized void visualize(Strip[] strips) {
     time = millis();
     milliDiff = time - mydelay;
-    colorMode(HSB, 360, 100, 100);
-    int innerOffset = round(getAmplitudeForBand(7) / 4);
-    int outerOffset = round(getAmplitudeForBand(11) / 3);
 
+    colorMode(HSB, 360, 100, 100);
+    int innerOffset = round(sound.getAmplitudeForBand(7) / 4);
+    int outerOffset = round(sound.getAmplitudeForBand(11) / 3);
 
     for (int i = 0; i < NUM_STRIPS; i++) {
       int lights = int(random(20, 25));
@@ -84,6 +83,7 @@ class PatternSound extends Pattern {
     } else if (colorShifter < 0) {
       colorShifter = 100;
     }
+
     colorMode(RGB, 255);
   }
 
@@ -135,8 +135,8 @@ class PatternSoundBlob extends CartesianPattern {
     scrapeImage(image.get(), strips);
   }
   synchronized void visualize(Strip[] strips) {
-    bassAmp = getAmplitudeForBand(7) * 8;
-    trebleAmp = getAmplitudeForBand(11) * 14;
+    bassAmp = sound.getAmplitudeForBand(7) * 8;
+    trebleAmp = sound.getAmplitudeForBand(11) * 14;
     image.beginDraw();
     image.background(0);
     image.noStroke();
@@ -166,6 +166,7 @@ class PatternSoundBlob extends CartesianPattern {
     image.endDraw();
     scrapeImage(image.get(), strips);
   }
+
   void colorOverlay() {
     colorMode(HSB, 360, 100, 100);
     for (int x = 0; x < dimension; x++) {
@@ -184,8 +185,8 @@ class PatternSoundBlob extends CartesianPattern {
       }
     }
     colorMode(RGB, 255);
-    colorShift += 0.5;
-    if (colorShift >= 360) colorShift = 0;
+    colorShift = (colorShift + 0.5) % 360;
+
   }
 
   void renderSpike(float rad, float theta) {

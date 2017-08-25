@@ -3,7 +3,7 @@
 * will correspond to a user's action. When the Conjurer is idling
 * it can direct the global IPattern, looping through static patterns.
 *
-* Commands are received in the simulator.draw() method as a string, 
+* Commands are received in the simulator.draw() method as a string,
 * and then sent to parseCmd(), which then passes a Command to the Conjurer.
 */
 
@@ -18,9 +18,11 @@ class Conjurer {
   Command command;
   PatternBurst burst;
   PatternRainbowRings rainbowRing;
+  PatternRainbowWaves rainbowWave;
   public Conjurer(PApplet window) {
     burst = new PatternBurst(window);
     rainbowRing = new PatternRainbowRings();
+    rainbowWave = new PatternRainbowWaves();
   }
   public void sendCommand(Command cmd) {
     this.command = cmd;
@@ -35,22 +37,35 @@ class Conjurer {
         case "WAVE":
           rainbowRing.addRing();
           break;
+        case "TRACE":
+          rainbowWave.addWave(command.origin,command.destination);
+          break;
+
       }
       this.command = null;
     }
     burst.run(ledstrips);
     rainbowRing.run(ledstrips);
+    rainbowWave.run(ledstrips);
   }
-  
+
+  public void clean() {
+    burst.targets.clear();
+    rainbowRing.lightTracks.clear();
+    rainbowWave.waves.clear();
+  }
+
 }
 
 
 class Command {
   PVector origin;
+  PVector destination;
   PVector vector;
   String action;
-  Command(PVector origin, PVector vector, String action) {
+  Command(PVector origin, PVector destination, PVector vector, String action) {
     this.origin = origin;
+    this.destination = destination;
     this.vector = vector;
     this.action = action;
   }
@@ -71,10 +86,13 @@ void parseCmd(String cmd) {
     String origin = json.getString("origin").trim(); // (x,y,z)
     String[] oCoords = origin.substring(1,origin.length() - 1).split(",");
     PVector o = new PVector(float(oCoords[0]), float(oCoords[1]), float(oCoords[2]));
+    String destination = json.getString("destination").trim(); // (x,y,z)
+    String[] dCoords = destination.substring(1,destination.length() - 1).split(",");
+    PVector d = new PVector(float(dCoords[0]), float(dCoords[1]), float(dCoords[2]));
     String vector = json.getString("vector").trim(); // (v1,v2,v3);
     String[] vCoords = vector.substring(1,vector.length() - 1).split(",");
     PVector v = new PVector(float(vCoords[0]), float(vCoords[1]), float(vCoords[2]));
     String action = json.getString("action").trim();
     conjurer.cmdString = cmd;
-    conjurer.command = new Command(o,v,action);
+    conjurer.command = new Command(o,d,v,action);
 }
