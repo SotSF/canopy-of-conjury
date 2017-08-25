@@ -1,4 +1,4 @@
-int fadeSpeed = 10; //<>// //<>//
+int fadeSpeed = 10; //<>//
 int playlistRuntime = 3 * 1000;
 boolean isFadingOut = false;
 boolean stopCurrentAudio = true;
@@ -32,6 +32,7 @@ enum PatternSelect {
   SOUND_BLOB("Sound Blob"),
   SUNFLOWER("Sunflower"),
   SWIRLS("Swirls"),
+  TENTACLES("Tentacles"),
   TRIANGLES("Triangles"),
   STILL_IMAGE("Still Image"),
   GIF_IMAGE("Gif"),
@@ -59,7 +60,7 @@ enum TransformSelect {
 }
 
 class GUI {
-  public float timeToIdle = 60000; // in millis
+  public float timeToIdle = 120000; // in millis
   public float lastAction;
   public ControlP5 cp5;
   
@@ -358,6 +359,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternSoundBlob(); break;
     case TRIANGLES:
       pattern = new PatternTriangles(); break;
+    case TENTACLES:
+      pattern = new PatternTentacles(); break;
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
     case GRADIENT:
