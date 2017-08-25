@@ -61,7 +61,7 @@ class RotationTransform extends BaseTransform {
       strips[i] = lastStrips[i];
     }
 
-    offset = (offset + direction) % NUM_STRIPS;
+    offset = (offset + velocity) % NUM_STRIPS;
     if (offset < 0) offset += NUM_STRIPS;
   }
 }
