@@ -15,7 +15,7 @@ class PatternRainbowRings extends Pattern {
   public void runDefault(Strip[] strips) {
     // switch to HSB colors for this method
     boolean added = false;
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     
     if (conjurer.mode == MODE_MANUAL) {
      if (delayCount == 0) {
@@ -43,14 +43,14 @@ class PatternRainbowRings extends Pattern {
       }
     }
     
-    colorMode(RGB,255);
+    colorMode(RGB, 255);
     delayCount++;
     if (delayCount >= delay) delayCount = 0;
   }
   
   synchronized void visualize(Strip[] strips) {
     // switch to HSB colors for this method
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     boolean added = false;
     
     float highAmp = 0;
@@ -88,7 +88,7 @@ class PatternRainbowRings extends Pattern {
       }
     }
     
-    colorMode(RGB,255);
+    colorMode(RGB, 255);
   }
   
   public void addRing() {

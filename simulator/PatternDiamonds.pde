@@ -15,7 +15,7 @@ class PatternDiamonds extends CartesianPattern {
     
   }
   void runDefault(Strip[] strips) {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     image.beginDraw();
     image.clear();
     image.background(0);
@@ -45,7 +45,7 @@ class PatternDiamonds extends CartesianPattern {
   
   synchronized void visualize(Strip[] strips) {
     gradient.visualize(strips);
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     diamonds[bassShape].hue = int(random(270,290));
     diamonds[bassShape].satOffset = round(getAmplitudeForBand(5) * 10); 
     diamonds[trebleShape].hue = int(random(250,270));

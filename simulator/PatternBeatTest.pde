@@ -5,7 +5,7 @@ class PatternBeatDetect extends CartesianPattern {
     image.noSmooth();
   }
   synchronized void visualize(Strip[] strips) {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     image.beginDraw();
     image.clear();
     image.background(0);

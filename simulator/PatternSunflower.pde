@@ -9,7 +9,7 @@ class PatternSunflower extends Pattern {
   int alphaFlowerDirection = -1;
   int stripShift = 0;
   public void runDefault(Strip[] strips) {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     int spikePos = 0;
     for (int s = 0; s < NUM_STRIPS; s++) {
       int strip = s + stripShift;
@@ -61,7 +61,7 @@ class PatternBlossom extends Pattern {
     
   }
   void runDefault(Strip[] strips) {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     for (int i = 0; i < petals.length; i++) {
       for (int l = 0; l < petals[i].petalLength; l++) {
         int scale = NUM_LEDS_PER_STRIP - l - 1;
@@ -106,7 +106,7 @@ class PatternBlossom extends Pattern {
     }
     if (beat.isOnset()) { shiftDirection = shiftDirection * -1; }
     petals[beatPetal].petalBrightness = targetBrightness;
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     for (int i = 0; i < petals.length; i++) {
       for (int l = 0; l < petals[i].petalLength; l++) {
         int scale = NUM_LEDS_PER_STRIP - l - 1;

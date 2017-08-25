@@ -28,7 +28,7 @@ class PatternFireFlies extends CartesianPattern {
   }
   
   void renderFirefly(Firefly f) {
-    colorMode(HSB,360);
+    colorMode(HSB, 360, 100, 100);
     image.pushMatrix();
     image.translate(f.x, f.y);
     for (int i = flySize; i >=0; i--) {
@@ -42,7 +42,7 @@ class PatternFireFlies extends CartesianPattern {
       image.ellipse(x,y,i * f.size, i * f.size);
     }
     image.popMatrix();
-    colorMode(RGB,255);
+    colorMode(RGB, 255);
   }
 
   class Firefly {

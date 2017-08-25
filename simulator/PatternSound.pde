@@ -12,7 +12,7 @@ class PatternSound extends Pattern {
   int time = 0;
 
   public void runDefault(Strip[] strips) {
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     int offset = int(random(5, 10));
 
     for (int i = 0; i < NUM_STRIPS; i++) {
@@ -46,7 +46,7 @@ class PatternSound extends Pattern {
   synchronized void visualize(Strip[] strips) {
     time = millis();
     milliDiff = time - mydelay;
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     int innerOffset = round(getAmplitudeForBand(7) / 4);
     int outerOffset = round(getAmplitudeForBand(11) / 3);
 
@@ -167,7 +167,7 @@ class PatternSoundBlob extends CartesianPattern {
     scrapeImage(image.get(), strips);
   }
   void colorOverlay() {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     for (int x = 0; x < dimension; x++) {
       for (int y = 0; y < dimension; y++) {
         if (image.get(x, y) == color(360)) {
