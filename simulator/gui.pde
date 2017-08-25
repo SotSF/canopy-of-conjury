@@ -1,4 +1,4 @@
-int fadeSpeed = 10;
+int fadeSpeed = 10; //<>// //<>//
 int playlistRuntime = 3 * 1000;
 boolean isFadingOut = false;
 boolean stopCurrentAudio = true;
@@ -8,14 +8,13 @@ String selectedImg;
 String selectedGif;
 String selectedVid;
 String selectedPlaylist;
-boolean listeningToMic = false;
 PatternSelect selectedPattern = PatternSelect.EMPTY;
 
 Button modebtn;
 
 enum PatternSelect {
   EMPTY("Empty"),
-  BEAT_DETECT("Beat Detect"),
+  BUBBLE_SPIRAL("Bubble Spiral"),
   FLOWER("Blossom"),
   DIAMONDS("Diamonds"),
   FIREFLIES("Fireflies"),
@@ -25,12 +24,15 @@ enum PatternSelect {
   HEART_BEAT("Heart Beat"),
   INFINITE_SKY("Infinite Sky"),
   INFINITE_NIGHT("Infinite Night"),
+  KALEIDOSCOPE("Kaleidoscope"),
   PULSE("Pulse"),
   RAINBOW_RINGS("Rainbow Rings"),
+  RAINBOW_WAVES("Rainbow Waves"),
   SOUND("Sound"),
   SOUND_BLOB("Sound Blob"),
   SUNFLOWER("Sunflower"),
   SWIRLS("Swirls"),
+  TRIANGLES("Triangles"),
   STILL_IMAGE("Still Image"),
   GIF_IMAGE("Gif"),
   VIDEO("Video"),
@@ -45,6 +47,7 @@ enum PatternSelect {
     this.displayName = displayName;
   }
 };
+PatternSelect[] patternNames = PatternSelect.values();
 
 enum TransformSelect {
   ROTATION("Rotation");
@@ -56,11 +59,13 @@ enum TransformSelect {
 }
 
 class GUI {
+  public float timeToIdle = 60000; // in millis
+  public float lastAction;
   public ControlP5 cp5;
-
+  
   public GUI(PApplet window) {
     cp5 = new ControlP5(window);
-
+    lastAction = millis();
     // Playlist picker
     ScrollableList playlistDropdown = cp5.addScrollableList("PlaylistFolders")
                                           .setLabel("Select Playlist Folder")
@@ -150,6 +155,11 @@ class GUI {
   }
 
   public void run() {
+    if (millis() - lastAction >= timeToIdle) {
+      PatternSelect p = patternNames[int(random(patternNames.length - 7))];
+      setPattern(p);
+      lastAction = millis();
+    }
     currCameraMatrix = new PMatrix3D(g3.camera);
     camera();
     cp5.draw();
@@ -238,16 +248,13 @@ void controlAudioEvent (ControlEvent event) {
   int index = int(d.getValue());
   println("[AUDIO SELECTED]" + d.getItem(index).get("value"));
   selectedAudio = d.getItem(index).get("value").toString();
-  if (player != null) player.mute();
+    if (sound.player != null) sound.player.mute();
   if (selectedAudio.equals("Speaker Audio")) {
-    listeningToMic = true;
-    fft = new FFT(audio.bufferSize(), audio.sampleRate());
-    fft.logAverages(11, 1);
+      sound.listeningToMic = true;
+      sound.processMicSignal();
   } else {
-    listeningToMic = false;
-    player = minim.loadFile(selectedAudio, 1024);
-    fft = new FFT(player.bufferSize(), player.sampleRate());
-    fft.logAverages(11, 1);
+      sound.listeningToMic = false;
+      sound.processAudioFile(selectedAudio);
   }
 }
 
@@ -305,7 +312,6 @@ String getFileExtension(File file) {
 }
 
 void addPatterns(ScrollableList list) {
-  PatternSelect[] patternNames = PatternSelect.values();
   for (int i = 0; i < patternNames.length; i++) {
     list.addItem(((PatternSelect)patternNames[i]).displayName, patternNames[i]);
   }
@@ -324,8 +330,8 @@ void setPattern(PatternSelect val) {
   switch (val) {
     case EMPTY:
       pattern = new EmptyPattern(); break;
-    case BEAT_DETECT:
-      pattern = new PatternBeatDetect(); break;
+    case BUBBLE_SPIRAL:
+      pattern = new PatternBubbleSpiral(); break;
     case SWIRLS:
       pattern = new PatternSwirly(color(255,0,0), 500, 1, false); break;
     case PULSE:
@@ -344,16 +350,22 @@ void setPattern(PatternSelect val) {
       pattern = new PatternInfiniteSky(false); break;
     case INFINITE_NIGHT:
       pattern = new PatternInfiniteSky(true); break;
+    case KALEIDOSCOPE:
+      pattern = new PatternKaleidoscope(); break;
     case SOUND:
       pattern = new PatternSound(); break;
     case SOUND_BLOB:
       pattern = new PatternSoundBlob(); break;
+    case TRIANGLES:
+      pattern = new PatternTriangles(); break;
     case GRADIENT_PULSE:
       pattern = new PatternGradientPulse(); break;
     case GRADIENT:
       pattern = new PatternGradient(); break;
     case RAINBOW_RINGS:
       pattern = new PatternRainbowRings(); break;
+    case RAINBOW_WAVES:
+      pattern = new PatternRainbowWaves(); break;
     case DIAMONDS:
       pattern = new PatternDiamonds(); break;
     case TEST_SNAKE:
@@ -397,25 +409,23 @@ void setTransform (TransformSelect transform) {
 }
 
 void PlayAudio() {
-  if (player == null) {
+  if (sound.player == null) {
     if (selectedAudio == null) { println("[WARNING] No audio selected!"); }
     else {
-      player = minim.loadFile(selectedAudio, 1024);
-      fft = new FFT(player.bufferSize(), player.sampleRate());
-      fft.logAverages(11, 1);
+      sound.processAudioFile(selectedAudio);
     }
   }
-  if (!player.isPlaying() && !listeningToMic) {
-    player.play();
+  if (!sound.player.isPlaying() && !sound.listeningToMic) {
+    sound.player.play();
   }
 }
 
 void StopAudio() {
-  if (player != null && player.isPlaying()) { player.pause(); player.rewind(); }
+  if (sound.player != null && sound.player.isPlaying()) { sound.player.pause(); sound.player.rewind(); }
 }
 
 void PauseAudio() {
-  if (player != null && player.isPlaying()) { player.pause(); }
+  if (sound.player != null && sound.player.isPlaying()) { sound.player.pause(); }
 }
 
 void PlayVideo() {
@@ -463,8 +473,8 @@ void ToggleMode() {
   }
   else if (conjurer.mode == MODE_LISTENING) {
     conjurer.mode = MODE_MANUAL;
+    conjurer.clean();
     modebtn.setLabel("Switch to Kinect Mode");
-    kinectServer = null;
   }
 
   println(conjurer.mode);
