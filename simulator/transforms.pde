@@ -116,7 +116,6 @@ class HSVTransform extends BaseTransform {
 
     // Move the value automatically if auto mode is engaged
     if (hsvTransformAutoSlide) {
-      println(TWO_PI, hertz, timeStep, stepsPerLap, TWO_PI * hertz * timeStep / stepsPerLap);
       float halfAmplitude = amplitude / 2.;
       float newValue = halfAmplitude * sin(TWO_PI * hertz * timeStep / stepsPerLap) + halfAmplitude;
       slider.setValue(newValue * sliderScaleFactor);
