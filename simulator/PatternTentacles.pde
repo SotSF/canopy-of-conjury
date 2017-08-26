@@ -42,6 +42,7 @@ class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //
         image.stroke(0);
         colorMode(HSB, 360);
         float segmentBrightness = 360 - abs(a.lightSegment - j) * 30;
+        if (segmentBrightness < 0) segmentBrightness = 0;
         image.stroke(color(j * 5 + hue, 360, 360, 
           c.brightnessFadeIn < segmentBrightness ? c.brightnessFadeIn : segmentBrightness));
         colorMode(RGB, 255);
