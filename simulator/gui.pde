@@ -25,6 +25,7 @@ enum PatternSelect {
   INFINITE_SKY("Infinite Sky"),
   INFINITE_NIGHT("Infinite Night"),
   KALEIDOSCOPE("Kaleidoscope"),
+  MANDALAS("Mandalas"),
   PULSE("Pulse"),
   RAINBOW_RINGS("Rainbow Rings"),
   RAINBOW_WAVES("Rainbow Waves"),
@@ -353,6 +354,8 @@ void setPattern(PatternSelect val) {
       pattern = new PatternInfiniteSky(true); break;
     case KALEIDOSCOPE:
       pattern = new PatternKaleidoscope(); break;
+    case MANDALAS:
+      pattern = new PatternMandalas(); break;
     case SOUND:
       pattern = new PatternSound(); break;
     case SOUND_BLOB:

@@ -1,98 +1,80 @@
-class PatternMandalas extends CartesianPattern {
-  int numRings = 6;
+class PatternMandalas extends Pattern {
+  int numRings = 5;
   int finishedRings = 0;
-  Ring[] rings = new Ring[numRings];
   boolean ringset = false;
-  void runDefault(Strip[] strips) {
-    image.beginDraw();
-    image.noSmooth();
-    image.background(0);
-    if (!ringset) {
-      float radius = random(10, 50);
-      for (int i = 0; i < rings.length; i++) {
-        float ringRadius = radius + (i > 0 ? rings[i - 1].ringWidth : 0);
-        radius = ringRadius + 5 * i;
-        rings[i] = new Ring(int(random(3, 7)), ringRadius); 
-        println(ringRadius, rings[i].ringWidth, ringRadius + rings[i].ringWidth);
-      }
-      ringset = true;
+  Ring[] rings = new Ring[numRings];
+  PatternMandalas() {
+    int lastOut = 0;
+    for (int i = 0; i < rings.length; i++) {
+      if (lastOut >= NUM_LEDS_PER_STRIP) return;
+      int out = lastOut + 3 + int(random(10, 15));
+      if (out > NUM_LEDS_PER_STRIP) out = NUM_LEDS_PER_STRIP;
+      rings[i] = new Ring(lastOut + 3, out);
+      lastOut = out;
     }
-
-    //DEBUG
-    image.translate(image.width /2, image.height /2);
+  }
+  void runDefault(Strip[] strips) {
     for (int i = 0; i < rings.length; i++) {
       Ring r = rings[i];
-      image.stroke(r.c);
-      image.strokeWeight(2);
-      image.noFill();
-      image.ellipse(0, 0, r.innerRadius * 2, r.innerRadius * 2);
-      image.ellipse(0, 0, (r.innerRadius + r.ringWidth) * 2, (r.innerRadius + r.ringWidth) * 2);
-      r.renderShapes();
-      if (r.t == r.shapeCount) rings[i] = new Ring(int(random(3, 7)), r.innerRadius);
+      for (int s = r.offset + r.fadeOut; s < r.t + r.offset; s++) {
+        for (int l = r.innerRing; l < r.outerRing; l++) {
+          if (l == r.innerRing || l == r.outerRing - 1 || 
+            l == r.innerRing + 1 || l == r.outerRing - 2) {
+            strips[s % NUM_STRIPS].leds[l] = r.c1;
+          } else if (s % r.numShapes == 0) { 
+            strips[s % NUM_STRIPS].leds[l] = r.c1;
+          }
+          if (s % r.numShapes < r.outerRing - r.innerRing) {
+            for (int j = 2; j < s % r.numShapes; j++) {
+              strips[s % NUM_STRIPS].leds[r.innerRing + j] = r.c2;
+            }
+          }
+        }
+      }
+      r.update();
     }
-    
-    image.endDraw();
-    scrapeImage(image.get(), strips);
   }
 
-  int[] factors = {18, 20, 24, 30, 36, 40, 45, 60, 72, 90, 120};
+  int[] factors = { 2, 3, 4, 6, 8, 12, 16, 24, 32, 48};
   class Ring {
-    int vertices; //2 (line), 3 (triangles, 4 (rectangles), 5 (circles)
-    float innerRadius;
-    float ringWidth;
-    float shapeCount;
-    float shapeWidth;
-    float shapeMargin;
-    color c;
-    float velocity;
+    int innerRing;
+    int outerRing;
     int offset;
     int t = 0;
-    float[] verts;
-    Ring(int v, float rad) {
-      vertices = v;
-      innerRadius = rad;
-      ringWidth = random(20, 50);
-      shapeCount = factors[int(random(factors.length))];
-      shapeMargin = random(1, 5);
-      shapeWidth = (360 / shapeCount) - (2 * shapeMargin);
-      //c = color(random(255),random(255),random(255));
-      c =color(random(200, 255), random(50, 255), 0);
-      //velocity = random(1, 5);
-      velocity = 5;
-      offset = int(random(360));
-      verts = new float[vertices - 1];
-      for (int i = 0; i < vertices - 1; i++) {
-        verts[i] = random(shapeWidth * 2);
+    int fadeOut = 0;
+
+    color c1;
+    color c2;
+    int velocity;
+    int numShapes;
+    Ring(int pos, int out) {
+      innerRing = pos;
+      outerRing = out;
+      offset = int(random(NUM_STRIPS));
+      setParams();
+    }
+
+    void update() {
+      if (t < NUM_STRIPS) {
+        t += velocity;
+      }
+      if (t > NUM_STRIPS / 2) {
+        fadeOut += velocity;
+      }
+      if (t >= NUM_STRIPS && fadeOut >= NUM_STRIPS) { 
+        t = 0; 
+        fadeOut = 0;
+        setParams();
       }
     }
-    void renderShapes() {
-      image.pushMatrix();
-      for (float i = 0; i < t; i++) {
-        image.rotate(radians(shapeWidth + (2 * shapeMargin)));
-        if (vertices > 2) image.noStroke();
-        else { 
-          image.stroke(c); 
-          image.strokeWeight(2);
-        }
-        image.fill(c);
-        image.beginShape();
-        image.vertex(innerRadius + ringWidth, shapeWidth / 2);
-        for (int v = 0; v < vertices - 1; v++) {
-          float rad = innerRadius;
-          if (v > vertices / 2) { 
-            rad = innerRadius + ringWidth / vertices * (v - 1);
-          }
-          if (v == vertices - 1) {
-            rad = innerRadius + ringWidth;
-          }
-          float x = rad * cos(radians(verts[v]));
-          float y = rad * sin(radians(verts[v]));
-          image.vertex(x, y);
-        }
-        image.endShape(CLOSE);
-      }
-      image.popMatrix();
-      t += 2;
+
+    void setParams() {
+      numShapes = factors[int(random(factors.length))];
+      colorMode(HSB, 360);
+      c1 = color(random(360), 360, 360);
+      c2 = color(hue(c1) + 50 % 360, 360, 360);
+      colorMode(RGB, 255);
+      velocity = int(random(1, 4));
     }
   }
 }

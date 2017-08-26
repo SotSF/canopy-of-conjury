@@ -1,4 +1,4 @@
-class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //<>//
+class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //<>// //<>//
   int numCreatures = 5;
   Creature[] creatures = new Creature[numCreatures];
   PatternTentacles() {
@@ -15,8 +15,16 @@ class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //
     image.beginDraw();
     image.background(0);
     for (int i = 0; i < creatures.length; i++) {
-      renderCreature(creatures[i]);
+      Creature c = creatures[i];
+      renderCreature(c);
       creatures[i].update();
+      if (c.center.x < 0 || c.center.x > image.width || c.center.y > image.height || c.center.y < 0) {
+        int numArms = int(random(7, 12));
+        int numArmSegments = int(random(8, 20));
+        int segmentLength = int(random(15, 40)); 
+        creatures[i] = new Creature(random(image.width - 50), random(image.height - 50), 
+          numArms, numArmSegments, segmentLength);
+      }
     }
     image.endDraw();
     scrapeImage(image.get(), strips);
@@ -73,8 +81,6 @@ class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //
     void update() {
       center.x += xDirection;
       center.y += yDirection;
-      if (center.x > image.width - 50) xDirection *= -1;
-      if (center.y > image.height - 50) yDirection *= -1;
       if (brightnessFadeIn < 360) brightnessFadeIn += 10;
     }
   }
