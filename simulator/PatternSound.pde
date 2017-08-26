@@ -11,7 +11,7 @@ class PatternSound extends Pattern {
   int time = 0;
 
   public void runDefault(Strip[] strips) {
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     int offset = int(random(5, 10));
 
     for (int i = 0; i < NUM_STRIPS; i++) {
@@ -45,10 +45,10 @@ class PatternSound extends Pattern {
   synchronized void visualize(Strip[] strips) {
     time = millis();
     milliDiff = time - mydelay;
-    colorMode(HSB, 100);
+
+    colorMode(HSB, 360, 100, 100);
     int innerOffset = round(sound.getAmplitudeForBand(7) / 4);
     int outerOffset = round(sound.getAmplitudeForBand(11) / 3);
-
 
     for (int i = 0; i < NUM_STRIPS; i++) {
       int lights = int(random(20, 25));
@@ -83,6 +83,7 @@ class PatternSound extends Pattern {
     } else if (colorShifter < 0) {
       colorShifter = 100;
     }
+
     colorMode(RGB, 255);
   }
 
@@ -165,9 +166,9 @@ class PatternSoundBlob extends CartesianPattern {
     image.endDraw();
     scrapeImage(image.get(), strips);
   }
-  
+
   void colorOverlay() {
-    colorMode(HSB, 360);
+    colorMode(HSB, 360, 100, 100);
     for (int x = 0; x < dimension; x++) {
       for (int y = 0; y < dimension; y++) {
         if (image.get(x, y) == color(360)) {
@@ -185,7 +186,7 @@ class PatternSoundBlob extends CartesianPattern {
     }
     colorMode(RGB, 255);
     colorShift = (colorShift + 0.5) % 360;
-   
+
   }
 
   void renderSpike(float rad, float theta) {

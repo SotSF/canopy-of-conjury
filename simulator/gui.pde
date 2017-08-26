@@ -53,7 +53,8 @@ PatternSelect[] patternNames = PatternSelect.values();
 
 enum TransformSelect {
   BASE("None"),
-  ROTATION("Rotation");
+  ROTATION("Rotation"),
+  HSV("HSV");
 
   private final String displayName;
   private TransformSelect(String displayName) {
@@ -65,7 +66,7 @@ class GUI {
   public float timeToIdle = 120000; // in millis
   public float lastAction;
   public ControlP5 cp5;
-  
+
   public GUI(PApplet window) {
     cp5 = new ControlP5(window);
     lastAction = millis();
@@ -414,6 +415,9 @@ void setTransform (TransformSelect transform) {
       break;
     case ROTATION:
       transforms.addTransform(new RotationTransform());
+      break;
+    case HSV:
+      transforms.addTransform(new HSVTransform());
       break;
   }
 }

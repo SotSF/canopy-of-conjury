@@ -15,7 +15,7 @@ class PatternGradientPulse extends Pattern {
   
   public void runDefault(Strip[] strips) {
     // switch to HSB colors for this method
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     
     int r = int(random(100));
     if (r > 50 && beatList.size() < 25) {
@@ -43,12 +43,12 @@ class PatternGradientPulse extends Pattern {
     }
 
     // switch back to RGB color (in case this interferes with anything after visualize()
-    colorMode(RGB,255);
+    colorMode(RGB, 255);
   }
   
   synchronized public void visualize(Strip[] strips) {
     // switch to HSB colors for this method
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
     boolean added = false;
     
     float highAmp = 0;
@@ -96,7 +96,7 @@ class PatternGradientPulse extends Pattern {
     }
     
     // switch back to RGB color (in case this interferes with anything after visualize()
-    colorMode(RGB,255);
+    colorMode(RGB, 255);
   }
   
   private class Beat {

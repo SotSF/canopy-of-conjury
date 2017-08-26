@@ -70,7 +70,7 @@ class PatternKaleidoscope extends CartesianPattern {
     image.strokeWeight(3);
     image.stroke(255);
     float theta = PI / 3;
-    image.rotate(triangleAngle); 
+    image.rotate(triangleAngle);
     for (int i = 0; i < 6; i++) {
       image.rotate( theta );
       image.beginShape();
@@ -117,7 +117,7 @@ class PatternKaleidoscope extends CartesianPattern {
       this.amp = amp;
       this.hue = random(360);
       this.flip = random(100) > 50 ? 1 : -1;
-    } 
+    }
     void update() {
       t += 5;
       if (t > 300) brightness -= 0.05;

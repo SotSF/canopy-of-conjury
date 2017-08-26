@@ -27,7 +27,7 @@ class Sound {
   }
 
   private void setBeat() {
-    if (beat == null) { 
+    if (beat == null) {
       if (listeningToMic) beat = new BeatDetect(micSignal.bufferSize(), micSignal.sampleRate());
       else beat = new BeatDetect(player.bufferSize(), player.sampleRate());
       beat.setSensitivity(120);
@@ -42,16 +42,16 @@ class Sound {
 
   public float getAmplitudeForBand(int band) {
     int lowFreq;
-    if ( band == 0 ) { 
+    if ( band == 0 ) {
       lowFreq = 0;
-    } else { 
+    } else {
       lowFreq = (int)((sampleRate/2) / (float)Math.pow(2, 12 - band));
     }
     int hiFreq = (int)((sampleRate/2) / (float)Math.pow(2, 11 - band));
 
     // we're asking for the index of lowFreq & hiFreq
     int lowBound = fft.freqToIndex(lowFreq); // freqToIndex returns the index of the frequency band that contains the requested frequency
-    int hiBound = fft.freqToIndex(hiFreq); 
+    int hiBound = fft.freqToIndex(hiFreq);
 
     // calculate the average amplitude of the frequency band
     float avg = fft.calcAvg(lowBound, hiBound);
@@ -68,7 +68,7 @@ class Sound {
       if (listeningToMic) {
         this.input = micSignal;
         this.input.addListener(this);
-      } else 
+      } else
       {
         this.source = player;
         this.source.addListener(this);
@@ -78,7 +78,7 @@ class Sound {
 
     synchronized void samples(float[] samps)
     {
-      if (listeningToMic) { 
+      if (listeningToMic) {
         beat.detect(micSignal.mix);
       } else {
         checkSource();
@@ -90,7 +90,7 @@ class Sound {
     {
       if (listeningToMic) {
         beat.detect(micSignal.mix);
-      } else { 
+      } else {
         checkSource();
         beat.detect(source.mix);
       }

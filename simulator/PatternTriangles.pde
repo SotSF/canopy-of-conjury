@@ -40,7 +40,7 @@ class PatternTriangles extends CartesianPattern {
     int yDirection = 1;
     boolean remove = false;
     Point() {
-      this.point = new PVector(random(image.width), 
+      this.point = new PVector(random(image.width),
         (random(100) > 50 ? random(-image.height, 0) : random(image.height, 2 * image.height)));
       if (this.point.y >= image.height) yDirection = -1;
       this.xStep = random(-2, 2);

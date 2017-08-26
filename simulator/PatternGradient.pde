@@ -157,7 +157,7 @@ class PatternGradient extends Pattern {
     color[] interpolatedColors = new color[NUM_LEDS_PER_STRIP];
 
     // use HSB for this
-    colorMode(HSB, 100);
+    colorMode(HSB, 360, 100, 100);
 
     color color1 = this.colorState.active1.c;
     color color2 = this.colorState.active2.c;

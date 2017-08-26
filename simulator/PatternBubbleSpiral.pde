@@ -52,7 +52,7 @@ class PatternBubbleSpiral extends CartesianPattern {
       this.theta += radians(5 * rotation);
       this.diameter -= 0.2;
       if (radius > 300 || diameter < 0) remove = true;
-      if (random(100) > 99.99) { 
+      if (random(100) > 99.99) {
         rotation *= -1;
       }
     }

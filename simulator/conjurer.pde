@@ -3,7 +3,7 @@
 * will correspond to a user's action. When the Conjurer is idling
 * it can direct the global IPattern, looping through static patterns.
 *
-* Commands are received in the simulator.draw() method as a string, 
+* Commands are received in the simulator.draw() method as a string,
 * and then sent to parseCmd(), which then passes a Command to the Conjurer.
 */
 
@@ -40,7 +40,7 @@ class Conjurer {
         case "TRACE":
           rainbowWave.addWave(command.origin,command.destination);
           break;
-          
+
       }
       this.command = null;
     }
@@ -48,13 +48,13 @@ class Conjurer {
     rainbowRing.run(ledstrips);
     rainbowWave.run(ledstrips);
   }
-  
+
   public void clean() {
     burst.targets.clear();
     rainbowRing.lightTracks.clear();
     rainbowWave.waves.clear();
   }
-  
+
 }
 
 

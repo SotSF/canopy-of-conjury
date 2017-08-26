@@ -69,7 +69,7 @@ class PatternHeartPulse extends CartesianPattern {
   }
   
   public void colorOverlay(Strip[] strips) {
-    colorMode(HSB,100);
+    colorMode(HSB, 360, 100, 100);
     for (Strip s : strips) {
       for (int l = 0; l < NUM_LEDS_PER_STRIP; l++) {
         if (s.leds[l] == colorMask) {
@@ -81,6 +81,4 @@ class PatternHeartPulse extends CartesianPattern {
     if (brightness < 100) brightness++;
     colorMode(RGB, 255);
   }
-  
-
 }

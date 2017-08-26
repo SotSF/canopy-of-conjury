@@ -1,13 +1,13 @@
-/** 
-* Given Point A (x0,y0) and B (x1,y1), 
-* animate a sine wave between the two 
+/**
+* Given Point A (x0,y0) and B (x1,y1),
+* animate a sine wave between the two
 */
 class PatternRainbowWaves extends CartesianPattern {
   ArrayList<Wave> waves = new ArrayList<Wave>();
   void runDefault(Strip[] strips) {
     if (conjurer.mode == MODE_MANUAL) {
-      if (random(100) > 80) { 
-        addWave(new PVector(random(500), random(500)), 
+      if (random(100) > 80) {
+        addWave(new PVector(random(500), random(500)),
           new PVector(random(500), random(500)));
       }
     }
