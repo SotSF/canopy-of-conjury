@@ -1,4 +1,4 @@
-int fadeSpeed = 10; //<>//
+int fadeSpeed = 10; //<>// //<>//
 int playlistRuntime = 3 * 1000;
 boolean isFadingOut = false;
 boolean stopCurrentAudio = true;

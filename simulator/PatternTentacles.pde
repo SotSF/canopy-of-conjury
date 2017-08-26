@@ -74,8 +74,8 @@ class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //
       arms = new Arm[numArms];
       baseHue = random(360);
       for (int i = 0; i < arms.length; i++) {
-        rotate(2 * PI / numArms * i);
-        arms[i] = new Arm(numArmSegments, segmentLength);
+        float theta = (2 * PI / numArms * i);
+        arms[i] = new Arm(numArmSegments, segmentLength, theta);
       }
     }
 
@@ -93,18 +93,20 @@ class PatternTentacles extends CartesianPattern { //<>// //<>// //<>// //<>// //
     int changeDirection;
     int lightSegment;
     int timer = 0;
-    Arm(int numSegments, int segmentLength) {
+    float thetaMod;
+    Arm(int numSegments, int segmentLength, float theta) {
       segments = new PVector[numSegments];
       this.segmentLength = segmentLength;
       thetaDirection = random(100) > 50 ? -1 : 1;
       lightSegment = int(random(segments.length));
       generateSegments();
       changeDirection = int(random(400, 600));
+      thetaMod = theta;
     }
 
     private void generateSegments() {
       segments[0] = new PVector(0, 0);
-      float theta = random(PI / 3, 2 * PI / 3);
+      float theta = random(PI / 3, 2 * PI / 3) + thetaMod;
       for (int i = 1; i < segments.length; i++) {
         float x = segmentLength * cos(theta);
         float y = segmentLength * sin(theta);
