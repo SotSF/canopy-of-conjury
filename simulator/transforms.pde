@@ -14,6 +14,10 @@ class Transforms {
   public void addTransform (BaseTransform transform) {
     transforms.add(transform);
   }
+  
+  public void clear() {
+    transforms.clear();
+  }
 
   void apply (Strip[] ledStrips) {
     for (BaseTransform transform : transforms) {

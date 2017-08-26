@@ -52,6 +52,7 @@ enum PatternSelect {
 PatternSelect[] patternNames = PatternSelect.values();
 
 enum TransformSelect {
+  BASE("None"),
   ROTATION("Rotation");
 
   private final String displayName;
@@ -408,6 +409,9 @@ void setPattern(PatternSelect val) {
 
 void setTransform (TransformSelect transform) {
   switch (transform) {
+    case BASE:
+      transforms.clear();
+      break;
     case ROTATION:
       transforms.addTransform(new RotationTransform());
       break;
